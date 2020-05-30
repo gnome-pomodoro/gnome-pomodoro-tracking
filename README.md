@@ -1,0 +1,1 @@
+python3 /home/jhbez/soft/gnome-pomodoro-clockify/clockify.py -e $(state) -t "$(triggers)" -d $(duration) -l $(elapsed)
