@@ -1,4 +1,4 @@
-#! /bin/env python3
+#! /usr/bin/python3
 import requests
 import json
 from urllib.parse import urljoin
