@@ -124,11 +124,11 @@ parse.add_argument('-l',
 
 parse.add_argument('-n', 
     action='store',
-    dest='activity_name', 
+    dest='name', 
     help='Activity name')
 
-results = parse.parse_args()
-print(results)
+params = parse.parse_args()
+
 
 path = os.path.dirname(os.path.abspath(__file__)) +"/.gp-clockify.cfg"
 if not os.path.exists(path):
@@ -137,34 +137,42 @@ if not os.path.exists(path):
 g = GpClockify(path)
 c = Clockify(g.settings("token"))
 
-def from_cli(activity_name):
+def convert_millis(millis, to="seconds"):
+    if to=="minutes":
+        return (millis/(1000*60))%60
+    elif to=="hours":
+        return (millis/(1000*60*60))%24        
+    return (millis/1000)%60
+    
+
+def from_cli(name):
     os.system("gnome-pomodoro --start")
     time.sleep(3)
-    GpClockify(path).pomodoro( "name", activity_name)
+    GpClockify(path).pomodoro( "name", name)
 
-def from_gp(activity_name):
-    start = g.pomodoro("start")
-    if start:
-        end = today()
-        _, ok = c.add_time_entry(g.pomodoro("name"),start, end)
-        if ok:
-            g.clean_pomodoro()
-    else:
-        g.pomodoro( "name", activity_name)
+def from_gp(name, trigger, elapsed):
+    if 'start enable' in trigger or 'resume' in trigger:
+        #Start timer
+        g.pomodoro( "name", name)
         g.pomodoro("start", today())
+    elif 'skip disable' in trigger or 'pause' in trigger:
+        # Stop timer    
+        minutes = convert_millis(float(elapsed), to="minutes")
+        if minutes > 2: 
+            start = g.pomodoro("start")
+            end = today()
+            _, ok = c.add_time_entry(g.pomodoro("name"),start, end)
+            if ok:
+                g.clean_pomodoro()
+        else: 
+            g.clean_pomodoro()
 
-
-if results.state == 'pomodoro':
-    if results.activity_name: from_cli(results.activity_name)
-    else: from_gp("Pomodoro")
-elif results.state == 'short-break':
-    if results.activity_name: from_cli(results.activity_name)
-    else: from_gp("Short break")
-elif results.state == 'long-break':
-    if results.activity_name: from_cli(results.activity_name)
-    else: from_gp("Long break")
-
-
-
-#
-
+if params.state == 'pomodoro':
+    if params.name: from_cli(params.name)
+    else: from_gp("Pomodoro", params.trigger, params.elapsed)
+elif params.state == 'short-break':
+    if params.name: from_cli(params.name)
+    else: from_gp("Short break", params.trigger, params.elapsed)
+elif params.state == 'long-break':
+    if params.name: from_cli(params.name)
+    else: from_gp("Long break", params.trigger, params.elapsed)
