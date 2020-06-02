@@ -129,7 +129,7 @@ parse.add_argument('-n',
 params = parse.parse_args()
 
 
-path = os.path.dirname(os.path.abspath(__file__)) +"/.gp-clockify.cfg"
+path = os.path.dirname("~/.config/gp-clockify.conf")
 if not os.path.exists(path):
     raise Exception("File:{} does not exist".format(path))
 
