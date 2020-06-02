@@ -1,9 +1,8 @@
 #! /bin/env python3
 import requests
-from urllib.parse import urljoin
 import json
+from urllib.parse import urljoin
 from datetime import datetime
-
 import argparse
 import configparser
 import os 
