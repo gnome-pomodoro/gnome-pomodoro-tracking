@@ -7,6 +7,7 @@ import argparse
 import configparser
 import os 
 import time
+from os.path import expanduser
 
 
 class Clockify:
@@ -128,8 +129,8 @@ parse.add_argument('-n',
 
 params = parse.parse_args()
 
-
-path = os.path.dirname("~/.config/gp-clockify.conf")
+home = expanduser("~")
+path = "{}/.config/gp-clockify.conf".format(home)
 if not os.path.exists(path):
     raise Exception("File:{} does not exist".format(path))
 
@@ -145,7 +146,8 @@ def convert_millis(millis, to="seconds"):
     
 
 def from_cli(name):
-    os.system("gnome-pomodoro --start")
+    os.system("gnome-pomodoro --stop")
+    os.system("gnome-pomodoro --start --no-default-window")
     time.sleep(3)
     GpClockify(path).pomodoro( "name", name)
 
