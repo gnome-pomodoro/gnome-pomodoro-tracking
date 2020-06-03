@@ -128,7 +128,6 @@ parse.add_argument('-n',
     help='Activity name')
 
 params = parse.parse_args()
-
 home = expanduser("~")
 path = "{}/.config/gp-clockify.conf".format(home)
 if not os.path.exists(path):
@@ -137,12 +136,8 @@ if not os.path.exists(path):
 g = GpClockify(path)
 c = Clockify(g.settings("token"))
 
-def convert_millis(millis, to="seconds"):
-    if to=="minutes":
-        return (millis/(1000*60))%60
-    elif to=="hours":
-        return (millis/(1000*60*60))%24        
-    return (millis/1000)%60
+def convert_minutes(seconds):
+    return seconds/60.0
     
 
 def from_cli(name):
@@ -152,13 +147,13 @@ def from_cli(name):
     GpClockify(path).pomodoro( "name", name)
 
 def from_gp(name, trigger, elapsed):
-    if 'start enable' in trigger or 'resume' in trigger:
+    if 'start' in trigger or 'resume' in trigger:
         #Start timer
         g.pomodoro( "name", name)
         g.pomodoro("start", today())
-    elif 'skip disable' in trigger or 'pause' in trigger:
+    if 'skip' in trigger or 'pause' in trigger or 'complete' in trigger:
         # Stop timer    
-        minutes = convert_millis(float(elapsed), to="minutes")
+        minutes = convert_minutes(float(elapsed))
         if minutes > 2: 
             start = g.pomodoro("start")
             end = today()
