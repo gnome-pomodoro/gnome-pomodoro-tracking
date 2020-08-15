@@ -169,7 +169,11 @@ class GPTracking:
             dest='reset', 
             const=True,
             help='Reset pomodoro')
-
+        self.parse.add_argument('-k', 
+            action='store_const',
+            dest='kill', 
+            const=True,
+            help='Kill pomodoro')
         self.parse.add_argument('-w', 
             action='store',
             dest='write', 
@@ -184,13 +188,14 @@ class GPTracking:
         params = self.gptparse_params()
         if gpt.gnome_pomodoro():
             return
-        if params.reset:
+        if params.reset or params.kill:
             params.trigger = 'skip'
             params.duration = "0"
             params.elapsed = "0"
             self.gnome_pomodoro(params=params)
             os.system("gnome-pomodoro --stop")
-            os.system("gnome-pomodoro --start --no-default-window")
+            if params.reset:
+                os.system("gnome-pomodoro --start --no-default-window")
         if params.name:
             if not len(self.gptconfig_pomodoro("name")) and not len(self.gptconfig_pomodoro("start")):            
                 os.system("gnome-pomodoro --stop")

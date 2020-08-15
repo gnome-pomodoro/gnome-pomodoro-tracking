@@ -39,6 +39,8 @@ gp-tracking -p clockify
     
     # * if running pmodoro, stop current pomodoro and start new
     gp-tracking -r
+    # * if running pmodoro, kill current pomodoro
+    gp-tracking -k
 ```
 
 ## Gnome-Pomodoro 
