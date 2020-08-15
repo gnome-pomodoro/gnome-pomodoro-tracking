@@ -99,78 +99,84 @@ class GPTracking:
 
     def load_plugin(self):
         try:
-            plugin = self.gpconfig_settings("plugin") 
+            plugin = self.gpconfig_settings("plugin")
+            if not len(plugin):
+              raise configparser.NoOptionError("plugin", "settings")
             path_plugin = "%s/plugins/%s" % (self.dirpath, plugin)
             GPTracking.exists(path_plugin, "the plugin does not exist.")            
-        except configparser.NoOptionError as e:            
-            self.parse.add_argument('-p',
-                action='store', 
-                dest='plugin', 
-                help='Check plugins available ', 
-                required=True
-                )
+        except configparser.NoOptionError as e:
+            self.gptparse_args(['plugin'])
             params = self.gptparse_params()
             path_plugin = "%s/plugins/%s" % (self.dirpath, params.plugin)
             GPTracking.exists(path_plugin, "the plugin does not exist.")
             self.gpconfig_settings("plugin", params.plugin)
             plugin = params.plugin
-            
+
         sys.path.insert(1, path_plugin)
         try:            
             globals()[plugin] = __import__(plugin)
-            pluginClass = getattr(globals()[plugin], "Clockify")
+            pluginClass = getattr(globals()[plugin], plugin.title())
             self.plugin = pluginClass(self)
         except ModuleNotFoundError as e:
             GPTracking.exit("Fail import plugin %s" % plugin)
-        
+        except Exception as e:
+            GPTracking.exit("Fail import plugin %s" % plugin)
         
     def gptparse_params(self):
         return self.parse.parse_args()
 
     def gptparse_args(self, required=True):
-        if required:            
-            if getattr(self.plugin, 'gptparse_args',False):
-                getattr(self.plugin, 'gptparse_args')(required=True)
-        else:
-            self.parse.add_argument('-s',
+        
+        if isinstance(required, list):                
+            required_args = {}                
+            for p in required:
+                required_args.update({p: True})            
+            self.parse.add_argument('-p',
                 action='store', 
-                dest='state', 
-                choices= ['pomodoro', 'short-break', 'long-break'],
-                help='Pomodoro state', 
-                default="pomodoro")
+                dest='plugin', 
+                help='Check plugins available ', 
+                required=required_args.get('plugin', False)
+            )
+    
+        self.parse.add_argument('-s',
+            action='store', 
+            dest='state', 
+            choices= ['pomodoro', 'short-break', 'long-break'],
+            help='Pomodoro state', 
+            default="pomodoro")
 
-            self.parse.add_argument('-t', 
-                action='store', 
-                dest='trigger', 
-                help='Pomodoro  trigger')
-            self.parse.add_argument('-d', 
-                action='store', 
-                dest='duration', 
-                help='Pomodoro  duration')
+        self.parse.add_argument('-t', 
+            action='store', 
+            dest='trigger', 
+            help='Pomodoro  trigger')
+        self.parse.add_argument('-d', 
+            action='store', 
+            dest='duration', 
+            help='Pomodoro  duration')
 
-            self.parse.add_argument('-e', 
-                action='store', 
-                dest='elapsed', 
-                help='Pomodoro elapsed')
+        self.parse.add_argument('-e', 
+            action='store', 
+            dest='elapsed', 
+            help='Pomodoro elapsed')
 
-            self.parse.add_argument('-n', 
-                action='store',
-                dest='name', 
-                help='Pomodoro name')
+        self.parse.add_argument('-n', 
+            action='store',
+            dest='name', 
+            help='Pomodoro name')
 
-            self.parse.add_argument('-r', 
-                action='store_const',
-                dest='reset', 
-                const=True,
-                help='Reset pomodoro')
+        self.parse.add_argument('-r', 
+            action='store_const',
+            dest='reset', 
+            const=True,
+            help='Reset pomodoro')
 
-            self.parse.add_argument('-w', 
-                action='store',
-                dest='write', 
-                help='Write value in file config')
+        self.parse.add_argument('-w', 
+            action='store',
+            dest='write', 
+            help='Write value in file config')
 
-            if getattr(self.plugin, 'gptparse_args',False):
-                getattr(self.plugin, 'gptparse_args')(required=False)
+        if getattr(self.plugin, 'gptparse_args',False):
+            getattr(self.plugin, 'gptparse_args')(required=False)
     """
         Gnome pomodoro methods
     """
@@ -228,9 +234,7 @@ GPTracking.exists(GPT_CONF,)
 
 gpt = GPTracking(GPT_CONF, DIRPATH, DIRHOME)
 gpt.load_plugin()
-
-gpt.gptparse_args(required=True)
-gpt.gptparse_args(required=False)
+gpt.gptparse_args()
 
 gpt.gptparse_params()
 gpt.cli()

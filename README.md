@@ -1,50 +1,54 @@
-# Gnome-pomodoro & Clockify 
+# Gnome Pomodoro Tracking
 
 
 
+### Pre-requirements 
 
+* git 
+* gnome-pomodoro
 
-## Installation 
+### Install
 
-Clone 
-
-```
-git clone git@github.com:josehbez/gnome-pomodoro-clockify.git ~/.bin/gnome-pomodoro-clockify
-```
-
-Optional 
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/install.sh)"
 
 ```
-cd ~/.bin 
-ln -s gnome-pomodoro-clockify/gp-clockify gp-clockify
+
+### Uninstall
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/uninstall.sh)"
 ```
 
-### Clockify 
 
-Generate token API in https://clockify.me/
 
-![](images/clockify-token.png)
+### Set plugin tracking
 
-Add token in  gp-clockify.cfg
-
-![](images/add-token-gp-clockify.png)
-
-### Gnome-Pomodoro 
-
-Is required enable Plugins (Custom Actions -- Execute shell scripts)
-
-![](images/plugins.png)
-
-![](images/custom-actions.png)
-
-Add action Clockify  and 
-
-```
-python3 ~/.bin/gnome-pomodoro-clockify/gp-clockify.py -e $(state) -t "$(triggers)" -d $(duration) -l $(elapsed)
+```bash
+gp-tracking -p clockify
 ```
 
-![](images/action-clockify.png)
+### Plugins available
+
+* [clockify](./plugins/clockify/README.md)
+
+## Gnome-Pomodoro 
+
+* Launch gnome-pomodoro. Preferences / Plugins ... / Custom Actions(Execute shell scripts)
+
+![](img/plugins.png)
+
+![](img/custom-actions.png)
+
+* Launch gnome-pomodoro. Preferences / Custom actions ...  / add Action
+
+```bash
+gp-tracking -s $(state)  -t "$(triggers)" -d "$(duration)" -e "$(elapsed)"
+```
+
+![](img/action-clockify.png)
+
 
 ## LICENSE
 
-[GNU General Public License v3.0]( ./LICENSE)
+[GPL V3.0]( ./LICENSE)
