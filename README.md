@@ -3,7 +3,7 @@
 
 
 ### Pre-requirements 
-
+* python3
 * git 
 * gnome-pomodoro
 
@@ -31,6 +31,15 @@ gp-tracking -p clockify
 ### Plugins available
 
 * [clockify](./plugins/clockify/README.md)
+
+### CLI short-cut
+```bash
+    # * if not running pomodoro, start new pomodoro
+    gp-tracking -n "Add decription time entry"
+    
+    # * if running pmodoro, stop current pomodoro and start new
+    gp-tracking -r
+```
 
 ## Gnome-Pomodoro 
 
