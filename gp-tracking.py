@@ -17,8 +17,10 @@ PLUGING = "{}/plugins".format(DIRPATH)
 
 class GPTracking:
 
-    def __init__(self, gptconfig):
+    def __init__(self, gptconfig, dirpath, dirhome):
         self.gptconfig = gptconfig
+        self.dirpath = dirpath
+        self.dirhome = dirhome
 
         self.config = configparser.RawConfigParser()
         self.config.read(self.gptconfig)
@@ -95,32 +97,32 @@ class GPTracking:
         print(msg)
         exit(1)
 
-    def load_plugin(self, plugin):
-        sys.path.insert(1, PLUGING+"/"+plugin)
+    def load_plugin(self):
+        try:
+            plugin = self.gpconfig_settings("plugin") 
+            path_plugin = "%s/plugins/%s" % (self.dirpath, plugin)
+            GPTracking.exists(path_plugin, "the plugin does not exist.")            
+        except configparser.NoOptionError as e:            
+            self.parse.add_argument('-p',
+                action='store', 
+                dest='plugin', 
+                help='Check plugins available ', 
+                required=True
+                )
+            params = self.gptparse_params()
+            path_plugin = "%s/plugins/%s" % (self.dirpath, params.plugin)
+            GPTracking.exists(path_plugin, "the plugin does not exist.")
+            self.gpconfig_settings("plugin", params.plugin)
+            plugin = params.plugin
+            
+        sys.path.insert(1, path_plugin)
         try:            
             globals()[plugin] = __import__(plugin)
             pluginClass = getattr(globals()[plugin], "Clockify")
             self.plugin = pluginClass(self)
         except ModuleNotFoundError as e:
-            GPTracking.exit("Fail load plugin %s" % plugin)
-
-    def check_plugin(self):
-        try:
-            plugin = self.gpconfig_settings("plugin") 
-            path_plugin = "%s/%s" % (PLUGING,plugin)
-            GPTracking.exists(path_plugin, "the plugin does not exist.")
-            return plugin
-        except configparser.NoOptionError as e:            
-            parse.add_argument('-p',
-                action='store', 
-                dest='plugin', 
-                help='-p [clockify]', 
-                required=True
-                )
-            params = get_params()
-            path_plugin = "%s/%s" % (PLUGING, params.plugin)
-            GPTracking.exists(path_plugin, "the plugin does not exist.")
-            self.gpconfig_settings("plugin", params.plugin)
+            GPTracking.exit("Fail import plugin %s" % plugin)
+        
         
     def gptparse_params(self):
         return self.parse.parse_args()
@@ -222,11 +224,10 @@ class GPTracking:
                 print(e)
         return True
 
-GPTracking.exists(GPT_CONF)
+GPTracking.exists(GPT_CONF,)
 
-gpt = GPTracking(GPT_CONF)
-plugin = gpt.check_plugin()
-gpt.load_plugin(plugin)
+gpt = GPTracking(GPT_CONF, DIRPATH, DIRHOME)
+gpt.load_plugin()
 
 gpt.gptparse_args(required=True)
 gpt.gptparse_args(required=False)
