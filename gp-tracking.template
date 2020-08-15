@@ -1,8 +1,8 @@
 [settings]
-token = 
+plugin = clockify
 
 [pomodoro]
 start = 
 end = 
 name = 
-
+description =
