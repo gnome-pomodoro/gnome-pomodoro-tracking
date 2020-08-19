@@ -47,7 +47,7 @@ class GPTracking:
         with open(self.gptconfig, "w") as f: 
             self.config.write(f)
 
-    def gpconfig_settings(self, key, value=None):
+    def gptconfig_settings(self, key, value=None):
         if value:
             self.config.set("settings", key, value)
             self.gptconfig_write()
@@ -99,7 +99,7 @@ class GPTracking:
 
     def load_plugin(self):
         try:
-            plugin = self.gpconfig_settings("plugin")
+            plugin = self.gptconfig_settings("plugin")
             if not len(plugin):
               raise configparser.NoOptionError("plugin", "settings")
             path_plugin = "%s/plugins/%s" % (self.dirpath, plugin)
@@ -109,7 +109,7 @@ class GPTracking:
             params = self.gptparse_params()
             path_plugin = "%s/plugins/%s" % (self.dirpath, params.plugin)
             GPTracking.exists(path_plugin, "the plugin does not exist.")
-            self.gpconfig_settings("plugin", params.plugin)
+            self.gptconfig_settings("plugin", params.plugin)
             plugin = params.plugin
 
         sys.path.insert(1, path_plugin)
@@ -141,9 +141,9 @@ class GPTracking:
         self.parse.add_argument('-s',
             action='store', 
             dest='state', 
-            choices= ['pomodoro', 'short-break', 'long-break'],
+            choices= ['pomodoro', 'short-break', 'long-break','resume'],
             help='Pomodoro state', 
-            default="pomodoro")
+            default="resume")
 
         self.parse.add_argument('-t', 
             action='store', 
@@ -174,6 +174,7 @@ class GPTracking:
             dest='kill', 
             const=True,
             help='Kill pomodoro')
+
         self.parse.add_argument('-w', 
             action='store',
             dest='write', 
@@ -184,7 +185,7 @@ class GPTracking:
     """
         Gnome pomodoro methods
     """
-    def cli(self):        
+    def cli(self):
         params = self.gptparse_params()
         if gpt.gnome_pomodoro():
             return
@@ -201,6 +202,25 @@ class GPTracking:
                 os.system("gnome-pomodoro --stop")
                 os.system("gnome-pomodoro --start --no-default-window")
             self.gptconfig_pomodoro("description", params.name)
+        if params.state and params.state == 'resume':
+            data = {}
+            for k in ["plugin", "start", "name", "description"]:
+                try:
+                    if k in ["start", "name", "description"]:
+                        v = self.gptconfig_pomodoro(k)
+                    else:
+                        v = self.gptconfig_settings(k)
+                except: 
+                    v = ""
+                data.update({k:v})
+            print(" ------------------------")
+            print("| Gnome Pomodoro Tracking |")
+            print(" -------------------------")
+            print("Plugin: {}".format(data.get('plugin')))
+            print("{}: {}".format(data.get('name'), data.get('description')))
+            print("Elapsed: {0:.2f} Min".format(self.convert2minutes(self.diff_elapsed(data.get('start'), self.today()))))
+            if getattr(self.plugin, 'pomodoro_state',False):
+                getattr(self.plugin, 'pomodoro_state')()
 
         if getattr(self.plugin, 'cli',False):
                 getattr(self.plugin, 'cli')()
@@ -213,10 +233,12 @@ class GPTracking:
         for p in ['state', 'trigger','duration','elapsed']:
             if not getattr(params, p):
                 return False
+            if getattr(params, p) == 'resume':
+                return False
         params.name = params.name.title() if params.name else params.state.title()
         #Start timer
         if 'start' in params.trigger or 'resume' in params.trigger:          
-            self.gptconfig_pomodoro("name", params.name)
+            self.gptconfig_pomodoro("name", params.state)
             self.gptconfig_pomodoro("start", self.today())
         # Stop timer
         elif 'skip' in params.trigger or 'pause' in params.trigger or 'complete' in params.trigger:
@@ -243,12 +265,4 @@ gpt.gptparse_args()
 
 gpt.gptparse_params()
 gpt.cli()
-
-
-
-
-#def from_cli(name):
-#    time.sleep(3)
-#    GpTracking(path).pomodoro( "name", name)
-
 

@@ -13,6 +13,12 @@
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/install.sh)"
 
 ```
+### Upgrade
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/install.sh --upgrade)"
+
+```
 
 ### Uninstall
 
@@ -33,12 +39,23 @@ gp-tracking -p clockify
 * [clockify](./plugins/clockify/README.md)
 
 ### CLI short-cut
+* Resume 
+```bash
+    # print resume current pomodoro
+    gp-tracking
+```
+* Add description
 ```bash
     # * if not running pomodoro, start new pomodoro
     gp-tracking -n "Add decription time entry"
-    
+```
+* Restart 
+```bash
     # * if running pmodoro, stop current pomodoro and start new
     gp-tracking -r
+```
+* Kill 
+```bash
     # * if running pmodoro, kill current pomodoro
     gp-tracking -k
 ```
