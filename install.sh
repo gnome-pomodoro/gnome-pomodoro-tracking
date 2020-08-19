@@ -34,8 +34,18 @@ setup_gpt_conf(){
         return 
     fi
 }
-
-main(){    
+setup_gpt_upgrade(){
+    currentdir=$(pwd)
+    cd $GPT
+    printf "Updating Gnome Pomodoro Tracking"
+    if git pull --rebase --stat origin master; then
+      printf "Gnome Pomodoro Tracking has been updated and/or is at the current version."
+    else
+        printf 'There was an error updating. Try again later?'
+    fi
+    cd $currentdir
+}
+main(){     
     if ! command_exists git; then
         error "git is not installed. Please install git."
         exit 
@@ -47,9 +57,13 @@ main(){
     if ! command_exists gnome-pomodoro; then
         error "gnome-pomodoro is not installed. Please install gnome-pomodoro."
         exit 
+    fi    
+    if [ "$1" = "--upgrade" ] || ["$2" = "--upgrade" ]; then
+        setup_gpt_upgrade        
+    else
+        setup_gpt    
+        setup_gpt_conf
     fi
-    setup_gpt
-    setup_gpt_conf
 
     cat <<-'EOF'
 
