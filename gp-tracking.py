@@ -234,11 +234,10 @@ class GPTracking:
         params = self.gptparse_params() if not params else params
         for p in ['gp_state', 'gp_trigger','gp_duration','gp_elapsed']:
             if not getattr(params, p):
-                return False
-        params.name = params.name.title() if params.name else params.state.title()
+                return False        
         #Start timer
         if 'start' in params.gp_trigger or 'resume' in params.gp_trigger:          
-            self.gptconfig_pomodoro("name", params.state)
+            self.gptconfig_pomodoro("name", params.gp_state.title())
             self.gptconfig_pomodoro("start", self.today())
         # Stop timer
         elif 'skip' in params.gp_trigger or 'pause' in params.gp_trigger or 'complete' in params.gp_trigger:
