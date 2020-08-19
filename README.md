@@ -71,7 +71,7 @@ gp-tracking -p clockify
 * Launch gnome-pomodoro. Preferences / Custom actions ...  / add Action
 
 ```bash
-gp-tracking -s $(state)  -t "$(triggers)" -d "$(duration)" -e "$(elapsed)"
+gp-tracking -gps $(state) -gpt "$(triggers)" -gpd $(duration) -gpe $(elapsed)
 ```
 
 ![](img/action-clockify.png)

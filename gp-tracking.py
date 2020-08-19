@@ -138,42 +138,43 @@ class GPTracking:
                 required=required_args.get('plugin', False)
             )
     
-        self.parse.add_argument('-s',
+        self.parse.add_argument('-gps','--gp-state',
             action='store', 
-            dest='state', 
-            choices= ['pomodoro', 'short-break', 'long-break','resume'],
-            help='Pomodoro state', 
-            default="resume")
+            dest='gp_state', 
+            choices= ['pomodoro', 'short-break', 'long-break'],
+            help='Is used Gnome Pomodoro custom action e.g -gps $(state)')
+        self.parse.add_argument('-gpt', '--gp-trigger',
+            action='store', 
+            dest='gp_trigger', 
+            help='Is used Gnome Pomodoro custom action e.g -gps $(triggers)')
+        self.parse.add_argument('-gpd', '--gp-duration',
+            action='store', 
+            dest='gp_duration', 
+            help='Is used Gnome Pomodoro custom action e.g -gps $(duration)')
+        self.parse.add_argument('-gpe', '--gp-elapsed',
+            action='store', 
+            dest='gp_elapsed', 
+            help='Is used Gnome Pomodoro custom action e.g -gps $(elapsed)')
 
-        self.parse.add_argument('-t', 
-            action='store', 
-            dest='trigger', 
-            help='Pomodoro  trigger')
-        self.parse.add_argument('-d', 
-            action='store', 
-            dest='duration', 
-            help='Pomodoro  duration')
-
-        self.parse.add_argument('-e', 
-            action='store', 
-            dest='elapsed', 
-            help='Pomodoro elapsed')
-
-        self.parse.add_argument('-n', 
+        self.parse.add_argument('-n', '--name',
             action='store',
             dest='name', 
-            help='Pomodoro name')
-
-        self.parse.add_argument('-r', 
+            help='Name')
+        self.parse.add_argument('-r', '--reset',
             action='store_const',
             dest='reset', 
             const=True,
-            help='Reset pomodoro')
-        self.parse.add_argument('-k', 
+            help='Reset')
+        self.parse.add_argument('-k', '--kill',
             action='store_const',
             dest='kill', 
             const=True,
-            help='Kill pomodoro')
+            help='Kill')
+        self.parse.add_argument('-s', '--state',
+            action='store_const',
+            dest='state', 
+            const=True,
+            help='State')
 
         self.parse.add_argument('-w', 
             action='store',
@@ -189,6 +190,7 @@ class GPTracking:
         params = self.gptparse_params()
         if gpt.gnome_pomodoro():
             return
+        
         if params.reset or params.kill:
             params.trigger = 'skip'
             params.duration = "0"
@@ -202,7 +204,7 @@ class GPTracking:
                 os.system("gnome-pomodoro --stop")
                 os.system("gnome-pomodoro --start --no-default-window")
             self.gptconfig_pomodoro("description", params.name)
-        if params.state and params.state == 'resume':
+        if params.state:
             data = {}
             for k in ["plugin", "start", "name", "description"]:
                 try:
@@ -227,21 +229,19 @@ class GPTracking:
 
     def gnome_pomodoro(self, params=None):        
         """
-            -s $(state) -t "$(triggers)" -d $(duration) -e $(elapsed)
+           gp-tracking -gps $(state) -gpt "$(triggers)" -gpd $(duration) -gpe $(elapsed)
         """
         params = self.gptparse_params() if not params else params
-        for p in ['state', 'trigger','duration','elapsed']:
+        for p in ['gp_state', 'gp_trigger','gp_duration','gp_elapsed']:
             if not getattr(params, p):
-                return False
-            if getattr(params, p) == 'resume':
                 return False
         params.name = params.name.title() if params.name else params.state.title()
         #Start timer
-        if 'start' in params.trigger or 'resume' in params.trigger:          
+        if 'start' in params.gp_trigger or 'resume' in params.gp_trigger:          
             self.gptconfig_pomodoro("name", params.state)
             self.gptconfig_pomodoro("start", self.today())
         # Stop timer
-        elif 'skip' in params.trigger or 'pause' in params.trigger or 'complete' in params.trigger:
+        elif 'skip' in params.gp_trigger or 'pause' in params.gp_trigger or 'complete' in params.gp_trigger:
             try:
                 name = self.gptconfig_pomodoro("description") or self.gptconfig_pomodoro("name")
                 start = self.gptconfig_pomodoro("start")            
