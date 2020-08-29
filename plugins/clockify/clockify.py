@@ -137,14 +137,19 @@ class Clockify:
                 return len(data) and data[0], err
         return data, err
 
-    def projects(self, workspace_id, filter=""):
+    def gptparse_args(self, workspace_id, filter=""):
         data, err = self.get("/api/v1/workspaces/{}/projects".format(workspace_id))
         if filter =='first' :
             if not err:
                 return len(data) and data[0], err
         return data, err
 
-    def add_time_entry(self, description, start, end ):
+    def add_time_entry(self, **kwargs ):
+        
+        description = kwargs.get('description')
+        start= kwargs.get('start')
+        end= kwargs.get('end')
+
         workspace_id  = ""
         try:
             workspace_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "workspace")
