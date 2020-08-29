@@ -2,7 +2,7 @@
 
 
 
-### Pre-requirements 
+### Requirements 
 * python3
 * git 
 * gnome-pomodoro
@@ -37,12 +37,13 @@ gp-tracking -p clockify
 ### Plugins available
 
 * [clockify](./plugins/clockify/README.md)
+* [Odoo](./plugins/odoo/README.md)
 
 ### CLI short-cut
 * Resume 
 ```bash
     # print resume current pomodoro
-    gp-tracking
+    gp-tracking -s 
 ```
 * Add description
 ```bash

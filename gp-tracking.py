@@ -5,7 +5,9 @@ import configparser
 import sys
 from datetime import datetime
 import asyncio
+import logging
 
+logger = logging.getLogger(__name__)
 
 DIRPATH = os.path.dirname(os.path.realpath(__file__))
 DIRHOME = os.path.expanduser("~")
@@ -179,10 +181,27 @@ class GPTracking:
         self.parse.add_argument('-w', 
             action='store',
             dest='write', 
-            help='Write value in file config')
+            help='Write value in file config -- deprecate')
+        
+        self.parse.add_argument('--set', 
+            action='store',
+            dest='set', 
+            help='Set value in file config')
 
         if getattr(self.plugin, 'gptparse_args',False):
             getattr(self.plugin, 'gptparse_args')(required=False)
+    
+    def print_cli(self, items, **kwargs):
+        title = kwargs.get('title', None)
+        if title:
+            print("-" *  len(title))
+            print(title)
+            print("-" *  len(title))
+        for item in items:
+            line = ""
+            for k in item.keys():
+                line += "| %s " %item.get(k)
+            print(line)
     """
         Gnome pomodoro methods
     """
@@ -221,8 +240,8 @@ class GPTracking:
             print("Plugin: {}".format(data.get('plugin')))
             print("{}: {}".format(data.get('name'), data.get('description')))
             print("Elapsed: {0:.2f} Min".format(self.convert2minutes(self.diff_elapsed(data.get('start'), self.today()))))
-            if getattr(self.plugin, 'pomodoro_state',False):
-                getattr(self.plugin, 'pomodoro_state')()
+            if getattr(self.plugin, 'state',False):
+                getattr(self.plugin, 'state')()
 
         if getattr(self.plugin, 'cli',False):
                 getattr(self.plugin, 'cli')()
@@ -248,7 +267,14 @@ class GPTracking:
                 minutes = self.convert2minutes(self.diff_elapsed(start, end))            
                 if minutes > 2:                                 
                     if getattr(self.plugin, 'add_time_entry',False):
-                        getattr(self.plugin, 'add_time_entry')(name, start, end)
+                        add_time_entry = getattr(self.plugin, 'add_time_entry')(
+                            description=name, 
+                            start=start, 
+                            end=end,
+                            minutes= minutes,
+                        )
+                        if add_time_entry:
+                            logger.info("The time entry is added successfully %s " % add_time_entry)
                         self.gptconfig_pomodoro_clean()
                 else: 
                     self.gptconfig_pomodoro_clean()
