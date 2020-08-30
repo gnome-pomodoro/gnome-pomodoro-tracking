@@ -63,8 +63,9 @@ class Odoo:
         try:
             project_id = int(self.gptracking.gptconfig_get(self.GTP_CONFIG, "project_id"))
             if project_id > 0 :
-                task_id = int(self.gptracking.gptconfig_get(self.GTP_CONFIG, "project_id")) or False
-
+                task_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "task_id")                
+                task_id =  task_id if len(task_id) else  False
+                
                 id = self.models('account.analytic.line','create', [{
                     'date':datetime.now().strftime("%Y-%m-%d"), # Required
                     'name': name, # Required
@@ -88,8 +89,8 @@ class Odoo:
                 url = self.gptracking.gptconfig_get(self.GTP_CONFIG, "url"),
                 database = self.gptracking.gptconfig_get(self.GTP_CONFIG, "database"),
             )
-            if not self.is_auth():
-                raise Exception("Fail auth check credentials")
+            #if not self.is_auth():
+            #    raise Exception("Fail auth check credentials")
         except configparser.NoSectionError as e:
             #logger.error(e)
             self.gptracking.gptconfig_set_section(self.GTP_CONFIG)
