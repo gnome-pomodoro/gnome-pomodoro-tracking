@@ -189,7 +189,7 @@ class GPTracking:
             help='Set value in file config')
 
         if getattr(self.plugin, 'gptparse_args',False):
-            getattr(self.plugin, 'gptparse_args')(required=False)
+            getattr(self.plugin, 'gptparse_args')()
     
     def print_cli(self, items, **kwargs):
         title = kwargs.get('title', None)
