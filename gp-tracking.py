@@ -224,22 +224,19 @@ class GPTracking:
                 os.system("gnome-pomodoro --start --no-default-window")
             self.gptconfig_pomodoro("description", params.name)
         if params.state:
-            data = {}
+            items = []
+            dt_start = self.today()
             for k in ["plugin", "start", "name", "description"]:
                 try:
                     if k in ["start", "name", "description"]:
-                        v = self.gptconfig_pomodoro(k)
+                        dt_start = self.gptconfig_pomodoro(k) if k == 'start' else self.today()
+                        items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_pomodoro(k) )})
                     else:
-                        v = self.gptconfig_settings(k)
+                        items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_settings(k) )})
                 except: 
-                    v = ""
-                data.update({k:v})
-            print(" ------------------------")
-            print("| Gnome Pomodoro Tracking |")
-            print(" -------------------------")
-            print("Plugin: {}".format(data.get('plugin')))
-            print("{}: {}".format(data.get('name'), data.get('description')))
-            print("Elapsed: {0:.2f} Min".format(self.convert2minutes(self.diff_elapsed(data.get('start'), self.today()))))
+                    pass
+            items.append({'name': 'Elapsed: {0:.2f} Min'.format(self.convert2minutes(self.diff_elapsed(dt_start, self.today() ))) })
+            self.print_cli(items, title="Gnome Pomodoro Tracking")
             if getattr(self.plugin, 'state',False):
                 getattr(self.plugin, 'state')()
 
