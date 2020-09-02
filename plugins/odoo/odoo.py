@@ -64,8 +64,7 @@ class Odoo:
             project_id = int(self.gptracking.gptconfig_get(self.GTP_CONFIG, "project_id"))
             if project_id > 0 :
                 task_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "task_id")                
-                task_id =  task_id if len(task_id) else  False
-                
+                task_id =  int(task_id) if len(task_id) else  False
                 id = self.models('account.analytic.line','create', [{
                     'date':datetime.now().strftime("%Y-%m-%d"), # Required
                     'name': name, # Required
@@ -221,3 +220,5 @@ class Odoo:
         getstate('task')
         getstate('project')
         self.gptracking.print_cli(items)
+
+
