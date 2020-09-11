@@ -39,6 +39,9 @@ gp-tracking -p clockify
 * [clockify](./plugins/clockify/README.md)
 * [Odoo](./plugins/odoo/README.md)
 
+### Build a plugin
+[See guide build a plugin ](./plugins/README.md)
+
 ### CLI short-cut
 * Resume 
 ```bash
@@ -80,4 +83,4 @@ gp-tracking -gps $(state) -gpt "$(triggers)" -gpd $(duration) -gpe $(elapsed)
 
 ## LICENSE
 
-[GPL V3.0]( ./LICENSE)
+[MIT]( ./LICENSE)
