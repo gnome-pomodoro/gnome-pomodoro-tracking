@@ -36,7 +36,7 @@ gp-tracking -p clockify
 
 ### Plugins available
 
-* [clockify](./plugins/clockify/README.md)
+* [Clockify](./plugins/clockify/README.md)
 * [Odoo](./plugins/odoo/README.md)
 
 ### Build a plugin
@@ -66,21 +66,14 @@ gp-tracking -p clockify
 
 ## Gnome-Pomodoro 
 
-* Launch gnome-pomodoro. Preferences / Plugins ... / Custom Actions(Execute shell scripts)
-
-![](img/plugins.png)
-
-![](img/custom-actions.png)
-
-* Launch gnome-pomodoro. Preferences / Custom actions ...  / add Action
+* Launch gnome-pomodoro. Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add 
 
 ```bash
 gp-tracking -gps $(state) -gpt "$(triggers)" -gpd $(duration) -gpe $(elapsed)
 ```
 
-![](img/action-clockify.png)
+![](gp-tracking-settings.gif)
 
 
-## LICENSE
+## LICENSE [MIT]( ./LICENSE)
 
-[MIT]( ./LICENSE)
