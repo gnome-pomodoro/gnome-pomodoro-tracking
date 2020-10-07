@@ -1,7 +1,7 @@
 #!/bin/sh
 
-GPT=${GPT:-~/.gnome-pomodoro-tracking}
-REPO=${REPO:-josehbez/gnome-pomodoro-tracking}
+GPT=${GPT:-~/.gp-tracking}
+REPO=${REPO:-josehbez/gp-tracking}
 REMOTE=${REMOTE:-https://github.com/${REPO}.git}
 BRANCH=${BRANCH:-master}
 
@@ -18,7 +18,7 @@ setup_gpt(){
 		-c fetch.fsck.zeroPaddedFilemode=ignore \
 		-c receive.fsck.zeroPaddedFilemode=ignore \
         --depth=1 --branch "$BRANCH" "$REMOTE" "$GPT" || {
-		error "git clone of gnome-pomodoro-tracking repo failed"
+		error "git clone of gp-tracking repo failed"
 		exit 1
 	}
 }
@@ -66,11 +66,9 @@ main(){
     fi
 
     cat <<-'EOF'
-
 		GNOME POMODORO TRACKING ....is now installed!
 		
 		• Follow us on Twitter: https://twitter.com/josehbez
-		• Get stickers, shirts, coffee mugs and other swag: https://github.com/josehbez/gnome-pomodoro-tracking
 		• Don't forget to restart your terminal!
 	EOF
     echo "Run gp-tracking to try it out."
