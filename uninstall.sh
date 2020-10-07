@@ -21,7 +21,7 @@ echo "Looking for gnome-pomodoro-tracking ..."
 if [ -d ~/.gnome-pomodoro-tracking ]; then
     echo "Found ~/.gnome-pomodoro-tracking"
     echo "Removing ..."
-    rm -rf ~/.gnome-pomodoro-tracking
+    rm -rf ~/.gp-tracking
 fi
 
 echo "Thanks for trying out Gnomme Pomodoro Tracking. It's been uninstalled."

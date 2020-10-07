@@ -1,5 +1,14 @@
-# Gnome Pomodoro Tracking
 
+<p align="center"><img src="docs/assets/DigbyShadows.png" width="360"></p>
+<p align="center">  
+  
+  <a href="LICENSE">  
+    <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
+  </a>
+</p>
+
+
+## Gnome Pomodoro Tracking
 
 
 ### Requirements 
@@ -10,20 +19,20 @@
 ### Install
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/install.sh)"
 
 ```
 ### Upgrade
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/install.sh)" "" --upgrade
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/install.sh)" "" --upgrade
 
 ```
 
 ### Uninstall
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/uninstall.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/uninstall.sh)"
 ```
 
 
@@ -74,6 +83,4 @@ gp-tracking -gps $(state) -gpt "$(triggers)" -gpd $(duration) -gpe $(elapsed)
 
 ![](gp-tracking-settings.gif)
 
-
-## LICENSE [MIT]( ./LICENSE)
 
