@@ -1,32 +1,39 @@
 
-<p align="center"><img src="docs/assets/DigbyShadows.png" width="360"></p>
 <p align="center">  
-  
   <a href="LICENSE">  
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
+   <a href="semv.toml">
+    <img src="https://img.shields.io/badge/semv-2.0.1-green">
+  </a>
 </p>
-
+<p align="center">  
+  <a href="https://github.com/josehbez/semv">
+    <img src="https://img.shields.io/badge/semver.org-by semv-green">
+  </a>
+</p>
 
 ## Gnome Pomodoro Tracking
 
+`gp-tracking` is a plugin for gnomepomodoro.org, connecting external time tracking providers.
+
 
 ### Requirements 
-* python3
+
+* python3 
 * git 
-* gnome-pomodoro
+* gnomepomodoro.org
+
 
 ### Install
 
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/install.sh)"
-
 ```
 ### Upgrade
 
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/install.sh)" "" --upgrade
-
 ```
 
 ### Uninstall
@@ -35,52 +42,53 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/maste
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/uninstall.sh)"
 ```
 
-
-
-### Set plugin tracking
-
-```bash
-gp-tracking -p clockify
-```
-
 ### Plugins available
 
 * [Clockify](./plugins/clockify/README.md)
 * [Odoo](./plugins/odoo/README.md)
+* [Build a plugin](./plugins/README.md)
 
-### Build a plugin
-[See guide build a plugin ](./plugins/README.md)
 
-### CLI short-cut
-* Resume 
+
+### Command line
+
+* Set plugin 
 ```bash
-    # print resume current pomodoro
-    gp-tracking -s 
-```
-* Add description
-```bash
-    # * if not running pomodoro, start new pomodoro
-    gp-tracking -n "Add decription time entry"
-```
-* Restart 
-```bash
-    # * if running pmodoro, stop current pomodoro and start new
-    gp-tracking -r
-```
-* Kill 
-```bash
-    # * if running pmodoro, kill current pomodoro
-    gp-tracking -k
+gp-tracking --plugin NAME  
 ```
 
-## Gnome-Pomodoro 
-
-* Launch gnome-pomodoro. Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add 
-
+* Print resume pomodoro
 ```bash
-gp-tracking -gps $(state) -gpt "$(triggers)" -gpd $(duration) -gpe $(elapsed)
+gp-tracking --state 
 ```
 
-![](gp-tracking-settings.gif)
+* Add description, or if not running pomodoro start new pomodoro
+```bash
+gp-tracking --name "Add decription"
+```
+
+* Stop and start new pomodoro
+```bash
+gp-tracking --reset
+```
+
+* Kill  current pomodoro
+```bash
+gp-tracking --kill
+```
+
+
+## Gnome Pomodoro Settings 
+
+* Launch gnome-pomodoro. `Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
+
+```bash
+gp-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapsed)"
+```
+
+<p align="center">  
+ <img src="gp-tracking-settings.gif"/>
+</p>
+
 
 
