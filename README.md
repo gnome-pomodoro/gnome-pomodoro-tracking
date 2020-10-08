@@ -7,7 +7,11 @@
     <img src="https://img.shields.io/badge/semv-2.0.1-green">
   </a>
 </p>
-
+<p align="center">  
+  <a href="https://github.com/josehbez/semv">
+    <img src="https://img.shields.io/badge/semver.org-by semv-green">
+  </a>
+</p>
 
 ## Gnome Pomodoro Tracking
 
