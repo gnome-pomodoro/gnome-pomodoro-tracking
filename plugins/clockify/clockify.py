@@ -167,7 +167,7 @@ class Clockify:
 
         workspace_id  = ""
         try:
-            workspace_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "workspace")
+            workspace_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "workspace_id")
         except:
             try:
                 workspace, err = self.workspaces(filter='first')
@@ -176,7 +176,7 @@ class Clockify:
                 pass
         project_id = None
         try:
-            project_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "project")
+            project_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "project_id")
         except:
             pass        
         time_entry = {
