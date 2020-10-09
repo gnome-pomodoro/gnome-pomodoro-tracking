@@ -4,12 +4,7 @@
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-2.0.1-green">
-  </a>
-</p>
-<p align="center">  
-  <a href="https://github.com/josehbez/semv">
-    <img src="https://img.shields.io/badge/semver.org-by semv-green">
+    <img src="https://img.shields.io/badge/semv-2.1.2-green">
   </a>
 </p>
 
@@ -46,6 +41,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/maste
 
 * [Clockify](./plugins/clockify/README.md)
 * [Odoo](./plugins/odoo/README.md)
+* [Toggl](./plugins/toggl/README.md)
 * [Build a plugin](./plugins/README.md)
 
 

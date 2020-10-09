@@ -3,7 +3,7 @@ import os
 import argparse
 import configparser
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 import asyncio
 import logging
 
@@ -14,6 +14,7 @@ DIRHOME = os.path.expanduser("~")
 GPT_CONF = "{}/.gp-tracking.conf".format(DIRHOME)
 PLUGING = "{}/plugins".format(DIRPATH)
 
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 class GPTracking:
 
@@ -67,7 +68,7 @@ class GPTracking:
         self.gptconfig_write()
     
     @classmethod
-    def today (cls):
+    def today (cls, dt=None):        
         return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     
     def convert2minutes(self, seconds):
@@ -131,7 +132,7 @@ class GPTracking:
             action='store', 
             dest='plugin', 
             #help='Plugins', 
-            choices= ['odoo', 'clockify'],
+            choices= ['odoo', 'clockify', 'toggl'],
         )
     
         self.parse.add_argument('-gps','--gp-state',
@@ -175,6 +176,12 @@ class GPTracking:
         self.parse.add_argument('--set', 
             action='store',
             dest='set', 
+            help=argparse.SUPPRESS)
+        
+        self.parse.add_argument('--test-time-entry', 
+            action='store_const',
+            dest='test_time_entry', 
+            const=True,
             help=argparse.SUPPRESS)
 
         if getattr(self.plugin, 'gptparse_args',False):
@@ -236,6 +243,17 @@ class GPTracking:
             if getattr(self.plugin, 'state',False):
                 getattr(self.plugin, 'state')()
 
+        if params.test_time_entry:
+            if getattr(self.plugin, 'add_time_entry',False):
+                end = datetime.utcnow()
+                start = end - timedelta(minutes=25)
+                result = getattr(self.plugin, 'add_time_entry')(
+                    description= "Test Time entry ", 
+                    start=start.strftime(DATETIME_FORMAT), 
+                    end=end.strftime(DATETIME_FORMAT),
+                    minutes= 25,
+                )
+
         if getattr(self.plugin, 'cli',False):
                 getattr(self.plugin, 'cli')()
 
@@ -260,6 +278,7 @@ class GPTracking:
                 minutes = self.convert2minutes(self.diff_elapsed(start, end))            
                 if minutes > 2:                                 
                     if getattr(self.plugin, 'add_time_entry',False):
+                        # Check param --test-time-entry
                         add_time_entry = getattr(self.plugin, 'add_time_entry')(
                             description=name, 
                             start=start, 
