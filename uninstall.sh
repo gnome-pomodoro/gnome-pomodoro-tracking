@@ -17,9 +17,9 @@ if [ -f ~/.local/bin/gp-tracking ]; then
     rm -rf ~/.local/bin/gp-tracking
 fi
 
-echo "Looking for gnome-pomodoro-tracking ..." 
-if [ -d ~/.gnome-pomodoro-tracking ]; then
-    echo "Found ~/.gnome-pomodoro-tracking"
+echo "Looking for gp-tracking ..." 
+if [ -d ~/.gp-tracking ]; then
+    echo "Found ~/.gp-tracking"
     echo "Removing ..."
     rm -rf ~/.gp-tracking
 fi
