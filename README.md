@@ -1,10 +1,13 @@
+<p align="center">
+  <img src="how-does-work.png" width="1200">
+</p>
 
 <p align="center">  
   <a href="LICENSE">  
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-2.1.2-green">
+    <img src="https://img.shields.io/badge/semv-2.1.4-green">
   </a>
 </p>
 
