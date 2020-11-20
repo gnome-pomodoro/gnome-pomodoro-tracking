@@ -291,7 +291,7 @@ class GPTracking:
                 start = self.gptconfig_pomodoro("start")            
                 end = self.today()
                 minutes = self.convert2minutes(self.diff_elapsed(start, end))            
-                if minutes > 2:                                 
+                if minutes > 0:                                 
                     if getattr(self.plugin, 'add_time_entry',False):
                         # Check param --test-time-entry
                         add_time_entry = getattr(self.plugin, 'add_time_entry')(
