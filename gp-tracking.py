@@ -27,8 +27,12 @@ class GPTracking:
         self.config.read(self.gptconfig)
         self.parse = argparse.ArgumentParser(
             prog="gp-tracking",
-            description="GNOME POMODORO TRACKING",
-            epilog="Enjoy the program! :)",
+            description='''
+            It is a custom action for Gnome Pomodoro, 
+            whose main function is to connect with Time Tracking Software
+            and create Time Entries.
+            ''',
+            epilog="Enjoy the program Gnome Pomodoro Tracking.",
         )
         self.plugin = None
     
@@ -131,7 +135,9 @@ class GPTracking:
         self.parse.add_argument('--plugin',
             action='store', 
             dest='plugin', 
-            #help='Plugins', 
+            help='''
+                Select Time Tracking Software
+            ''', 
             choices= ['odoo', 'clockify', 'toggl'],
         )
     
@@ -156,22 +162,31 @@ class GPTracking:
         self.parse.add_argument('-n', '--name',
             action='store',
             dest='name', 
-            help='Name')
+            help='''
+                Enter the name of the time entry (Promodoro, short/long break). 
+                If there is no active Pomodoro start a new one.
+            ''')
         self.parse.add_argument('-r', '--reset',
             action='store_const',
             dest='reset', 
             const=True,
-            help='Reset')
+            help=''' 
+                Stop the active Pomodoro starts a new time entry
+            ''')
         self.parse.add_argument('-k', '--kill',
             action='store_const',
             dest='kill', 
             const=True,
-            help='Kill')
+            help='''
+                Stop the active Pomodoro
+            ''')
         self.parse.add_argument('-s', '--state',
             action='store_const',
             dest='state', 
             const=True,
-            help='State')
+            help='''
+                Displays the summary of the time entry (Plugin, Time elapsed, Name...)
+            ''')
         
         self.parse.add_argument('--set', 
             action='store',

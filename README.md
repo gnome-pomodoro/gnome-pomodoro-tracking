@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-2.1.4-green">
+    <img src="https://img.shields.io/badge/semv-2.2.0-beta.0-green">
   </a>
 </p>
 
