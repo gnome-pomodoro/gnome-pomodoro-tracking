@@ -1,3 +1,4 @@
+import os
 import pdb
 from .test_plugin_gpt import TestPluginGPT
 
@@ -6,10 +7,11 @@ class TestClockify(TestPluginGPT):
 
     plugin = "clockify"
 
-    def test_load_plugin(self):
+    def test_load_plugin(self):        
         gpt = self.gpt()
         gpt.gptconfig_settings("plugin", self.plugin)
-        gpt.gptconfig_set(self.plugin, "token", "XtGTMKauzTS8sJ/E")
+        token = os.getenv("GP_TRACKING_CLOCKIFY_TOKEN", "")
+        gpt.gptconfig_set(self.plugin, "token", token)
         assert gpt.load_plugin() == True, "The plugin do not exists!"
 
     def test_command_clockify_workspaces(self):

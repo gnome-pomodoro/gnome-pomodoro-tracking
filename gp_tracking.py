@@ -220,13 +220,13 @@ class GPTracking:
             print(line)
             lines += line +"\n"
         
-        if str(os.getenv("GP_TRACKING_ENV", "Test")).lower() == 'test':
+        if str(os.getenv("GP_TRACKING_ENV", "")).lower() == 'test':
             original_stdout = sys.stdout
             with open(self.dirpath + '/tests/stdout.txt', 'w') as f:
                 sys.stdout = f
                 print(title +"\n" +lines)
                 sys.stdout = original_stdout 
-                #f.close()
+
     """
         Gnome pomodoro methods
     """
