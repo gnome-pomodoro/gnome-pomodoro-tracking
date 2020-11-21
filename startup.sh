@@ -17,7 +17,9 @@ error(){
 gpt_install(){
     echo "Start process instalation ... $GPT_DIR"
     echo "Cloning gp-tracking branch:$1"
-
+    if [ ! -d $GPT_DIR ]; then
+        mkdir $GPT_DIR
+    fi 
     git clone -c core.eol=lf -c core.autocrlf=false \
 		-c fsck.zeroPaddedFilemode=ignore \
 		-c fetch.fsck.zeroPaddedFilemode=ignore \
