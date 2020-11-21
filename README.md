@@ -11,99 +11,89 @@
   </a>
 </p>
 
-## Gnome Pomodoro Tracking
-
-`gp-tracking` is a plugin for gnomepomodoro.org, connecting external time tracking providers.
-
-
-### Requirements 
-
-* python3 
-* git 
-* gnomepomodoro.org
-
-
-### Install
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --install
-```
-### Upgrade
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --upgrade
-```
-
-### Uninstall
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --uninstall
-```
+## Gnome Pomodoro Tracking (gp-tracking)
+It is a custom action for Gnome Pomodoro, whose main function is to connect with Time Tracking Software and create Time Entries.
 
 ### Plugins available
 
-* [Clockify](clockify.md)
-* [Odoo](odoo.md)
-* [Toggl](toggl.md)
-* [Build a plugin](./plugins/README.md)
+* [Clockify](assets/clockify/readme.md)
+* [Odoo](assets/odoo/readme.md)
+* [Toggl](assets/toggl/readme.md)
+
+### Pre-requirements 
+
+* python3 
+* git 
+* [gnomepomodoro.org](https://gnomepomodoro.org)
 
 
+### Startup 
 
-### Command line
-
-* Set plugin 
 ```bash
+# Install 
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --install
+
+# Upgrade
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" 
+--upgrade
+
+# Uninstall
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --uninstall
+
+```
+
+### CLI
+
+```bash
+# Select Time Tracking Software
 gp-tracking --plugin NAME  
-```
 
-* Print resume pomodoro
-```bash
-gp-tracking --state 
-```
+#Enter the name of the time entry. If there is no active Pomodoro start a new one.
+gp-tracking --name NAME
 
-* Add description, or if not running pomodoro start new pomodoro
-```bash
-gp-tracking --name "Add decription"
-```
+# Displays the summary of the time entry 
+gp-tracking --state
 
-* Stop and start new pomodoro
-```bash
+# Stop the active Pomodoro starts a new time entry
 gp-tracking --reset
-```
 
-* Kill  current pomodoro
-```bash
+# Stop the active Pomodoro
 gp-tracking --kill
+
 ```
 
 
 ## Gnome Pomodoro Settings 
 
-* Launch gnome-pomodoro. `Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
+`Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
 
 ```bash
 gp-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapsed)"
 ```
 
 <p align="center">  
- <img src="assets/gnome-pomodoro-settings.gif"/>
+ <img src="assets/gnome-pomodoro-settings.gif" width="400"/>
 </p>
 
 
+
+## Contributing
+* [Build a plugin](./PLUGIN.md)
 
 ## Tests 
 ```bash
 export GP_TRACKING_ENV=Test
 
+# Params clockify
 export GP_TRACKING_CLOCKIFY_TOKEN=Token
-
+# Params toggl
 export GP_TRACKING_TOGGL_TOKEN=Token
-
+# Params odoo
 export GP_TRACKING_ODOO_URL=Url
 export GP_TRACKING_ODOO_PASSWORD=Password
 export GP_TRACKING_ODOO_USERNAME=User
 export GP_TRACKING_ODOO_DATABASE=Db
 
+# run tests
 pytest
-
 ```
