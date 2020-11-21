@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-2.2.0.beta.0-green">
+    <img src="https://img.shields.io/badge/semv-2.2-green">
   </a>
   
 
@@ -36,13 +36,13 @@ It is a custom action for Gnome Pomodoro, whose main function is to connect with
 
 ```bash
 # Install 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --install
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --install
 
 # Upgrade
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --upgrade
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --upgrade
 
 # Uninstall
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --uninstall
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --uninstall
 
 ```
 
