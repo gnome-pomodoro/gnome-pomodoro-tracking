@@ -1,10 +1,9 @@
 #!/bin/sh
 
-#GPT_DIR=${GPT_DIR:-~/.gp-tracking}
-GPT_DIR=${GPT_DIR:-/tmp/.gp-tracking}
+GPT_DIR=${GPT_DIR:-$HOME/.gp-tracking}
 REMOTE=${REMOTE:-https://github.com/josehbez/gp-tracking.git}
-GPT_CONF="/tmp/.gp-tracking.conf"
-GPT_BIN="$HOME/.local/bin/gp-tracking2"
+GPT_CONF="$HOME/.gp-tracking.conf"
+GPT_BIN="$HOME/.local/bin/gp-tracking"
 
 command_exists() {
 	command -v "$@" >/dev/null 2>&1
