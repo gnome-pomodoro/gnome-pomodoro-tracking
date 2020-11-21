@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">  
-  <a href="https://github.com/josehbez/gp-tracking/actions?query=workflow%3APython+test">
-    <img src="https://github.com/josehbez/gp-tracking/workflows/Python%20test/badge.svg">
+  <a href="https://github.com/josehbez/gp-tracking/actions?query=workflow%3APytest">
+    <img src="https://github.com/josehbez/gp-tracking/workflows/Pytest/badge.svg">
   </a>
   <a href="LICENSE">  
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
@@ -58,7 +58,7 @@ gp-tracking --name NAME
 # Displays the summary of the time entry 
 gp-tracking --state
 
-# Stop the active Pomodoro starts a new time entry
+# Stop the active Pomodoro, starts a new time entry
 gp-tracking --reset
 
 # Stop the active Pomodoro
