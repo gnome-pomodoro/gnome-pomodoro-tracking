@@ -6,11 +6,6 @@ from datetime import datetime, timedelta
 import logging
 
 
-#DIRPATH = os.path.dirname(os.path.realpath(__file__))
-#DIRHOME = os.path.expanduser("~")
-#GPT_CONF = "{}/.gp-tracking.conf".format(DIRHOME)
-#PLUGING = "{}/plugins".format(DIRPATH)
-
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 class GPTracking:

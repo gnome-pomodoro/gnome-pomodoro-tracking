@@ -2,7 +2,7 @@
 
 * Generate token API in https://track.toggl.com/profile
 
-![](assets/toggl/token.png)
+![](token.png)
 
 * Add token 
 
