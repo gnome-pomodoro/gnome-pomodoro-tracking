@@ -39,8 +39,7 @@ It is a custom action for Gnome Pomodoro, whose main function is to connect with
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --install
 
 # Upgrade
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" 
---upgrade
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --upgrade
 
 # Uninstall
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --uninstall
