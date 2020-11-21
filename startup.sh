@@ -101,7 +101,7 @@ main(){
     fi
     action=$1
     
-    if [ -n "$2" ]; then 
+    if [ -z "$2" ]; then 
         branch=master
     else
         branch=$2
