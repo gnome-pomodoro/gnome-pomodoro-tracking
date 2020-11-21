@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">  
-  <a href="https://github.com/actions/toolkit/actions?query=Python test">
-    <img src="https://github.com/josehbez/gp-tracking/workflows/Python test/badge.svg">
+  <a href="https://github.com/josehbez/gp-tracking/actions?query=workflow%3APython+test">
+    <img src="https://github.com/josehbez/gp-tracking/workflows/Python%20test/badge.svg">
   </a>
   <a href="LICENSE">  
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
