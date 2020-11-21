@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="how-does-work.png" width="1200">
+  <img src="assets/how-does-it-work.png" width="1200">
 </p>
 
 <p align="center">  
@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-2.2.0-beta.0-green">
+    <img src="https://img.shields.io/badge/semv-2.2.0.beta.0-green">
   </a>
 </p>
 
@@ -86,7 +86,7 @@ gp-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapse
 ```
 
 <p align="center">  
- <img src="gp-tracking-settings.gif"/>
+ <img src="assets/gnome-pomodoro-settings.gif"/>
 </p>
 
 
