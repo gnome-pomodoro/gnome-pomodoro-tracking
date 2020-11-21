@@ -42,7 +42,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/maste
 
 ### Plugins available
 
-* [Clockify](./plugins/clockify/README.md)
+* [Clockify](clockify.md)
 * [Odoo](./plugins/odoo/README.md)
 * [Toggl](./plugins/toggl/README.md)
 * [Build a plugin](./plugins/README.md)
