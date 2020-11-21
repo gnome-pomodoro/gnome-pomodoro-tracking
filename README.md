@@ -43,8 +43,8 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/maste
 ### Plugins available
 
 * [Clockify](clockify.md)
-* [Odoo](./plugins/odoo/README.md)
-* [Toggl](./plugins/toggl/README.md)
+* [Odoo](odoo.md)
+* [Toggl](toggl.md)
 * [Build a plugin](./plugins/README.md)
 
 
@@ -91,3 +91,19 @@ gp-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapse
 
 
 
+## Tests 
+```bash
+export GP_TRACKING_ENV=Test
+
+export GP_TRACKING_CLOCKIFY_TOKEN=Token
+
+export GP_TRACKING_TOGGL_TOKEN=Token
+
+export GP_TRACKING_ODOO_URL=Url
+export GP_TRACKING_ODOO_PASSWORD=Password
+export GP_TRACKING_ODOO_USERNAME=User
+export GP_TRACKING_ODOO_DATABASE=Db
+
+pytest
+
+```
