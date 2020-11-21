@@ -3,12 +3,17 @@
 </p>
 
 <p align="center">  
+  <a href="https://github.com/actions/toolkit/actions?query=Python test">
+    <img src="https://github.com/josehbez/gp-tracking/workflows/Python test/badge.svg">
+  </a>
   <a href="LICENSE">  
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
     <img src="https://img.shields.io/badge/semv-2.2.0.beta.0-green">
   </a>
+  
+
 </p>
 
 ## Gnome Pomodoro Tracking (gp-tracking)
