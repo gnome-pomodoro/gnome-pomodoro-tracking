@@ -2,7 +2,7 @@
 
 * Generate token API in https://clockify.me/
 
-![](img/clockify-token.png)
+![](token.png)
 
 * Add token 
 

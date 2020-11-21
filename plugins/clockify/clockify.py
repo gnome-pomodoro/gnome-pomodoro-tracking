@@ -1,3 +1,4 @@
+import pdb
 import requests
 import json
 from urllib.parse import urljoin
@@ -66,9 +67,8 @@ class Clockify:
         return self.http_call("/api/v1/user", 'GET')
     
     def cli(self):
-        # Overwrite
-        params = self.gptracking.gptparse_params()
-
+        # Overwrite        
+        params = self.gptracking.gptparse_params() 
         def findbyid(rows, id):
             for row in rows:
                 for k in row.keys():
@@ -81,6 +81,8 @@ class Clockify:
             for r in rows: 
                 l.append( { 'id': r.get('id'), 'name':  r.get('name')})
             return l
+        
+        
 
         if params.clockify_workspaces:
             try:
@@ -108,7 +110,7 @@ class Clockify:
                 workspace, err = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
             try:
-                rows, err = self.projects(workspace_id)
+                rows, err = self.projects(workspace_id)                
                 rows = onlycolumns(rows)
                 title ="Clockify projects"
                 if params.set:
@@ -122,7 +124,7 @@ class Clockify:
                 else: 
                     self.gptracking.print_cli(rows, title=title)
             except Exception as e:
-                logger.error(e)
+                raise Exception(e)
 
   
     
@@ -193,8 +195,9 @@ class Clockify:
 
             if "id" in time_entry_resp.keys():
                 return time_entry_resp
+            raise Exception(ok)
         except Exception as e:
-            logger.error(e)
+            raise Exception(e)
         return False
     
     ## Optional params

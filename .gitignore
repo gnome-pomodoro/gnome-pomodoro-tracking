@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+tests/stdout.txt
+assets/gnome-pomodoro-256x256.png
+assets/how-does-work.xcf
+assets/gitlab-logo2.png

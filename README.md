@@ -1,93 +1,103 @@
 <p align="center">
-  <img src="how-does-work.png" width="1200">
+  <img src="assets/how-does-it-work.png" width="1200">
 </p>
 
 <p align="center">  
+  <a href="https://github.com/josehbez/gp-tracking/actions?query=workflow%3APytest">
+    <img src="https://github.com/josehbez/gp-tracking/workflows/Pytest/badge.svg">
+  </a>
   <a href="LICENSE">  
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-2.1.4-green">
+    <img src="https://img.shields.io/badge/semv-2.2-green">
   </a>
+  
+
 </p>
 
-## Gnome Pomodoro Tracking
-
-`gp-tracking` is a plugin for gnomepomodoro.org, connecting external time tracking providers.
-
-
-### Requirements 
-
-* python3 
-* git 
-* gnomepomodoro.org
-
-
-### Install
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/install.sh)"
-```
-### Upgrade
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/install.sh)" "" --upgrade
-```
-
-### Uninstall
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/uninstall.sh)"
-```
+## Gnome Pomodoro Tracking (gp-tracking)
+It is a custom action for Gnome Pomodoro, whose main function is to connect with Time Tracking Software and create Time Entries.
 
 ### Plugins available
 
-* [Clockify](./plugins/clockify/README.md)
-* [Odoo](./plugins/odoo/README.md)
-* [Toggl](./plugins/toggl/README.md)
-* [Build a plugin](./plugins/README.md)
+* [Clockify](assets/clockify/readme.md)
+* [Odoo](assets/odoo/readme.md)
+* [Toggl](assets/toggl/readme.md)
+
+### Pre-requirements 
+
+* python3 
+* git 
+* [gnomepomodoro.org](https://gnomepomodoro.org)
 
 
+### Startup 
 
-### Command line
-
-* Set plugin 
 ```bash
+# Install 
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --install
+
+# Upgrade
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --upgrade
+
+# Uninstall
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --uninstall
+
+```
+
+### CLI
+
+```bash
+# Select Time Tracking Software
 gp-tracking --plugin NAME  
-```
 
-* Print resume pomodoro
-```bash
-gp-tracking --state 
-```
+#Enter the name of the time entry. If there is no active Pomodoro start a new one.
+gp-tracking --name NAME
 
-* Add description, or if not running pomodoro start new pomodoro
-```bash
-gp-tracking --name "Add decription"
-```
+# Displays the summary of the time entry 
+gp-tracking --state
 
-* Stop and start new pomodoro
-```bash
+# Stop the active Pomodoro, starts a new time entry
 gp-tracking --reset
-```
 
-* Kill  current pomodoro
-```bash
+# Stop the active Pomodoro
 gp-tracking --kill
+
 ```
 
 
 ## Gnome Pomodoro Settings 
 
-* Launch gnome-pomodoro. `Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
+`Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
 
 ```bash
 gp-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapsed)"
 ```
 
 <p align="center">  
- <img src="gp-tracking-settings.gif"/>
+ <img src="assets/gnome-pomodoro-settings.gif" width="400"/>
 </p>
 
 
 
+## Contributing
+* [Build a plugin](./PLUGIN.md)
+
+## Tests 
+```bash
+export GP_TRACKING_ENV=Test
+
+# Params clockify
+export GP_TRACKING_CLOCKIFY_TOKEN=Token
+# Params toggl
+export GP_TRACKING_TOGGL_TOKEN=Token
+# Params odoo
+export GP_TRACKING_ODOO_URL=Url
+export GP_TRACKING_ODOO_PASSWORD=Password
+export GP_TRACKING_ODOO_USERNAME=User
+export GP_TRACKING_ODOO_DATABASE=Db
+
+# run tests
+pytest
+```

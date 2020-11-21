@@ -1,8 +1,16 @@
 [settings]
-plugin = 
+plugin =
 
 [pomodoro]
 start = 
 end = 
 name = 
 description = 
+
+[clockify]
+
+
+[toggl]
+
+
+[odoo]

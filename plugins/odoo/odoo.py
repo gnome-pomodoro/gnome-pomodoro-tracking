@@ -88,8 +88,8 @@ class Odoo:
                 url = self.gptracking.gptconfig_get(self.GTP_CONFIG, "url"),
                 database = self.gptracking.gptconfig_get(self.GTP_CONFIG, "database"),
             )
-            #if not self.is_auth():
-            #    raise Exception("Fail auth check credentials")
+            if not self.is_auth():
+                raise Exception("Fail auth check credentials")
         except configparser.NoSectionError as e:
             #logger.error(e)
             self.gptracking.gptconfig_set_section(self.GTP_CONFIG)
@@ -112,10 +112,10 @@ class Odoo:
                             getattr(params, 'odoo_'+p)
                         )
             except Exception as e:
-                logger.error(str(e))
+                logger.error(str(e))                
                 exit(0)
         except Exception as e :
-            logger.error(str(e))
+            raise Exception(str(e))
         #    self.setup_params()
 
     def setup_params(self):

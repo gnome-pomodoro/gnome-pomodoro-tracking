@@ -1,1 +1,3 @@
 http://effbot.org/media/downloads/xmlrpclib-1.0.1.zip
+pytest==6.1.2
+requests==2.24.0
