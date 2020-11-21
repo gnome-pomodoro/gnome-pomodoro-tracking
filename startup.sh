@@ -99,8 +99,8 @@ main(){
         exit 
     fi
     action=$1
-
-    if [ -Z $2  ]; then 
+    
+    if [ -n "$2" ]; then 
         branch=master
     else
         branch=$2

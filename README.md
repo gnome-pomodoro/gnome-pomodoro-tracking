@@ -26,18 +26,18 @@
 ### Install
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --install
 ```
 ### Upgrade
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/install.sh)" "" --upgrade
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --upgrade
 ```
 
 ### Uninstall
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/uninstall.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/v2.2/startup.sh)" "" --uninstall
 ```
 
 ### Plugins available
