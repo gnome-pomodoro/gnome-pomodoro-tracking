@@ -19,6 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -34,5 +35,13 @@ jobs:
     #    # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
     #    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      env:
+        GP_TRACKING_ENV: ${{ secrets.GP_TRACKING_ENV }}
+        GP_TRACKING_CLOCKIFY_TOKEN: ${{ secrets.GP_TRACKING_CLOCKIFY_TOKEN }}
+        GP_TRACKING_TOGGL_TOKEN: ${{ secrets.GP_TRACKING_TOGGL_TOKEN }}
+        GP_TRACKING_ODOO_URL: ${{ secrets.GP_TRACKING_ODOO_URL }}
+        GP_TRACKING_ODOO_PASSWORD: ${{ secrets.GP_TRACKING_ODOO_PASSWORD }}
+        GP_TRACKING_ODOO_USERNAME: ${{ secrets.GP_TRACKING_ODOO_USERNAME }}
+        GP_TRACKING_ODOO_DATABASE: ${{ secrets.GP_TRACKING_ODOO_DATABASE }}
       run: |
         pytest
