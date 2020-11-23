@@ -256,7 +256,7 @@ class GPTracking:
             for k in ["plugin", "start", "name", "description"]:
                 try:
                     if k in ["start", "name", "description"]:
-                        dt_start = self.gptconfig_pomodoro(k) if k == 'start' else self.today()
+                        if k == 'start' : dt_start = self.gptconfig_pomodoro(k) 
                         items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_pomodoro(k) )})
                     else:
                         items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_settings(k) )})

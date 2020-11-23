@@ -1,10 +1,6 @@
 
-[release]
-  label = "beta"
-  patch = 1
-
 [version]
   label = ""
   major = 2
   minor = 2
-  patch = 0
+  patch = 1
