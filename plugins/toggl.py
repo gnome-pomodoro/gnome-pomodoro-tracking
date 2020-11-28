@@ -3,10 +3,12 @@ import json
 from urllib.parse import urljoin
 import configparser
 import logging
+from .gpt_plugin import GPTPlugin
 
 logger = logging.getLogger(__name__)
 
-class Toggl:
+class Toggl(GPTPlugin):
+    
     GTP_CONFIG = "toggl"
     url = "https://api.track.toggl.com/"
     
