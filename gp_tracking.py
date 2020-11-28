@@ -104,14 +104,13 @@ class GPTracking:
 
             if not len(plugin):
               raise configparser.NoOptionError("plugin", "settings")
-            
-            path_plugin = "%s/plugins/%s" % (self.dirpath, plugin)
-            if not GPTracking.exists(path_plugin):
+            path_plugin = "%s/plugins/%s.py" % (self.dirpath, plugin)
+            if not os.path.isfile(path_plugin) :
                 raise configparser.NoOptionError("plugin", "settings")
-            
-            sys.path.insert(1, path_plugin)
-            globals()[plugin] = __import__(plugin)
-            pluginClass = getattr(globals()[plugin], plugin.title())
+
+            globals()[plugin] = __import__("plugins.%s"% plugin)            
+            pluginClass = getattr( getattr(globals()[plugin], plugin), plugin.title())
+            __import__("plugins.%s"% plugin)            
             self.plugin = pluginClass(self)
             
             return True
@@ -129,7 +128,7 @@ class GPTracking:
     def gptparse_params(self):
         return self.parse.parse_args()
 
-    def gptparse_args(self, **kwargs):
+    def add_parse_args(self):
         
         self.parse.add_argument('--plugin',
             action='store', 
@@ -198,8 +197,8 @@ class GPTracking:
             const=True,
             help=argparse.SUPPRESS)
 
-        if getattr(self.plugin, 'gptparse_args',False):
-            getattr(self.plugin, 'gptparse_args')()
+        if getattr(self.plugin, 'add_parse_args',False):
+            getattr(self.plugin, 'add_parse_args')(kind="optionals")
     
     def print_cli(self, items, **kwargs):
         title = kwargs.get('title', "")
@@ -277,7 +276,6 @@ class GPTracking:
                     end=end.strftime(DATETIME_FORMAT),
                     minutes= 25,
                 )
-                
 
         if getattr(self.plugin, 'cli',False):
                 getattr(self.plugin, 'cli')()

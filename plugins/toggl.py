@@ -1,3 +1,5 @@
+from os import name
+import pdb
 import requests
 import json
 from urllib.parse import urljoin
@@ -8,68 +10,70 @@ from .gpt_plugin import GPTPlugin
 logger = logging.getLogger(__name__)
 
 class Toggl(GPTPlugin):
+
+    name = "toggl"
+    url = "https://api.track.toggl.com/api/v8"
+    token = None
+
+    def __init__(self, gpt):    
+        super(Toggl, self).__ini__(gpt)
     
-    GTP_CONFIG = "toggl"
-    url = "https://api.track.toggl.com/"
-    
-    def __init__(self, gptracking):
-        self.gptracking = gptracking        
-        self.token= None
-        self.setup_config()
-    
-    # Check setup config & params 
-    def setup_config(self):
+    def setup(self):
         try:
-            self.token = self.gptracking.gptconfig_get(self.GTP_CONFIG, "token")
+            self.token = self.gpt.gptconfig_get(self.name, "token")
         except configparser.NoSectionError as e:
-            #logger.error(str(e))
-            self.gptracking.gptconfig_set_section(self.GTP_CONFIG)
-            self.setup_params()
-        except configparser.NoOptionError as e:            
-            #logger.error(str(e))
-            self.setup_params()
-            params =  self.gptracking.gptparse_params()
+            logger.error(str(e))
+            self.gpt.gptconfig_set_section(self.name)
+            self.add_parse_args(kind="setup-args")
+        except configparser.NoOptionError as e:
+            self.add_parse_args(kind="setup-args")
+            params =  self.gpt.gptparse_params()
             self.token = params.toggl_token
             try:
-                data, err  = self.auth()
-                if not err:
-                    self.gptracking.gptconfig_set(self.GTP_CONFIG, "token", self.token)
+                if self.auth():
+                    self.gpt.gptconfig_set(self.name, "token", self.token)
+                    print("Now you can use the plugin. Try gp-tracking -h %s" % self.name)
+                else: 
+                    raise Exception("Fail auth")
             except Exception as e:
                 logger.error(str(e))
                 exit(0)
 
-    def setup_params(self):
-        self.gptracking.parse.add_argument('--toggl-token',
-            action='store', 
-            dest='toggl_token', 
-            help=' e.g 23bc78d4e46edd5479885db4260ecsf3', 
-            required=True
-        )
-        
-    
-    ## Optional params
-    def gptparse_args(self, **kwargs):
-       # Overwrite
-        self.gptracking.parse.add_argument('--toggl-workspaces', 
+    def add_parse_args(self, kind):
+        if kind == "setup-args":
+            self.gpt.parse.add_argument('--toggl-token',
+                action='store', 
+                dest='toggl_token', 
+                help=' e.g 23bc78d4e46edd5479885db4260ecsf3', 
+                required=True
+            )
+        else:
+            self.gpt.parse.add_argument('--toggl-workspaces', 
                 action='store_const', 
                 dest='toggl_workspaces', 
                 help='List workspaces',     
                 const=True,                
             )
-        self.gptracking.parse.add_argument('--toggl-projects', 
-              action='store_const', 
-              dest='toggl_projects', 
-              help='List projects',     
-              const=True,
+            self.gpt.parse.add_argument('--toggl-projects', 
+                action='store_const', 
+                dest='toggl_projects', 
+                help='List projects',     
+                const=True,
             )
-    
-    # Operations clockify 
+
+    http_auth = lambda self: (self.token, "api_token")
+
     def auth(self):
-        return self.http_call("/api/v8/me", 'GET')
+        try:
+            data =  self.http_call('GET', "%s/me" % self.url, auth=self.http_auth())
+            if data['data']['id']:
+                return True
+        except Exception as e :
+            pass
+        return False
     
     def cli(self):
-        # Overwrite
-        params = self.gptracking.gptparse_params()
+        params = self.gpt.gptparse_params()
 
         def findbyid(rows, id):
             for row in rows:
@@ -86,86 +90,78 @@ class Toggl(GPTPlugin):
 
         if params.toggl_workspaces:
             try:
-                rows, err = self.workspaces()
-                rows = onlycolumns(rows)
-                title ="Toggl Workspaces"
-                if params.set:
-                    row = findbyid(rows, params.set)
-                    if row: 
-                        self.gptracking.gptconfig_set(self.GTP_CONFIG, "workspace_id",row.get('id') )
-                        self.gptracking.gptconfig_set(self.GTP_CONFIG, "workspace_name",row.get('name') )
+                rows = self.workspaces()
+                if rows:
+                    rows = onlycolumns(rows)
+                    title ="Toggl Workspaces"
+                    if params.set:
+                        row = findbyid(rows, params.set)
+                        if row: 
+                            self.gpt.gptconfig_set(self.GTP_CONFIG, "workspace_id",row.get('id') )
+                            self.gpt.gptconfig_set(self.GTP_CONFIG, "workspace_name",row.get('name') )
 
-                        self.gptracking.gptconfig_set(self.GTP_CONFIG, "project_id", "")
-                        self.gptracking.gptconfig_set(self.GTP_CONFIG, "project_name","" )
+                            self.gpt.gptconfig_set(self.GTP_CONFIG, "project_id", "")
+                            self.gpt.gptconfig_set(self.GTP_CONFIG, "project_name","" )
 
-                        self.gptracking.print_cli([], title= 'the workspace was added successfully')
+                            self.gpt.print_cli([], title= 'the workspace was added successfully')
+                        else:
+                            self.gpt.print_cli([], title= 'the workspace id was not found')
                     else:
-                        self.gptracking.print_cli([], title= 'the workspace id was not found')
+                        self.gpt.print_cli(rows, title=title)
                 else:
-                    self.gptracking.print_cli(rows, title=title)
+                    raise Exception("Fail to get workspaces")
             except Exception as e:
-                self.gptracking.exit(e)
+                self.gpt.exit(e)
         elif params.toggl_projects:
             try:
-                workspace_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "workspace_id")
+                workspace_id = self.gpt.gptconfig_get(self.GTP_CONFIG, "workspace_id")
             except Exception as e:
                 #logger.error(e)
-                workspace, err = self.workspaces(filter='first')
+                workspace = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
             try:
-                rows, err = self.projects(workspace_id)
-                rows = onlycolumns(rows)
-                title ="Clockify projects"
-                if params.set:
-                    row = findbyid(rows, params.set)
-                    if row: 
-                        self.gptracking.gptconfig_set(self.GTP_CONFIG, "project_id",row.get('id') )
-                        self.gptracking.gptconfig_set(self.GTP_CONFIG, "project_name",row.get('name') )
-                        self.gptracking.print_cli([], title= 'the project was added successfully')
-                    else:
-                        self.gptracking.print_cli([], title= 'the project id was not found')
-                else: 
-                    self.gptracking.print_cli(rows, title=title)
+                rows = self.projects(workspace_id)
+                if rows:
+                    rows = onlycolumns(rows)
+                    title ="Clockify projects"
+                    if params.set:
+                        row = findbyid(rows, params.set)
+                        if row: 
+                            self.gpt.gptconfig_set(self.GTP_CONFIG, "project_id",row.get('id') )
+                            self.gpt.gptconfig_set(self.GTP_CONFIG, "project_name",row.get('name') )
+                            self.gpt.print_cli([], title= 'the project was added successfully')
+                        else:
+                            self.gpt.print_cli([], title= 'the project id was not found')
+                    else: 
+                        self.gpt.print_cli(rows, title=title)
+                else:
+                    raise Exception("Fail to get projects")
             except Exception as e:
                 logger.error(e)
-
-  
-    
-    def http_call(self, url, method, **kwargs):
-        
-        #headers = lambda : {'content-type': 'application/json', 'X-Api-Key': self.token}
-
-        #if 'headers' in kwargs:
-        #    kwargs['headers'].update(headers())
-        #else:
-        #    kwargs['headers'] = headers()
-        
-        url = urljoin(self.url, url)
-        response = requests.request(method, url, auth=(self.token, "api_token"), **kwargs)
-        
-        if response.ok:
-            try:
-                return response.json(), None
-            except Exception as e:
-                return None, e
-        raise Exception(response.text)
-    
+   
     def workspaces(self, filter=""):
-        data, err = self.http_call("/api/v8/workspaces", 'GET')
-        if filter =='first':
-            if not err:
-                return len(data) and data[0], err
-        return data, err
+        url = self.url +  "/workspaces"
+        try:
+            data = self.http_call('GET', url, auth=self.http_auth())
+            if filter =='first':            
+                return len(data) and data[0]
+            return data
+        except:
+            pass
+        return None
 
     def projects(self, workspace_id, filter=""):
-        data, err = self.http_call("/api/v8/workspaces/{}/projects".format(workspace_id), 'GET')
-        if filter =='first' :
-            if not err:
-                return len(data) and data[0], err
-        return data, err
-
-    def add_time_entry(self, **kwargs):
-        # Overwrite
+        try:
+            url = "{}/workspaces/{}/projects".format(self.url,workspace_id)
+            data = self.http_call('GET',url, auth=self.http_auth())
+            if filter =='first' :
+                    return len(data) and data[0]
+            return data
+        except :
+            pass
+        return None
+    
+    def add_time_entry(self, **kwargs):        
         description = kwargs.get('description')
         start= kwargs.get('start')
         end= kwargs.get('end')
@@ -173,7 +169,7 @@ class Toggl(GPTPlugin):
         
         workspace_id  = None
         try:
-            workspace_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "workspace_id")
+            workspace_id = self.gpt.gptconfig_get(self.GTP_CONFIG, "workspace_id")
         except:
             try:
                 workspace, err = self.workspaces(filter='first')
@@ -183,7 +179,7 @@ class Toggl(GPTPlugin):
         
         project_id = None
         try:
-            project_id = self.gptracking.gptconfig_get(self.GTP_CONFIG, "project_id")
+            project_id = self.gpt.gptconfig_get(self.GTP_CONFIG, "project_id")
         except:
             pass
         
@@ -203,29 +199,31 @@ class Toggl(GPTPlugin):
             time_entry.update({'pid': project_id})
         
         try:
-            time_entry_resp, ok = self.http_call(
-                "/api/v8/time_entries", 'POST',
+            url = self.url + "/time_entries"
+            data = self.http_call(
+                'POST',url, auth= self.http_auth(),
                 json= {"time_entry": time_entry}
             )
-
-            if "data" in time_entry_resp.keys():
-                return time_entry_resp
+            return data["data"]["id"]
         except Exception as e:
             logger.error(e)
-        return False
+        return -1
     
-    ## Optional params
-    def state(self, **kwargs):
-        # Overwrite
+    def state(self):
         items = []
         def getstate(param):
             try:
-                id = self.gptracking.gptconfig_get(self.GTP_CONFIG, param+"_id")
-                name =self.gptracking.gptconfig_get(self.GTP_CONFIG, param+"_name")
+                id = self.gpt.gptconfig_get(self.GTP_CONFIG, param+"_id")
+                name =self.gpt.gptconfig_get(self.GTP_CONFIG, param+"_name")
                 if len(id) and len(name):
                     items.append({'name': "%s: %s - %s " % (str(param).title(), id, name)})
             except:
                 pass
         getstate('workspace')
         getstate('project')
-        self.gptracking.print_cli(items) 
+        self.gpt.print_cli(items) 
+    
+
+
+
+
