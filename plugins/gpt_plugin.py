@@ -1,11 +1,12 @@
-from urllib.parse import urljoin
 import requests
+
 
 class GPTPlugin(object):
     
     name = None
+    session = {}
 
-    def __ini__(self, gpt):
+    def __init__(self, gpt):
         self.gpt = gpt
         self.setup()
 
@@ -104,7 +105,6 @@ class GPTPlugin(object):
         """
         raise NotImplementedError
 
-
     # Management Request 
     def http_call(self,method, url, **kwargs):
         #url = urljoin(self.url, url)
@@ -114,3 +114,5 @@ class GPTPlugin(object):
             return response.json()
         text =response.text
         raise Exception(text)
+
+

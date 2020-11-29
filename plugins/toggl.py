@@ -16,7 +16,7 @@ class Toggl(GPTPlugin):
     token = None
 
     def __init__(self, gpt):    
-        super(Toggl, self).__ini__(gpt)
+        super().__init__(gpt)
     
     def setup(self):
         try:
