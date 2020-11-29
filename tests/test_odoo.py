@@ -1,9 +1,9 @@
 import os
 import pdb
-from .test_plugin_gpt import TestPluginGPT
+from .test_gpt_plugin import TestGPTPlugin
 
 
-class TestOdoo(TestPluginGPT):
+class TestOdoo(TestGPTPlugin):
 
     plugin = "odoo"
 

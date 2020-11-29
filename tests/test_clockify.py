@@ -1,9 +1,9 @@
 import os
 import pdb
-from .test_plugin_gpt import TestPluginGPT
+from .test_gpt_plugin import TestGPTPlugin
 
 
-class TestClockify(TestPluginGPT):
+class TestClockify(TestGPTPlugin):
 
     plugin = "clockify"
 

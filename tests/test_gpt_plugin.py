@@ -4,7 +4,7 @@ import gp_tracking as gpt
 import os
 import re
 
-class TestPluginGPT(object):
+class TestGPTPlugin(object):
 
     def gpt(self):
         #DIRPATH = gpt.GPTracking.dirpath()
@@ -14,7 +14,7 @@ class TestPluginGPT(object):
     def load_plugin(self):
         gpt = self.gpt()
         gpt.load_plugin()
-        gpt.gptparse_args()
+        gpt.add_parse_args()
         return gpt
 
     def cli_params_list(self, parse_defaults):

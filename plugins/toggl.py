@@ -97,11 +97,11 @@ class Toggl(GPTPlugin):
                     if params.set:
                         row = findbyid(rows, params.set)
                         if row: 
-                            self.gpt.gptconfig_set(self.GTP_CONFIG, "workspace_id",row.get('id') )
-                            self.gpt.gptconfig_set(self.GTP_CONFIG, "workspace_name",row.get('name') )
+                            self.gpt.gptconfig_set(self.name, "workspace_id",row.get('id') )
+                            self.gpt.gptconfig_set(self.name, "workspace_name",row.get('name') )
 
-                            self.gpt.gptconfig_set(self.GTP_CONFIG, "project_id", "")
-                            self.gpt.gptconfig_set(self.GTP_CONFIG, "project_name","" )
+                            self.gpt.gptconfig_set(self.name, "project_id", "")
+                            self.gpt.gptconfig_set(self.name, "project_name","" )
 
                             self.gpt.print_cli([], title= 'the workspace was added successfully')
                         else:
@@ -114,7 +114,7 @@ class Toggl(GPTPlugin):
                 self.gpt.exit(e)
         elif params.toggl_projects:
             try:
-                workspace_id = self.gpt.gptconfig_get(self.GTP_CONFIG, "workspace_id")
+                workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
             except Exception as e:
                 #logger.error(e)
                 workspace = self.workspaces(filter='first')
@@ -127,8 +127,8 @@ class Toggl(GPTPlugin):
                     if params.set:
                         row = findbyid(rows, params.set)
                         if row: 
-                            self.gpt.gptconfig_set(self.GTP_CONFIG, "project_id",row.get('id') )
-                            self.gpt.gptconfig_set(self.GTP_CONFIG, "project_name",row.get('name') )
+                            self.gpt.gptconfig_set(self.name, "project_id",row.get('id') )
+                            self.gpt.gptconfig_set(self.name, "project_name",row.get('name') )
                             self.gpt.print_cli([], title= 'the project was added successfully')
                         else:
                             self.gpt.print_cli([], title= 'the project id was not found')
@@ -169,7 +169,7 @@ class Toggl(GPTPlugin):
         
         workspace_id  = None
         try:
-            workspace_id = self.gpt.gptconfig_get(self.GTP_CONFIG, "workspace_id")
+            workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
         except:
             try:
                 workspace, err = self.workspaces(filter='first')
@@ -179,7 +179,7 @@ class Toggl(GPTPlugin):
         
         project_id = None
         try:
-            project_id = self.gpt.gptconfig_get(self.GTP_CONFIG, "project_id")
+            project_id = self.gpt.gptconfig_get(self.name, "project_id")
         except:
             pass
         
@@ -213,8 +213,8 @@ class Toggl(GPTPlugin):
         items = []
         def getstate(param):
             try:
-                id = self.gpt.gptconfig_get(self.GTP_CONFIG, param+"_id")
-                name =self.gpt.gptconfig_get(self.GTP_CONFIG, param+"_name")
+                id = self.gpt.gptconfig_get(self.name, param+"_id")
+                name =self.gpt.gptconfig_get(self.name, param+"_name")
                 if len(id) and len(name):
                     items.append({'name': "%s: %s - %s " % (str(param).title(), id, name)})
             except:
