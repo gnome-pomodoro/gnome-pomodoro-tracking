@@ -21,8 +21,7 @@ class GPTracking:
             prog="gp-tracking",
             description='''
             It is a custom action for Gnome Pomodoro, 
-            whose main function is to connect with Time Tracking Software
-            and create Time Entries.
+            that connect any Time Tracking Software and create Time Entries.
             ''',
             epilog="Enjoy the program Gnome Pomodoro Tracking.",
         )
@@ -133,9 +132,7 @@ class GPTracking:
         self.parse.add_argument('--plugin',
             action='store', 
             dest='plugin', 
-            help='''
-                Select Time Tracking Software
-            ''', 
+            help='Select Time Tracking Software', 
             choices= ['odoo', 'clockify', 'toggl'],
         )
     
@@ -161,30 +158,24 @@ class GPTracking:
             action='store',
             dest='name', 
             help='''
-                Enter the name of the time entry (Promodoro, short/long break). 
+                Set the name of the time entry (Pomodoro, short/long break). 
                 If there is no active Pomodoro start a new one.
             ''')
-        self.parse.add_argument('-r', '--reset',
+        self.parse.add_argument('-r', '--restart',
             action='store_const',
             dest='reset', 
             const=True,
-            help=''' 
-                Stop the active Pomodoro starts a new time entry
-            ''')
-        self.parse.add_argument('-k', '--kill',
+            help='Stop the Pomodoro & starts a new')
+        self.parse.add_argument('-k', '--stop',
             action='store_const',
-            dest='kill', 
+            dest='stop', 
             const=True,
-            help='''
-                Stop the active Pomodoro
-            ''')
+            help='Stop the Pomodoro')
         self.parse.add_argument('-s', '--state',
             action='store_const',
             dest='state', 
             const=True,
-            help='''
-                Displays the summary of the time entry (Plugin, Time elapsed, Name...)
-            ''')
+            help='Displays the summary of the Pomodoro')
         
         self.parse.add_argument('--set', 
             action='store',
@@ -236,7 +227,7 @@ class GPTracking:
             if not self.load_plugin():            
                 self.gptconfig_settings("plugin", plugin)
 
-        if params.reset or params.kill:
+        if params.reset or params.stop:
             params.trigger = 'skip'
             params.duration = "0"
             params.elapsed = "0"
