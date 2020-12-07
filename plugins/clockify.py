@@ -198,7 +198,7 @@ class Clockify(GPTPlugin):
             pass
         return -1
     
-    def state(self, **kwargs):
+    def status(self, **kwargs):
         # Overwrite
         items = []
         def getstate(param):

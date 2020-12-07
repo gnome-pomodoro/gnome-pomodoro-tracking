@@ -10,3 +10,4 @@
 * Clockify , toogl and odoo now inehrit by GPTPlugin 
 * Rename arg --kill by long arg --stop
 * Rename arg --reset by --restart 
+* Rename arg --state by --status 

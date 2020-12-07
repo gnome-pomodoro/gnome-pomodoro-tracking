@@ -171,9 +171,9 @@ class GPTracking:
             dest='stop', 
             const=True,
             help='Stop the Pomodoro')
-        self.parse.add_argument('-s', '--state',
+        self.parse.add_argument('-s', '--status',
             action='store_const',
-            dest='state', 
+            dest='status', 
             const=True,
             help='Displays the summary of the Pomodoro')
         
@@ -240,7 +240,7 @@ class GPTracking:
                 os.system("gnome-pomodoro --stop")
                 os.system("gnome-pomodoro --start --no-default-window")
             self.gptconfig_pomodoro("description", params.name)
-        if params.state:
+        if params.status:
             items = []
             dt_start = self.today()
             for k in ["plugin", "start", "name", "description"]:
@@ -254,8 +254,8 @@ class GPTracking:
                     pass
             items.append({'name': 'Elapsed: {0:.2f} Min'.format(self.convert2minutes(self.diff_elapsed(dt_start, self.today() ))) })
             self.print_cli(items, title="Gnome Pomodoro Tracking")
-            if getattr(self.plugin, 'state',False):
-                getattr(self.plugin, 'state')()
+            if getattr(self.plugin, 'status',False):
+                getattr(self.plugin, 'status')()
 
         if params.test_time_entry:
             if getattr(self.plugin, 'add_time_entry',False):

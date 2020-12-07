@@ -209,7 +209,7 @@ class Toggl(GPTPlugin):
             logger.error(e)
         return -1
     
-    def state(self):
+    def status(self):
         items = []
         def getstate(param):
             try:

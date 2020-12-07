@@ -212,7 +212,7 @@ class Odoo(GPTPlugin):
         return False
         
     ## Optional params
-    def state(self, **kwargs):
+    def status(self, **kwargs):
         # Overwrite
         items = []
         def getstate(param):

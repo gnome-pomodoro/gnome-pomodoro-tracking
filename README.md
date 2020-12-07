@@ -56,7 +56,7 @@ gp-tracking --plugin NAME
 gp-tracking --name NAME
 
 # Displays the summary of the time entry 
-gp-tracking --state
+gp-tracking --status
 
 # Stop the active Pomodoro, starts a new time entry
 gp-tracking --restart

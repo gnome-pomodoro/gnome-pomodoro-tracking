@@ -89,9 +89,9 @@ class GPTPlugin(object):
         """
         raise NotImplementedError
 
-    def state(self):
+    def status(self):
         """
-        Print the current state of the Pomodoro ( gp-tracking --state )
+        Print the current state of the Pomodoro ( gp-tracking --status )
         params: 
             None
         return: 
