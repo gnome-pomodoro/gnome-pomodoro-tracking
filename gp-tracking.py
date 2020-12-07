@@ -11,6 +11,6 @@ if __name__ == "__main__":
     else:
         gpt = GPTracking(GPT_CONF, "", DIRHOME)
         gpt.load_plugin()
-        gpt.gptparse_args()
+        gpt.add_parse_args()
         gpt.cli()
 
