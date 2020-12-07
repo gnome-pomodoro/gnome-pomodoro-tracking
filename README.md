@@ -17,7 +17,7 @@
 </p>
 
 ## Gnome Pomodoro Tracking (gp-tracking)
-It is a custom action for Gnome Pomodoro, whose main function is to connect with Time Tracking Software and create Time Entries.
+It is a custom action for Gnome Pomodoro, that to connect any Time Tracking Software and create Time Entries.
 
 ### Plugins available
 
@@ -59,10 +59,10 @@ gp-tracking --name NAME
 gp-tracking --state
 
 # Stop the active Pomodoro, starts a new time entry
-gp-tracking --reset
+gp-tracking --restart
 
 # Stop the active Pomodoro
-gp-tracking --kill
+gp-tracking --stop
 
 ```
 
