@@ -10,14 +10,14 @@
     <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-2.2-green">
+    <img src="https://img.shields.io/badge/semv-3.0.0-green">
   </a>
   
 
 </p>
 
 ## Gnome Pomodoro Tracking (gp-tracking)
-It is a custom action for Gnome Pomodoro, whose main function is to connect with Time Tracking Software and create Time Entries.
+It is a custom action for Gnome Pomodoro, that to connect any Time Tracking Software and create Time Entries.
 
 ### Plugins available
 
@@ -56,13 +56,13 @@ gp-tracking --plugin NAME
 gp-tracking --name NAME
 
 # Displays the summary of the time entry 
-gp-tracking --state
+gp-tracking --status
 
 # Stop the active Pomodoro, starts a new time entry
-gp-tracking --reset
+gp-tracking --restart
 
 # Stop the active Pomodoro
-gp-tracking --kill
+gp-tracking --stop
 
 ```
 
