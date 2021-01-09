@@ -42,19 +42,22 @@ It is a custom action for Gnome Pomodoro, that to connect any Time Tracking Soft
 
 ```bash
 # Install 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --install
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/startup.sh)" "" --install
 
 # Upgrade
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --upgrade
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/startup.sh)" "" --upgrade
 
 # Uninstall
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/master/startup.sh)" "" --uninstall
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/startup.sh)" "" --uninstall
 
 ```
 
 ## CLI
 
 ```bash
+# set alias or any short-name
+alias gp-tracking=gnome-pomodoro-tracking
+
 # Select Time Tracking Software
 gp-tracking --plugin NAME  
 
