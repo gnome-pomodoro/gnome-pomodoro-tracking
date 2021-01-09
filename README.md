@@ -3,11 +3,11 @@
 </p>
 
 <p align="center">  
-  <a href="https://github.com/josehbez/gp-tracking/actions?query=workflow%3APytest">
-    <img src="https://github.com/josehbez/gp-tracking/workflows/Pytest/badge.svg">
+  <a href="https://github.com/gnome-pomodoro/gnome-pomodoro-tracking/actions?query=workflow%3APytest">
+    <img src="https://github.com/gnome-pomodoro/gnome-pomodoro-tracking/workflows/Pytest/badge.svg">
   </a>
   <a href="LICENSE">  
-    <img src="https://img.shields.io/github/license/josehbez/gp-tracking?style=flat-square" />
+    <img src="https://img.shields.io/github/license/gnome-pomodoro/gnome-pomodoro-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
     <img src="https://img.shields.io/badge/semv-3.0.1-green">
@@ -42,13 +42,13 @@ It is a custom action for Gnome Pomodoro, that to connect any Time Tracking Soft
 
 ```bash
 # Install 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/startup.sh)" "" --install
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomodoro-tracking/master/startup.sh)" "" --install
 
 # Upgrade
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/startup.sh)" "" --upgrade
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomodoro-tracking/master/startup.sh)" "" --upgrade
 
 # Uninstall
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gnome-pomodoro-tracking/master/startup.sh)" "" --uninstall
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomodoro-tracking/master/startup.sh)" "" --uninstall
 
 ```
 
