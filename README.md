@@ -21,16 +21,16 @@ It is a custom action for Gnome Pomodoro, that to connect any Time Tracking Soft
 
 ## Contents
 
-* Requirements
-* Install
-* CLI
-* Plugins
-  * Clockify
-  * Toggl
-  * Odoo 
-* Settings gnome-pomodoro 
-* Contributing
-* Tests
+* [Requirements](#requirements)
+* [Install](#install)
+* [CLI](#cli)
+* [Plugins](#plugins)
+  * [Clockify](#clockify)
+  * [Toggl](#toggl)
+  * [Odoo](#odoo)
+* [Gnome Pomodoro Settings](#gnome-pomodoro-settings)
+* [Contributing](#contributing)
+* [Tests](#tests)
 
 ## Requirements
 
@@ -76,17 +76,17 @@ gp-tracking --stop
 
 ### Clockify
 
-[Guidelines](./assets/clockify/readme.md) 
+[Guidelines](./assets/clockify/README.md)
 
 ### Toggl
 
-[Guidelines](./assets/toggl/readme.md) 
+[Guidelines](./assets/toggl/README.md)
 
 ### Odoo
 
-[Guidelines](./assets/odoo/readme.md) 
+[Guidelines](./assets/odoo/README.md)
 
-## Gnome Pomodoro Settings 
+## Gnome Pomodoro Settings
 
 `Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
 
@@ -104,19 +104,4 @@ gp-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapse
 [Guidelines](./CONTRIBUTING.md) 
 
 ## Tests 
-```bash
-export GP_TRACKING_ENV=Test
-
-# Params clockify
-export GP_TRACKING_CLOCKIFY_TOKEN=Token
-# Params toggl
-export GP_TRACKING_TOGGL_TOKEN=Token
-# Params odoo
-export GP_TRACKING_ODOO_URL=Url
-export GP_TRACKING_ODOO_PASSWORD=Password
-export GP_TRACKING_ODOO_USERNAME=User
-export GP_TRACKING_ODOO_DATABASE=Db
-
-# run tests
-pytest
-```
+[Guidelines](./tests/README.md)
