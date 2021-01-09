@@ -1,33 +1,8 @@
 [settings]
-plugin = toggl
+plugin =
 
 [pomodoro]
+type = 
+name = 
 start = 
 end = 
-name = 
-description = 
-
-[clockify]
-token = XtGTMKauzTS8sJ/E
-workspace_id = 5e9ca62da2686b699ed5748d
-workspace_name = José Hbez's workspace
-project_id = 5eab188c991f8972bb9a1fa3
-project_name = 61 Cañas
-
-[toggl]
-token = 18c04af89b405e048592125660145570
-workspace_id = 4755497
-workspace_name = José Hernández's workspace
-project_id = 164238639
-project_name = 61 Cañas
-
-[odoo]
-url = https://josehbez.com
-database = josehbezcom
-username = gpt@josehbez.com
-password = T8bPPsShBy7TBJYacydNe
-project_id = 6
-project_name = Teippo Odoo Fase 1
-task_id = 17
-task_name = Plan de implementación ausencias
-
