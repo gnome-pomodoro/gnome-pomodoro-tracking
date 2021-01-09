@@ -162,7 +162,7 @@ class Toggl(GPTPlugin):
         return None
     
     def add_time_entry(self, **kwargs):        
-        description = kwargs.get('description')
+        description = kwargs.get('name')
         start= kwargs.get('start')
         end= kwargs.get('end')
         minutes = kwargs.get('minutes')
