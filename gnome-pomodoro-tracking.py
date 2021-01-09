@@ -3,7 +3,7 @@ import os
 from gp_tracking import GPTracking
 
 DIRHOME = os.path.expanduser("~")
-GPT_CONF = "{}/.gp-tracking.conf".format(DIRHOME)
+GPT_CONF = "{}/.gnome-pomodoro-tracking.conf".format(DIRHOME)
 
 if __name__ == "__main__":
     if not os.path.exists(GPT_CONF):

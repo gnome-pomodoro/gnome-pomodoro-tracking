@@ -30,9 +30,9 @@ gpt_install(){
 	}
     echo "Looking for an existing ... $GPT_CONF"
     if [ ! -f $GPT_CONF ]; then
-        echo "Copy $GPT_DIR/gp-tracking.template $GPT_CONF"
+        echo "Copy $GPT_DIR/gnome-pomodoro-tracking.template $GPT_CONF"
         cp $GPT_DIR/gp-tracking.template $GPT_CONF
-        echo "ln $GPT_DIR/gp-tracking.py -s $GPT_BIN"
+        echo "ln $GPT_DIR/gnome-pomodoro-tracking.py -s $GPT_BIN"
         ln $GPT_DIR/gp-tracking.py -s $GPT_BIN
     else
         echo "Found $GPT_CONF"
