@@ -166,7 +166,7 @@ class Clockify(GPTPlugin):
     
     def add_time_entry(self, **kwargs ):
         # Overwrite
-        description = kwargs.get('description')
+        description = kwargs.get('name')
         start= kwargs.get('start')
         end= kwargs.get('end')
 
