@@ -28,7 +28,7 @@ class GPTPlugin(object):
         raise NotImplementedError
 
     # Management Time Entry 
-    def add_time_entry(self, **kwargs) -> int:
+    def add_time_entry(self, **kwargs):
         """
         Params: 
             description,str: Description activity
