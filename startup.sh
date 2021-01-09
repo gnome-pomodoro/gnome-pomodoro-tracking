@@ -1,9 +1,9 @@
 #!/bin/sh
 
-GPT_DIR=${GPT_DIR:-$HOME/.gp-tracking}
-REMOTE=${REMOTE:-https://github.com/josehbez/gp-tracking.git}
-GPT_CONF="$HOME/.gp-tracking.conf"
-GPT_BIN="$HOME/.local/bin/gp-tracking"
+GPT_DIR=${GPT_DIR:-$HOME/.gnome-pomodoro-tracking}
+REMOTE=${REMOTE:-https://github.com/josehbez/gnome-pomodoro-tracking.git}
+GPT_CONF="$HOME/.gnome-pomodoro-tracking.conf"
+GPT_BIN="$HOME/.local/bin/gnome-pomodoro-tracking"
 
 command_exists() {
 	command -v "$@" >/dev/null 2>&1
@@ -25,7 +25,7 @@ gpt_install(){
 		-c fetch.fsck.zeroPaddedFilemode=ignore \
 		-c receive.fsck.zeroPaddedFilemode=ignore \
         --depth=1 --branch "$1" "$REMOTE" "$GPT_DIR" || {
-		error "git clone of gp-tracking repo failed"
+		error "git clone of gnome-pomodoro-tracking repo failed"
 		exit 1
 	}
     echo "Looking for an existing ... $GPT_CONF"
@@ -41,7 +41,7 @@ gpt_install(){
 
     echo ""
     echo "• Follow us on Twitter: https://twitter.com/josehbez"
-    echo "• Now is installed, try gp-tracking -h"
+    echo "• Now is installed, try gnome-pomodoro-tracking -h"
     echo "• Don't forget to restart your terminal!''"
 }
 
@@ -78,7 +78,7 @@ gpt_uninstall(){
         rm -rf $GPT_DIR
     fi
     echo ""
-    echo "• Thanks for trying out gp-tracking. It's been uninstalled."
+    echo "• Thanks for trying out gnome-pomodoro-tracking. It's been uninstalled."
     echo "• Don't forget to restart your terminal!"
 
 }
