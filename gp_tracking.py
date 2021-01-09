@@ -59,7 +59,7 @@ class GPTracking:
             return self.config.get("pomodoro", key)
 
     def gptconfig_pomodoro_clean(self):
-        for k in ["start","end", "name",'description']: 
+        for k in ["start","end", "type",'name']: 
             self.config.set("pomodoro", k, "")
         self.gptconfig_write()
     
@@ -239,21 +239,19 @@ class GPTracking:
             if not len(self.gptconfig_pomodoro("name")) and not len(self.gptconfig_pomodoro("start")):            
                 os.system("gnome-pomodoro --stop")
                 os.system("gnome-pomodoro --start --no-default-window")
-            self.gptconfig_pomodoro("description", params.name)
+            self.gptconfig_pomodoro("name", params.name)
         if params.status:
             items = []
             dt_start = self.today()
-            for k in ["plugin", "start", "name", "description"]:
-                try:
-                    if k in ["start", "name", "description"]:
-                        if k == 'start' : dt_start = self.gptconfig_pomodoro(k) 
-                        items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_pomodoro(k) )})
-                    else:
-                        items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_settings(k) )})
+            for k in ["type", "name", "start"]:
+                try:                    
+                    if k == 'start' : dt_start = self.gptconfig_pomodoro(k) 
+                    items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_pomodoro(k) )})                    
                 except: 
                     pass
             items.append({'name': 'Elapsed: {0:.2f} Min'.format(self.convert2minutes(self.diff_elapsed(dt_start, self.today() ))) })
-            self.print_cli(items, title="Gnome Pomodoro Tracking")
+            
+            self.print_cli(items, title="Gnome Pomodoro Tracking - %s" % self.gptconfig_settings("plugin"))
             if getattr(self.plugin, 'status',False):
                 getattr(self.plugin, 'status')()
 
@@ -281,12 +279,12 @@ class GPTracking:
                 return False        
         #Start timer
         if 'start' in params.gp_trigger or 'resume' in params.gp_trigger:          
-            self.gptconfig_pomodoro("name", params.gp_state.title())
+            self.gptconfig_pomodoro("type", params.gp_state.title())
             self.gptconfig_pomodoro("start", self.today())
         # Stop timer
         elif 'skip' in params.gp_trigger or 'pause' in params.gp_trigger or 'complete' in params.gp_trigger:
             try:
-                name = self.gptconfig_pomodoro("description") or self.gptconfig_pomodoro("name")
+                name = self.gptconfig_pomodoro("name") or self.gptconfig_pomodoro("type")
                 start = self.gptconfig_pomodoro("start")            
                 end = self.today()
                 minutes = self.convert2minutes(self.diff_elapsed(start, end))            
@@ -294,7 +292,7 @@ class GPTracking:
                     if getattr(self.plugin, 'add_time_entry',False):
                         # Check param --test-time-entry
                         add_time_entry = getattr(self.plugin, 'add_time_entry')(
-                            description=name, 
+                            name=name,
                             start=start, 
                             end=end,
                             minutes= minutes,
