@@ -67,16 +67,16 @@ gpt_uninstall(){
         echo "Uninstall cancelled"
         exit
     fi
-    if [ -e $GPT_CONF ]; then    
-        echo "Removing config: $GPT_CONF ..."
+    if [ -f $GPT_CONF ]; then    
+        echo "Removing config ... $GPT_CONF"
         rm $GPT_CONF
     fi
     if [ -f $GPT_BIN ]; then
-        echo "Removing bin: $GPT_BIN ..."
+        echo "Removing bin .. $GPT_BIN"
         rm -rf $GPT_BIN
     fi
     if [ -d $GPT_DIR ]; then
-        echo "Removing dir: $GPT_DIR ..."
+        echo "Removing dir ... $GPT_DIR"
         rm -rf $GPT_DIR
     fi
     echo ""
