@@ -187,7 +187,7 @@ class Odoo(GPTPlugin):
     
     def add_time_entry(self, **kwargs):
         # Overwrite
-        description = kwargs.get('description')
+        description = kwargs.get('name')
         dt_start = kwargs.get('start')
         dt_end = kwargs.get('end')
         minutes = float(kwargs.get('minutes', 0))
