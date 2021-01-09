@@ -19,20 +19,26 @@
 ## Gnome Pomodoro Tracking (gp-tracking)
 It is a custom action for Gnome Pomodoro, that to connect any Time Tracking Software and create Time Entries.
 
-### Plugins available
+## Contents
 
-* [Clockify](assets/clockify/readme.md)
-* [Odoo](assets/odoo/readme.md)
-* [Toggl](assets/toggl/readme.md)
+* Requirements
+* Install
+* CLI
+* Plugins
+  * Clockify
+  * Toggl
+  * Odoo 
+* Settings gnome-pomodoro 
+* Contributing
+* Tests
 
-### Pre-requirements 
+## Requirements
 
-* python3 
+* python3
 * git 
 * [gnomepomodoro.org](https://gnomepomodoro.org)
 
-
-### Startup 
+## Install
 
 ```bash
 # Install 
@@ -46,7 +52,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/josehbez/gp-tracking/maste
 
 ```
 
-### CLI
+## CLI
 
 ```bash
 # Select Time Tracking Software
@@ -66,6 +72,19 @@ gp-tracking --stop
 
 ```
 
+## Plugins
+
+### Clockify
+
+[Guidelines](./assets/clockify/readme.md) 
+
+### Toggl
+
+[Guidelines](./assets/toggl/readme.md) 
+
+### Odoo
+
+[Guidelines](./assets/odoo/readme.md) 
 
 ## Gnome Pomodoro Settings 
 
@@ -80,9 +99,9 @@ gp-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapse
 </p>
 
 
-
 ## Contributing
-* [Build a plugin](./PLUGIN.md)
+
+[Guidelines](./CONTRIBUTING.md) 
 
 ## Tests 
 ```bash
