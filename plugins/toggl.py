@@ -1,13 +1,6 @@
-from os import name
-import pdb
-import requests
-import json
-from urllib.parse import urljoin
 import configparser
-import logging
 from .gpt_plugin import GPTPlugin
-
-logger = logging.getLogger(__name__)
+from .gpt_utils import printtbl, println, make_request, join_url, printlg
 
 class Toggl(GPTPlugin):
 
@@ -22,21 +15,22 @@ class Toggl(GPTPlugin):
         try:
             self.token = self.gpt.gptconfig_get(self.name, "token")
         except configparser.NoSectionError as e:
-            logger.error(str(e))
+            printlg(error=e)
             self.gpt.gptconfig_set_section(self.name)
             self.add_parse_args(kind="setup-args")
         except configparser.NoOptionError as e:
+            printlg(error=e)
             self.add_parse_args(kind="setup-args")
             params =  self.gpt.gptparse_params()
             self.token = params.toggl_token
             try:
                 if self.auth():
                     self.gpt.gptconfig_set(self.name, "token", self.token)
-                    print("Now you can use the plugin. Try gp-tracking -h %s" % self.name)
+                    print("Now you can use the plugin %s" % self.name)
                 else: 
                     raise Exception("Fail auth")
             except Exception as e:
-                logger.error(str(e))
+                printlg(critical=e)
                 exit(0)
 
     def add_parse_args(self, kind):
@@ -93,56 +87,53 @@ class Toggl(GPTPlugin):
                 rows = self.workspaces()
                 if rows:
                     rows = onlycolumns(rows)
-                    title ="Toggl Workspaces"
                     if params.set:
                         row = findbyid(rows, params.set)
-                        if row: 
+                        if row:
                             self.gpt.gptconfig_set(self.name, "workspace_id",row.get('id') )
                             self.gpt.gptconfig_set(self.name, "workspace_name",row.get('name') )
 
                             self.gpt.gptconfig_set(self.name, "project_id", "")
                             self.gpt.gptconfig_set(self.name, "project_name","" )
 
-                            self.gpt.print_cli([], title= 'the workspace was added successfully')
+                            printtbl([row])
                         else:
-                            self.gpt.print_cli([], title= 'the workspace id was not found')
+                            println('The workspace ID was not found')
                     else:
-                        self.gpt.print_cli(rows, title=title)
+                        printtbl(rows)
                 else:
                     raise Exception("Fail to get workspaces")
             except Exception as e:
-                self.gpt.exit(e)
+                printlg(exception=e)
         elif params.toggl_projects:
             try:
                 workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
             except Exception as e:
-                #logger.error(e)
                 workspace = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
             try:
                 rows = self.projects(workspace_id)
                 if rows:
                     rows = onlycolumns(rows)
-                    title ="Clockify projects"
                     if params.set:
                         row = findbyid(rows, params.set)
                         if row: 
                             self.gpt.gptconfig_set(self.name, "project_id",row.get('id') )
                             self.gpt.gptconfig_set(self.name, "project_name",row.get('name') )
-                            self.gpt.print_cli([], title= 'the project was added successfully')
+                            printtbl([row])
                         else:
-                            self.gpt.print_cli([], title= 'the project id was not found')
+                            println('The project ID was not found')
                     else: 
-                        self.gpt.print_cli(rows, title=title)
+                        printtbl(rows)
                 else:
                     raise Exception("Fail to get projects")
             except Exception as e:
-                logger.error(e)
+                printlg(exception=e)
    
     def workspaces(self, filter=""):
-        url = self.url +  "/workspaces"
+        url = join_url(self.url, "workspaces")
         try:
-            data = self.http_call('GET', url, auth=self.http_auth())
+            data = make_request('GET', url, auth=self.http_auth())
             if filter =='first':            
                 return len(data) and data[0]
             return data
@@ -152,8 +143,8 @@ class Toggl(GPTPlugin):
 
     def projects(self, workspace_id, filter=""):
         try:
-            url = "{}/workspaces/{}/projects".format(self.url,workspace_id)
-            data = self.http_call('GET',url, auth=self.http_auth())
+            url = join_url(self.url, "workspaces/{}/projects".format(workspace_id))
+            data = make_request('GET',url, auth=self.http_auth())
             if filter =='first' :
                     return len(data) and data[0]
             return data
@@ -170,17 +161,17 @@ class Toggl(GPTPlugin):
         workspace_id  = None
         try:
             workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
-        except:
+        except Exception as e:
             try:
                 workspace, err = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
-            except:
+            except Exception as e:
                 pass
         
         project_id = None
         try:
             project_id = self.gpt.gptconfig_get(self.name, "project_id")
-        except:
+        except Exception as e:
             pass
         
         time_entry = {
@@ -199,14 +190,14 @@ class Toggl(GPTPlugin):
             time_entry.update({'pid': project_id})
         
         try:
-            url = self.url + "/time_entries"
-            data = self.http_call(
+            url = join_url(self.url, "time_entries")
+            data = make_request(
                 'POST',url, auth= self.http_auth(),
                 json= {"time_entry": time_entry}
             )
             return data["data"]["id"]
         except Exception as e:
-            logger.error(e)
+            printlg(exception=e)
         return -1
     
     def status(self):
@@ -216,14 +207,12 @@ class Toggl(GPTPlugin):
                 id = self.gpt.gptconfig_get(self.name, param+"_id")
                 name =self.gpt.gptconfig_get(self.name, param+"_name")
                 if len(id) and len(name):
-                    items.append({'name': "%s: %s - %s " % (str(param).title(), id, name)})
+                    items.append({
+                        'key': str(param).title(),
+                        'value': "%s  %s" % ( id, name)
+                        })
             except:
                 pass
         getstate('workspace')
         getstate('project')
-        self.gpt.print_cli(items) 
-    
-
-
-
-
+        printtbl(items)
