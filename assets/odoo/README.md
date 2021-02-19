@@ -7,8 +7,8 @@
 ## Test 
 * ✅ Odoo 13.0 - Community
 * ✅ Odoo 13.0 - Enterprise
-* ❌ Odoo 12.0 - Community
-* ❌ Odoo 12.0 - Enterprise
+* ✅ Odoo 12.0 - Community
+* ✅ Odoo 12.0 - Enterprise
 * ❌ Odoo 11.0 - Community
 * ❌ Odoo 11.0 - Enterprise
 
