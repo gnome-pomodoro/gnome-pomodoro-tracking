@@ -1,6 +1,8 @@
 import re
 import logging
 import requests
+import os 
+import sys 
 
 logging.basicConfig(
     filename="/tmp/gnome-pomodoro-tracking.log",
@@ -19,6 +21,14 @@ def join_url(url, *paths):
 
 def println(*args):
     print(*args)
+    
+    if str(os.getenv("GP_TRACKING_ENV", "")).lower() == 'test':
+        original_stdout = sys.stdout
+        with open('/tmp/gnome-pomodoro-tracking.stdout', 'w') as f:
+            sys.stdout = f
+            print(*args)
+            sys.stdout = original_stdout 
+
 
 def printlg(info=None, warning=None, error=None, critical=None, debug=None, exception=None, *args,**kwargs):
     if info:
