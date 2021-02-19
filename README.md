@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/github/license/gnome-pomodoro/gnome-pomodoro-tracking?style=flat-square" />
   </a>
    <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-3.0.1-green">
+    <img src="https://img.shields.io/badge/version-3.0.2-green">
   </a>
 </p>
 
@@ -54,8 +54,8 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomod
 
 ```bash
 
-usage: gnome-pomodoro-tracking [-h] [--plugin {odoo,clockify,toggl}] [-n NAME] [-r] [-k]
-                               [-s] [--toggl-workspaces] [--toggl-projects]
+usage: gnome-pomodoro-tracking [-h] [--plugin {odoo,clockify,toggl}] [-n NAME] 
+                               [-r] [-k] [-s] 
 
 optional arguments:
   -h, --help            show this help message and exit
