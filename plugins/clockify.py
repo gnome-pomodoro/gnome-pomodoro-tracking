@@ -1,11 +1,8 @@
 import json
 import configparser
-import logging
-
 from .gpt_plugin import GPTPlugin
-from .gpt_utils import join_url
+from .gpt_utils import join_url, printtbl, println, printlg, make_request
 
-logger = logging.getLogger(__name__)
 
 class Clockify(GPTPlugin):
     name = "clockify"
@@ -18,11 +15,11 @@ class Clockify(GPTPlugin):
         try:
             self.session.update({"token": self.gpt.gptconfig_get(self.name, "token")})
         except configparser.NoSectionError as e:
-            #logger.error(str(e))
+            printlg(error=e)
             self.gpt.gptconfig_set_section(self.name)
             self.add_parse_args(kind="setup-args")
         except configparser.NoOptionError as e:            
-            #logger.error(str(e))
+            printlg(error=e)
             self.add_parse_args(kind="setup-args")
             params =  self.gpt.gptparse_params()
             self.session.update({"token": params.clockify_token})
@@ -31,7 +28,7 @@ class Clockify(GPTPlugin):
                     self.gpt.gptconfig_set(self.name, "token", self.token())
                     print(f"{self.name} now can do you use.")
             except Exception as e:
-                logger.error(str(e))
+                printlg(critical=e)
                 exit(0)        
     
     token = lambda self: self.session.get("token", "")
@@ -61,9 +58,9 @@ class Clockify(GPTPlugin):
                     )
     
     def auth(self):
-        url = join_url(self.url, "/api/v1/user")
+        url = join_url(self.url, "api/v1/user")
         try:
-            data = self.http_call('GET', url, headers= self.http_headers())
+            data = make_request('GET', url, headers= self.http_headers())
             return data.get("id") != ""
         except Exception as e :
             msg =""
@@ -99,26 +96,25 @@ class Clockify(GPTPlugin):
                 rows = self.workspaces()
                 if rows:
                     rows = onlycolumns(rows)
-                    title ="Clockify workspaces"
                     if params.set:
                         row = findbyid(rows, params.set)
                         if row: 
                             self.gpt.gptconfig_set(self.name, "workspace_id",row.get('id') )
                             self.gpt.gptconfig_set(self.name, "workspace_name",row.get('name') )
-                            self.gpt.print_cli([], title= 'the workspace was added successfully')
+                            printtbl([row])
                         else:
-                            self.gpt.print_cli([], title= 'the workspace id was not found')
+                            println('The workspace ID was not found')
                     else:
-                        self.gpt.print_cli(rows, title=title)
+                        printtbl(rows)
                 else:
                     raise Exception("Fail get workspaces")
             except Exception as e:
-                self.gpt.exit(e)
+                printlg(exception=e)
         elif params.clockify_projects:
             try:
                 workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
             except Exception as e:
-                #logger.error(e)
+                printlg(error=e)
                 workspace = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
             try:
@@ -131,20 +127,20 @@ class Clockify(GPTPlugin):
                         if row: 
                             self.gpt.gptconfig_set(self.name, "project_id",row.get('id') )
                             self.gpt.gptconfig_set(self.name, "project_name",row.get('name') )
-                            self.gpt.print_cli([], title= 'the project was added successfully')
+                            printtbl([row])
                         else:
-                            self.gpt.print_cli([], title= 'the project id was not found')
+                            println('The project ID was not found')
                     else: 
-                        self.gpt.print_cli(rows, title=title)
+                        printtbl(rows)
                 else:
                     raise Exception("Fail get projects")
             except Exception as e:
-                raise Exception(e)
+                printlg(exception=e)
     
     def workspaces(self, filter=""):
-        url = join_url(self.url, "/api/v1/workspaces")
+        url = join_url(self.url, "api/v1/workspaces")
         try:
-            data = self.http_call('GET', url, headers = self.http_headers())
+            data = make_request('GET', url, headers = self.http_headers())
             if filter =='first':
                 if data:
                     return len(data) and data[0]
@@ -154,9 +150,9 @@ class Clockify(GPTPlugin):
         return None
 
     def projects(self, workspace_id, filter=""):
-        url =join_url(self.url,f"/api/v1/workspaces/{workspace_id}/projects")
+        url =join_url(self.url,f"api/v1/workspaces/{workspace_id}/projects")
         try:            
-            data = self.http_call('GET', url, headers = self.http_headers())
+            data = make_request('GET', url, headers = self.http_headers())
             if filter =='first' :            
                 return len(data) and data[0]
             return data
@@ -192,10 +188,10 @@ class Clockify(GPTPlugin):
         }
         try:
             url = join_url(self.url, f"api/v1/workspaces/{workspace_id}/time-entries")
-            data = self.http_call('POST', url,json= time_entry, headers= self.http_headers())
+            data = make_request('POST', url,json= time_entry, headers= self.http_headers())
             return data["id"]
         except Exception as e:
-            pass
+            printlg(exception=e)
         return -1
     
     def status(self, **kwargs):
@@ -206,11 +202,14 @@ class Clockify(GPTPlugin):
                 id = self.gpt.gptconfig_get(self.name, param+"_id")
                 name =self.gpt.gptconfig_get(self.name, param+"_name")
                 if len(id) and len(name):
-                    items.append({'name': "%s: %s - %s " % (str(param).title(), id, name)})
+                    items.append({
+                        'key': str(param).title(),
+                        'value': "%s  %s" % ( id, name)
+                        })
             except:
                 pass
         getstate('workspace')
         getstate('project')
-        self.gpt.print_cli(items)
+        printtbl(items)
 
     

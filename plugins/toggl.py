@@ -1,6 +1,6 @@
 import configparser
 from .gpt_plugin import GPTPlugin
-from .gpt_utils import printtbl, println, make_request, join_url, printlg
+from .gpt_utils import printtbl, println, make_request, join_url, printlg 
 
 class Toggl(GPTPlugin):
 
@@ -26,7 +26,7 @@ class Toggl(GPTPlugin):
             try:
                 if self.auth():
                     self.gpt.gptconfig_set(self.name, "token", self.token)
-                    print("Now you can use the plugin %s" % self.name)
+                    print(f"{self.name} now can do you use.")
                 else: 
                     raise Exception("Fail auth")
             except Exception as e:
@@ -59,7 +59,7 @@ class Toggl(GPTPlugin):
 
     def auth(self):
         try:
-            data =  self.http_call('GET', "%s/me" % self.url, auth=self.http_auth())
+            data =  make_request('GET', join_url(self.url, "me" ), auth=self.http_auth())
             if data['data']['id']:
                 return True
         except Exception as e :
