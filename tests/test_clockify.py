@@ -16,23 +16,17 @@ class TestClockify(TestGPTPlugin):
 
     def test_command_clockify_workspaces(self):
         args = {'clockify_workspaces': True}
-        self.cli_params_list( args)
-
-        id, idErr  = self.get_id_stdout()
-        args.update({"set": id})
-        self.cli_params_set(args)
+        idA = self.cli_list( args)
+        args.update({"set": idA})
+        idB = self.cli_set(args)
+        assert idA == idB
 
     def test_command_clockify_projects(self):
         args = {'clockify_projects': True}
-        self.cli_params_list( args)
-
-        id, idErr  = self.get_id_stdout()
-        args.update({"set": id})
-        self.cli_params_set(args)
-
+        idA = self.cli_list( args)
+        args.update({"set": idA})
+        idB = self.cli_set(args)
+        assert idA == idB
 
     def test_time_entry(self): 
-        gpt = self.load_plugin()
-        parse_defaults =  {"test_time_entry": True}
-        gpt.parse.set_defaults(**parse_defaults)
-        gpt.cli()
+        super(TestClockify, self).test_time_entry()
