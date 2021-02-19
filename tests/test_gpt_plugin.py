@@ -1,15 +1,10 @@
-from os import supports_effective_ids
-import pdb
 import gp_tracking as gpt
-import os
-import re
 
 class TestGPTPlugin(object):
 
     def gpt(self):
-        #DIRPATH = gpt.GPTracking.dirpath()
-        DIRHOME = os.path.expanduser("~")
-        return gpt.GPTracking("./gp-tracking.template", "Remove", DIRHOME)
+        DIRHOME = "./tests" 
+        return gpt.GPTracking("gnome-pomodoro-tracking.template", "Remove", DIRHOME)
 
     def load_plugin(self):
         gpt = self.gpt()
@@ -17,41 +12,37 @@ class TestGPTPlugin(object):
         gpt.add_parse_args()
         return gpt
 
-    def cli_params_list(self, parse_defaults):
+    def cli_list(self, parse_defaults):
         gpt = self.load_plugin()
         gpt.parse.set_defaults(**parse_defaults)
         gpt.cli()
-        id, idErr  = self.get_id_stdout()
-        assert idErr == None, idErr
+        id, err  = self.get_stdout_id()
+        assert err == None,  err
+        return id 
     
-    def cli_params_set(self,parse_defaults):
+    def cli_set(self,parse_defaults):
         gpt = self.load_plugin()
         gpt.parse.set_defaults(**parse_defaults)
         gpt.cli()
-        success, successErr = self.set_success_stdout()
-        assert successErr == None, successErr
+        id, err = self.get_stdout_id()
+        assert err == None, err
+        return id
 
-
-    def get_id_stdout(self):
-        data  , err = None, None
-        with open("tests/stdout.txt", 'r') as f:
+    def get_stdout_id(self):
+        id, err = None, None
+        with open("/tmp/gnome-pomodoro-tracking.stdout", 'r') as f:
             lines = f.readlines()
-            line_split = str(lines[1]).split("|")
+            index = 1 if len(lines)>1 else 0
+            line_split = str(lines[index]).split(" ")
             if len(line_split)>1:
-                data  = line_split[1].strip()
+                id  = line_split[0].strip()
             else:
                 err = "Not found Id"
             f.close()
-        return data, err 
+        return id, err 
 
-    def set_success_stdout(self):
-        data, err= False, None
-        with open("tests/stdout.txt", 'r') as f:
-            lines = f.readlines()
-            line = str(lines[0])
-            if re.match(r'^.*succes.*$', line):
-                data  = True
-            else: 
-                err = line
-            f.close()
-        return data, err
+    def test_time_entry(self):
+        gpt = self.load_plugin()
+        parse_defaults =  {"test_time_entry": True}
+        gpt.parse.set_defaults(**parse_defaults)
+        gpt.cli()
