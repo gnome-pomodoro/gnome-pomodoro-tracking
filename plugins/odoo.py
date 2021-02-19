@@ -1,13 +1,10 @@
 import xmlrpc.client
 from urllib.parse import urlparse
 import configparser
-import logging
 from datetime import datetime
 
 from .gpt_plugin import GPTPlugin 
-from .gpt_utils import join_url
-
-logger = logging.getLogger(__name__)
+from .gpt_utils import printtbl, println, make_request, join_url, printlg 
 
 class Odoo(GPTPlugin):
 
@@ -29,11 +26,11 @@ class Odoo(GPTPlugin):
             if not self.auth():
                 raise Exception("Fail auth check credentials")
         except configparser.NoSectionError as e:
-            #logger.error(e)
+            printlg(error=e)
             self.gpt.gptconfig_set_section(self.name)
             self.add_parse_args("setup-args")
         except configparser.NoOptionError as e:            
-            #logger.error(e)
+            printlg(error=e)
             self.add_parse_args("setup-args")
             params = self.gpt.gptparse_params()
             try:
@@ -48,10 +45,7 @@ class Odoo(GPTPlugin):
                         self.gpt.gptconfig_set(self.name, p,self.session.get(p))
                     print(f"{self.name} now can do you use.")
             except Exception as e:
-                logger.error(str(e))                
-                exit(0)
-        except Exception as e :
-            raise Exception(str(e))
+                printlg(exception=e)
         
 
     def add_parse_args(self, kind):
@@ -109,14 +103,14 @@ class Odoo(GPTPlugin):
     # Odoo operations 
     version = lambda self: self.common().version().get('server_version')
 
-    common = lambda self: xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(self.session.get("url","")))
+    common = lambda self: xmlrpc.client.ServerProxy(join_url(self.session.get("url",""), 'xmlrpc/2/common'))
   
    
     
     def models(self, model, method, domain, options=False):
         if not self.session.get("uid"):
             return False
-        x = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(self.session.get("url")))
+        x = xmlrpc.client.ServerProxy( join_url(self.session.get("url"), 'xmlrpc/2/object'))
         return x.execute_kw(
             self.session.get("database"), 
             self.session.get("uid"), 
@@ -135,7 +129,6 @@ class Odoo(GPTPlugin):
             return None
 
         if params.odoo_projects:
-            title="Odoo Projects"
             try:
                 rows = self.projects()
                 if params.set:
@@ -145,31 +138,30 @@ class Odoo(GPTPlugin):
                         self.gpt.gptconfig_set(self.name, "project_name",row.get('name'))
                         self.gpt.gptconfig_set(self.name, "task_id","")
                         self.gpt.gptconfig_set(self.name, "task_name","")
-                        self.gpt.print_cli([], title= 'the project was added successfully')
+                        printtbl([row])
                     else:
-                        self.gpt.print_cli([], title= 'the project id was not found')
+                        println('The project ID was not found')
                 else:
-                    self.gpt.print_cli(rows, title=title)
+                    printtbl(rows)
             except Exception as e:
-                logger.error(e)
+                printlg(exception=e)
         elif params.odoo_tasks:
-            title="Odoo Tasks"
             try:
-                rows = self.tasks()
+                rows = self.tasks()                
                 if params.set:
                     row = findbyid(rows, int(params.set))
                     if row: 
                         self.gpt.gptconfig_set(self.name, "task_id",row.get('id'))
                         self.gpt.gptconfig_set(self.name, "task_name",row.get('name'))
-                        self.gpt.gptconfig_set(self.name, "project_id",row.get('project_id')[0])
-                        self.gpt.gptconfig_set(self.name, "project_name",row.get('project_id')[1])
-                        self.gpt.print_cli([], title= 'the task was added successfully')
+                        self.gpt.gptconfig_set(self.name, "project_id",row.get('project_id'))
+                        self.gpt.gptconfig_set(self.name, "project_name",row.get('project_name'))
+                        printtbl([row])
                     else:
-                        self.gpt.print_cli([], title= 'the task id was not found')
+                        println('The task ID was not found')
                 else:
-                    self.gpt.print_cli(rows, title=title)
+                    printtbl(rows)
             except Exception as e:
-                logger.error(e)
+                printlg(exception=e)
 
     
     def projects(self):
@@ -181,7 +173,14 @@ class Odoo(GPTPlugin):
             domain = [[['active','=', True], ['project_id','=',int(project_id)]]]
         else: 
             domain = [[['active','=', True]]]
-        tasks = self.models('project.task', 'search_read',domain,{'fields': ['id', 'name', 'project_id' ]})
+        tasks = self.models('project.task', 'search_read',domain,{'fields': ['id', 'name', 'project_id' ]})        
+        if len (tasks):
+            ntasks = []
+            for t in tasks: 
+                tb = t.pop('project_id')
+                ntasks.append({**t, 'project_id': tb[0],  'project_name': tb[1]})
+            tasks = ntasks
+        
         return tasks
     
     
@@ -208,7 +207,7 @@ class Odoo(GPTPlugin):
             else:
                 raise Exception ("First select the project  --odoo-projects --set ID")
         except Exception as e:
-            logger.error(str(e))
+            printlg(exception=e)
         return False
         
     ## Optional params
@@ -220,11 +219,14 @@ class Odoo(GPTPlugin):
                 id = self.gpt.gptconfig_get(self.name, param+"_id")
                 name =self.gpt.gptconfig_get(self.name, param+"_name")
                 if len(id) and len(name):
-                    items.append({'name': "%s: %s - %s " % (str(param).title(), id, name)})
+                    items.append({
+                        'key': str(param).title(),
+                        'value': "%s  %s" % ( id, name)
+                        })
             except:
                 pass
         getstate('task')
         getstate('project')
-        self.gpt.print_cli(items)
+        printtbl(items)
 
 
