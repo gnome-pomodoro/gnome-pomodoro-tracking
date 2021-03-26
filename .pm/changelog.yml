@@ -1,0 +1,16 @@
+3.0.0 (2020-12-07):
+  added:
+  - workflow
+  - Test odoo plugin
+  - Test toggl plugin
+  - Test clockify plugin
+  - Track time entry,  if time(minutes) elapsed  is greater zero
+  - Clockify , toogl and odoo now inehrit by GPTPlugin
+  - Rename arg --state by --status
+  - Rename arg --kill by long arg --stop
+
+3.0.1 (2021-01-09):
+  added:
+  - Rename repo josehbez/gp-tracking to gnome-pomodoro/gnome-pomodoro-tracking
+  - Rename bin gp-tracking to gnome-pomodoro-tracking
+  - File gpt.conf replace field name  Description by type
