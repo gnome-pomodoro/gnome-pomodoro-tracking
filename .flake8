@@ -1,0 +1,30 @@
+[flake8]
+paths =
+    gnome-pomodoro-tracking.py,
+    gp_tracking.py,
+    plugins,
+    tests
+
+max-line-length = 120
+
+# E126 continuation line over-indented for hanging indent
+# E127 continuation line over-indented for visual indent
+# E131 continuation line unaligned for hanging indent
+# E201 whitespace before '['
+# E202 whitespace before ']'
+# E221 multiple spaces before operator
+# E222 multiple spaces after operator
+# E241 multiple whitespaces after ','
+# E302 expected 2 blank lines  # TODO: remove
+# E303 too many blank lines  # TODO: remove
+# E800 found commented out code  # TODO: remove
+# W292 no newline at end of file
+# W391 blank line at end of file
+# W504 line break after binary operator
+# F841 local variable assigned but never used
+# B007 loop control variable not used within the loop body
+# B008 Do not perform function calls in argument defaults
+# B011 do not call assert False since python -O removes them
+ignore = E126,E127,E131,E201,E202,E221,E222,E241,E302,E303,E800,W292,W391,W504,F841,B007,B008,B011
+
+# hang-closing = True
