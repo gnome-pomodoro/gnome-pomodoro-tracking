@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import re
 import logging
 import requests
-import os 
-import sys 
+import os
+import sys
 
 logging.basicConfig(
     filename="/tmp/gnome-pomodoro-tracking.log",
@@ -21,16 +23,15 @@ def join_url(url, *paths):
 
 def println(*args):
     print(*args)
-    
+
     if str(os.getenv("GP_TRACKING_ENV", "")).lower() == 'test':
         original_stdout = sys.stdout
         with open('/tmp/gnome-pomodoro-tracking.stdout', 'w') as f:
             sys.stdout = f
             print(*args)
-            sys.stdout = original_stdout 
+            sys.stdout = original_stdout
 
-
-def printlg(info=None, warning=None, error=None, critical=None, debug=None, exception=None, *args,**kwargs):
+def printlg(info=None, warning=None, error=None, critical=None, debug=None, exception=None, *args, **kwargs):
     if info:
         logger.info(info, *args, **kwargs)
     elif warning:
@@ -48,24 +49,23 @@ def printlg(info=None, warning=None, error=None, critical=None, debug=None, exce
 
 def printtbl(rows, header=False):
 
-    val = lambda v: "{:<12} ".format(v)
+    def val(v):
+        return "{:<12} ".format(v)
 
-    if len(rows)>0 and header:
+    if len(rows) > 0 and header:
         line = ""
         for key in rows[0].keys():
             line += val(str(key).title())
         println(line)
 
     for row in rows:
-        line =""
+        line = ""
         for key in row.keys():
             line += val(row.get(key))
         println(line)
 
-def make_request(method, url, **kwargs): 
-        response = requests.request(method, url, **kwargs)
-        if response.ok:
-            return response.json()
-        raise Exception(response.text)
-
-
+def make_request(method, url, **kwargs):
+    response = requests.request(method, url, **kwargs)
+    if response.ok:
+        return response.json()
+    raise Exception(response.text)

@@ -1,5 +1,6 @@
 #! /usr/bin/python3
-import os 
+# Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
+import os
 from gp_tracking import GPTracking
 
 DIRHOME = os.path.expanduser("~")
