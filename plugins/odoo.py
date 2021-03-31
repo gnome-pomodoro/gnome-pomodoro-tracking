@@ -153,8 +153,15 @@ class Odoo(GPTPlugin):
             except Exception as e:
                 self.gpt.logger.exception(e)
 
+    def data_order(self, rows):
+        nrows = []
+        for row in rows:
+            nrows.append(dict(sorted(row.items(), key=lambda c: str(c[1]))))
+        return len(nrows) and nrows or rows
+
     def projects(self):
-        projects = self.models('project.project', 'search_read', [[['active', '=', True]]], {'fields': ['id', 'name']})
+        projects = self.models('project.project', 'search_read', [[['active', '=', True]]], {'fields': ['id','name']})
+        projects = self.data_order(projects)
         return projects
 
     def tasks(self, project_id=None):
@@ -163,6 +170,7 @@ class Odoo(GPTPlugin):
         else:
             domain = [[['active', '=', True]]]
         tasks = self.models('project.task', 'search_read', domain, {'fields': ['id', 'name', 'project_id' ]})
+        tasks = self.data_order(tasks)
         if len(tasks):
             ntasks = []
             for t in tasks:
@@ -183,7 +191,7 @@ class Odoo(GPTPlugin):
             project_id = int(self.gpt.gptconfig_get(self.name, "project_id"))
             if project_id > 0:
                 task_id = self.gpt.gptconfig_get(self.name, "task_id")
-                task_id = int(task_id) if len(task_id) else False
+                task_id = int(task_id) if isinstance(task_id, int) else False
                 id = self.models('account.analytic.line', 'create', [{
                     'date': datetime.now().strftime("%Y-%m-%d"),  # Required
                     'name': name,  # Required
