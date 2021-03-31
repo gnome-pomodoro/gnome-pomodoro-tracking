@@ -3,7 +3,7 @@
 import json
 import configparser
 from .gpt_plugin import GPTPlugin
-from .gpt_utils import join_url, printtbl, println, printlg, make_request
+from .gpt_utils import join_url, printtbl, make_request
 
 class Clockify(GPTPlugin):
     name = "clockify"
@@ -16,11 +16,11 @@ class Clockify(GPTPlugin):
         try:
             self.session.update({"token": self.gpt.gptconfig_get(self.name, "token")})
         except configparser.NoSectionError as e:
-            printlg(error=e)
+            self.gpt.logger.error(e)
             self.gpt.gptconfig_set_section(self.name)
             self.add_parse_args(kind="setup-args")
         except configparser.NoOptionError as e:
-            printlg(error=e)
+            self.gpt.logger.error(e)
             self.add_parse_args(kind="setup-args")
             params =  self.gpt.gptparse_params()
             self.session.update({"token": params.clockify_token})
@@ -29,7 +29,7 @@ class Clockify(GPTPlugin):
                     self.gpt.gptconfig_set(self.name, "token", self.token())
                     print(f"{self.name} now can do you use.")
             except Exception as e:
-                printlg(critical=e)
+                self.gpt.logger.critical(e)
                 exit(0)
 
     def token(self):
@@ -102,18 +102,18 @@ class Clockify(GPTPlugin):
                             self.gpt.gptconfig_set(self.name, "workspace_name", row.get('name'))
                             printtbl([row])
                         else:
-                            println('The workspace ID was not found')
+                            print('The workspace ID was not found')
                     else:
                         printtbl(rows)
                 else:
                     raise Exception("Fail get workspaces")
             except Exception as e:
-                printlg(exception=e)
+                self.gpt.logger.exception(e)
         elif params.clockify_projects:
             try:
                 workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
             except Exception as e:
-                printlg(error=e)
+                self.gpt.logger.error(e)
                 workspace = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
             try:
@@ -127,13 +127,13 @@ class Clockify(GPTPlugin):
                             self.gpt.gptconfig_set(self.name, "project_name", row.get('name'))
                             printtbl([row])
                         else:
-                            println('The project ID was not found')
+                            print('The project ID was not found')
                     else:
                         printtbl(rows)
                 else:
                     raise Exception("Fail get projects")
             except Exception as e:
-                printlg(exception=e)
+                self.gpt.logger.exception(e)
 
     def workspaces(self, filter=""):
         url = join_url(self.url, "api/v1/workspaces")
@@ -189,7 +189,7 @@ class Clockify(GPTPlugin):
             data = make_request('POST', url, json=time_entry, headers=self.http_headers())
             return data["id"]
         except Exception as e:
-            printlg(exception=e)
+            self.gpt.logger.exception(e)
         return -1
 
     def status(self, **kwargs):

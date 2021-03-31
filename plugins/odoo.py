@@ -6,7 +6,7 @@ import configparser
 from datetime import datetime
 
 from .gpt_plugin import GPTPlugin
-from .gpt_utils import printtbl, println, join_url, printlg
+from .gpt_utils import printtbl, join_url
 
 class Odoo(GPTPlugin):
 
@@ -27,11 +27,11 @@ class Odoo(GPTPlugin):
             if not self.auth():
                 raise Exception("Fail auth check credentials")
         except configparser.NoSectionError as e:
-            printlg(error=e)
+            self.gpt.logger.error(e)
             self.gpt.gptconfig_set_section(self.name)
             self.add_parse_args("setup-args")
         except configparser.NoOptionError as e:
-            printlg(error=e)
+            self.gpt.logger.error(e)
             self.add_parse_args("setup-args")
             params = self.gpt.gptparse_params()
             try:
@@ -45,7 +45,7 @@ class Odoo(GPTPlugin):
                         self.gpt.gptconfig_set(self.name, p, self.session.get(p))
                     print(f"{self.name} now can do you use.")
             except Exception as e:
-                printlg(exception=e)
+                self.gpt.logger.exception(e)
 
     def add_parse_args(self, kind):
         if kind == "setup-args":
@@ -130,11 +130,11 @@ class Odoo(GPTPlugin):
                         self.gpt.gptconfig_set(self.name, "task_name", "")
                         printtbl([row])
                     else:
-                        println('The project ID was not found')
+                        print('The project ID was not found')
                 else:
                     printtbl(rows)
             except Exception as e:
-                printlg(exception=e)
+                self.gpt.logger.exception(e)
         elif params.odoo_tasks:
             try:
                 rows = self.tasks()
@@ -147,11 +147,11 @@ class Odoo(GPTPlugin):
                         self.gpt.gptconfig_set(self.name, "project_name", row.get('project_name'))
                         printtbl([row])
                     else:
-                        println('The task ID was not found')
+                        print('The task ID was not found')
                 else:
                     printtbl(rows)
             except Exception as e:
-                printlg(exception=e)
+                self.gpt.logger.exception(e)
 
     def projects(self):
         projects = self.models('project.project', 'search_read', [[['active', '=', True]]], {'fields': ['id', 'name']})
@@ -194,7 +194,7 @@ class Odoo(GPTPlugin):
             else:
                 raise Exception("First select the project  --odoo-projects --set ID")
         except Exception as e:
-            printlg(exception=e)
+            self.gpt.logger.exception(e)
         return False
 
     # Optional params

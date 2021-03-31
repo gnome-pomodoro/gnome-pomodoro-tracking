@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import requests
+from requests.models import Response
 
 class GPTPlugin(object):
 
@@ -29,7 +30,7 @@ class GPTPlugin(object):
         raise NotImplementedError
 
     # Management Time Entry
-    def add_time_entry(self, **kwargs):
+    def add_time_entry(self, **kwargs) -> any:
         """
         Params:
             description,str: Description activity
@@ -37,7 +38,7 @@ class GPTPlugin(object):
             ends,str:        Datetime in UTC format %Y-%m-%dT%H:%M:%SZ
             minutes,float:   Elapsed
         return:
-            id,int:
+            id,int|str:
         Exception:
             fail to add
         """
@@ -104,11 +105,8 @@ class GPTPlugin(object):
         """
         raise NotImplementedError
 
-    # Management Request
-    def http_call(self, method, url, **kwargs):
-        # url = urljoin(self.url, url)
-        response = requests.request(method, url, **kwargs)
-        if response.ok:
-            return response.json()
-        text = response.text
-        raise Exception(text)
+    def make_request(self, method, url, **kwargs):
+        """
+            Make Request 
+        """
+        return requests.request(method, url, **kwargs)
