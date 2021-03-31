@@ -160,7 +160,7 @@ class Odoo(GPTPlugin):
         return len(nrows) and nrows or rows
 
     def projects(self):
-        projects = self.models('project.project', 'search_read', [[['active', '=', True]]], {'fields': ['id','name']})
+        projects = self.models('project.project', 'search_read', [[['active', '=', True]]], {'fields': ['id', 'name']})
         projects = self.data_order(projects)
         return projects
 

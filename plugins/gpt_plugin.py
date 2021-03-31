@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import requests
-from requests.models import Response
 
 class GPTPlugin(object):
 
@@ -107,6 +106,6 @@ class GPTPlugin(object):
 
     def make_request(self, method, url, **kwargs):
         """
-            Make Request 
+            Make Request
         """
         return requests.request(method, url, **kwargs)

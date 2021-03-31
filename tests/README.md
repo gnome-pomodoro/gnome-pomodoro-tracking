@@ -13,5 +13,5 @@ export GP_TRACKING_ODOO_USERNAME=User
 export GP_TRACKING_ODOO_DATABASE=Db
 
 # run tests
-pytest
+python -m unittest
 ```

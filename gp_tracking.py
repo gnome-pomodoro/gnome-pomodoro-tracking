@@ -80,16 +80,15 @@ class GPTracking:
             pass
         return 0
 
-    
     def logger_config(self):
         formatter = logging.Formatter(
             "%(asctime)s %(levelname)-8s %(filename)s:%(funcName)s %(message)s")
-        
-        fileh = logging.FileHandler('.gnome-pomodoro-tracking.log', 'a')        
+
+        fileh = logging.FileHandler('.gnome-pomodoro-tracking.log', 'a')
         fileh.setFormatter(formatter)
         self.logger.addHandler(fileh)
 
-        class StreamToLogger(object):            
+        class StreamToLogger(object):
             def __init__(self, logger, log_level=logging.INFO):
                 self.logger = logger
                 self.log_level = log_level
@@ -208,7 +207,7 @@ class GPTracking:
         params = self.gptparse_params()
         if params.debug:
             self.logger_config()
-        
+
         if not self.gnome_pomodoro():
             if params.plugin:
                 plugin = self.gptconfig_settings("plugin")
@@ -231,7 +230,7 @@ class GPTracking:
                 self.gptconfig_pomodoro("name", params.name)
             if params.status:
                 items = [
-                    {'key':'Plugin', 'value': str(self.gptconfig_settings("plugin")).title()}
+                    {'key': 'Plugin', 'value': str(self.gptconfig_settings("plugin")).title()}
                 ]
                 dt_start = self.today()
                 for k in ["name", "type", 'start']:
@@ -239,7 +238,7 @@ class GPTracking:
                         if k == 'start':
                             dt_start = self.gptconfig_pomodoro(k)
                         else:
-                            items.append({'key':str(k).title(), 'value': self.gptconfig_pomodoro(k)})
+                            items.append({'key': str(k).title(), 'value': self.gptconfig_pomodoro(k)})
                     except Exception:
                         pass
                 items.append({'key': 'Elapsed', 'value': '{0:.2f} Min'.format(

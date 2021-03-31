@@ -29,7 +29,7 @@ class TestGPTPlugin(unittest.TestCase):
         id = None
         with open(".gnome-pomodoro-tracking.log", 'r') as f:
             lines = f.readlines()
-            line_split = str(lines[len(lines)-1]).split("gp_tracking.py:write")
+            line_split = str(lines[len(lines) - 1]).split("gp_tracking.py:write")
             if len(line_split) == 2:
                 id  = line_split[1].strip().split(' ')[0] or None
             f.close()

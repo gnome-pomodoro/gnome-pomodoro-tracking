@@ -7,7 +7,7 @@ class TestOdoo(TestGPTPlugin):
 
     plugin = "odoo"
 
-    def test_plugin(self):        
+    def test_plugin(self):
         self.gpt.gptconfig_settings("plugin", self.plugin)
         self.gpt.gptconfig_set(self.plugin, "url", os.getenv("GP_TRACKING_ODOO_URL"))
         self.gpt.gptconfig_set(self.plugin, "database", os.getenv("GP_TRACKING_ODOO_DATABASE"))
@@ -21,12 +21,12 @@ class TestOdoo(TestGPTPlugin):
         args.update({"set": idA})
         idB = self.cli_set(args)
         assert idA == idB
-    
+
         args.update({'odoo_tasks': True, 'odoo_projects': False, 'set': False})
         idA = self.cli_list(args)
         args.update({"set": idA})
         idB = self.cli_set(args)
         assert idA == idB
 
-        args.update({'test_time_entry': True, 'set': False,'odoo_tasks': False})
+        args.update({'test_time_entry': True, 'set': False, 'odoo_tasks': False})
         self.cli_time_entry(args)

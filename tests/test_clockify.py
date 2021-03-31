@@ -25,6 +25,6 @@ class TestClockify(TestGPTPlugin):
         args.update({"set": idA})
         idB = self.cli_set(args)
         assert idA == idB
-        
-        args.update({'test_time_entry': True, 'set': False,'clockify_projects': False})
+
+        args.update({'test_time_entry': True, 'set': False, 'clockify_projects': False})
         self.cli_time_entry(args)

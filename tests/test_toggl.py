@@ -26,5 +26,5 @@ class TestToggl(TestGPTPlugin):
         idB = self.cli_set(args)
         assert idA == idB
 
-        args.update({'test_time_entry': True, 'set': False,'toggl_projects': True})
+        args.update({'test_time_entry': True, 'set': False, 'toggl_projects': True})
         self.cli_time_entry(args)
