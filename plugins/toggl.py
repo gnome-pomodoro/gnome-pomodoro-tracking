@@ -134,22 +134,24 @@ class Toggl(GPTPlugin):
         url = join_url(self.url, "workspaces")
         try:
             data = make_request('GET', url, auth=self.http_auth())
+            self.gpt.logger.info(data)
             if filter == 'first':
                 return len(data) and data[0]
             return data
-        except Exception:
-            pass
+        except Exception as e:
+            self.gpt.logger.exception(e)
         return None
 
     def projects(self, workspace_id, filter=""):
         try:
             url = join_url(self.url, "workspaces/{}/projects".format(workspace_id))
             data = make_request('GET', url, auth=self.http_auth())
+            self.gpt.logger.info(data)
             if filter == 'first':
                 return len(data) and data[0]
             return data
-        except Exception:
-            pass
+        except Exception as e:
+            self.gpt.logger.exception(e)
         return None
 
     def add_time_entry(self, **kwargs):
@@ -194,6 +196,7 @@ class Toggl(GPTPlugin):
                 'POST', url, auth=self.http_auth(),
                 json={"time_entry": time_entry}
             )
+            self.gpt.logger.info(data)
             return data["data"]["id"]
         except Exception as e:
             self.gpt.logger.exception(e)
