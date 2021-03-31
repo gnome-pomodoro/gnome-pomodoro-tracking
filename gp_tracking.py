@@ -23,7 +23,7 @@ class GPTracking:
         self.parse = argparse.ArgumentParser(
             prog="gnome-pomodoro-tracking",
             description='''Lets you track your time with the popular time tracking services''',
-            epilog="GONME Pomodoro Tracking <http://gnomepomodoro.org>",
+            epilog="GONME Pomodoro Tracking <https://gnomepomodoro.org>",
         )
         self.plugin = None
         self.logger = logging.getLogger(__name__)
@@ -191,9 +191,9 @@ class GPTracking:
                                 action='store',
                                 dest='set',
                                 help=argparse.SUPPRESS)
-        self.parse.add_argument('--test-time-entry',
+        self.parse.add_argument('--time-entry',
                                 action='store_const',
-                                dest='test_time_entry',
+                                dest='time_entry',
                                 const=True,
                                 help=argparse.SUPPRESS)
 
@@ -247,7 +247,7 @@ class GPTracking:
                 if getattr(self.plugin, 'status', False):
                     getattr(self.plugin, 'status')()
 
-            if params.test_time_entry:
+            if params.time_entry:
                 if getattr(self.plugin, 'add_time_entry', False):
                     end = datetime.utcnow()
                     start = end - timedelta(minutes=25)

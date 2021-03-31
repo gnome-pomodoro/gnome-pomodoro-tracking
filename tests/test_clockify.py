@@ -9,25 +9,26 @@ class TestClockify(TestGPTPlugin):
     plugin = "clockify"
     token = os.getenv("GP_TRACKING_CLOCKIFY_TOKEN", "X/oWnmt2eyj4ZCbh")
 
-    fake_workspaces = [
+    workspaces = [
         {'id': '5e9ca62da2686b699ed5748d', 'name': "Workspace C1"},
         {'id': '5e9ca62da2786b699ed5748d', 'name': "Workspace C2"}]
-    fake_projects = [
-        {'id': '5eab188c991f8972bb9a1fa3', 'name': 'Project C1', 'workspaceId':'5e9ca62da2686b699ed5748d'},
-        {'id': '5eab188c991f8972bb9a1fa4', 'name': 'Project C2', 'workspaceId':'5e9ca62da2786b699ed5748d'}]
-    
-    fake_auth = True    
-    fake_time_entry = '6065003e9341062dc3acf936'
+    projects = [
+        {'id': '5eab188c991f8972bb9a1fa3', 'name': 'Project C1', 'workspaceId': '5e9ca62da2686b699ed5748d'},
+        {'id': '5eab188c991f8972bb9a1fa4', 'name': 'Project C2', 'workspaceId': '5e9ca62da2786b699ed5748d'}]
+
+    auth = True
+    time_entry = '6065003e9341062dc3acf936'
 
     def setUp(self) -> None:
         super(TestClockify, self).setUp()
         self.gpt.gptconfig_settings("plugin", self.plugin)
         self.gpt.gptconfig_set(self.plugin, "token", self.token)
-        
-        patch("plugins.clockify.Clockify.auth", return_value=self.fake_auth).start()
-        patch("plugins.clockify.Clockify.workspaces", return_value=self.fake_workspaces).start()
-        patch("plugins.clockify.Clockify.projects", return_value=self.fake_projects).start()
-        patch("plugins.clockify.Clockify.add_time_entry", return_value=self.fake_time_entry).start()
+
+        if self.token == 'X/oWnmt2eyj4ZCbh':
+            patch("plugins.clockify.Clockify.auth", return_value=self.auth).start()
+            patch("plugins.clockify.Clockify.workspaces", return_value=self.workspaces).start()
+            patch("plugins.clockify.Clockify.projects", return_value=self.projects).start()
+            patch("plugins.clockify.Clockify.add_time_entry", return_value=self.time_entry).start()
 
         self.load_plugin()
 
@@ -45,5 +46,5 @@ class TestClockify(TestGPTPlugin):
         idB = self.cli_set(args)
         assert idA == idB
 
-        args.update({'test_time_entry': True, 'set': False, 'clockify_projects': False})
+        args.update({'time_entry': True, 'set': False, 'clockify_projects': False})
         self.cli_time_entry(args)

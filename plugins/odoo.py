@@ -162,6 +162,7 @@ class Odoo(GPTPlugin):
     def projects(self):
         projects = self.models('project.project', 'search_read', [[['active', '=', True]]], {'fields': ['id', 'name']})
         projects = self.data_order(projects)
+        self.gpt.logger.info(projects)
         return projects
 
     def tasks(self, project_id=None):
@@ -177,7 +178,7 @@ class Odoo(GPTPlugin):
                 tb = t.pop('project_id')
                 ntasks.append({**t, 'project_id': tb[0],  'project_name': tb[1]})
             tasks = ntasks
-
+        self.gpt.logger.info(tasks)
         return tasks
 
     def add_time_entry(self, **kwargs):
@@ -198,6 +199,7 @@ class Odoo(GPTPlugin):
                     'project_id': project_id,  # Required
                     'task_id': task_id,
                     'unit_amount': minutes / 60 }])
+                self.gpt.logger.info(id)
                 return id
             else:
                 raise Exception("First select the project  --odoo-projects --set ID")

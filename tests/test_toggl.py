@@ -9,25 +9,27 @@ class TestToggl(TestGPTPlugin):
     plugin = "toggl"
     token = os.getenv("GP_TRACKING_TOGGL_TOKEN", "19c98455494ab3f5d72d91de5c26b116")
 
-    fake_workspaces = [
+    workspaces = [
         {'id': 4755497, 'name': "Workspace T1"},
         {'id': 4755487, 'name': "Workspace T2"}]
-    fake_projects = [
-        {'id': 164238639, 'name': 'Project T1', "wid": 4755497}, 
+    projects = [
+        {'id': 164238639, 'name': 'Project T1', "wid": 4755497},
         {'id': 168573879, 'name': 'Project T2', 'wid': 4755487}]
 
-    fake_auth = True    
-    fake_time_entry = 1950743713
+    auth = True
+    time_entry = 1950743713
 
     def setUp(self) -> None:
-        super(TestToggl, self).setUp()        
+        super(TestToggl, self).setUp()
         self.gpt.gptconfig_settings("plugin", self.plugin)
         self.gpt.gptconfig_set(self.plugin, "token", self.token)
 
-        patch("plugins.toggl.Toggl.auth", return_value=self.fake_auth).start()
-        patch("plugins.toggl.Toggl.workspaces", return_value=self.fake_workspaces).start()
-        patch("plugins.toggl.Toggl.projects", return_value=self.fake_projects).start()
-        patch("plugins.toggl.Toggl.add_time_entry", return_value=self.fake_time_entry).start()
+        if self.token == '19c98455494ab3f5d72d91de5c26b116':
+            patch("plugins.toggl.Toggl.auth", return_value=self.auth).start()
+            patch("plugins.toggl.Toggl.workspaces", return_value=self.workspaces).start()
+            patch("plugins.toggl.Toggl.projects", return_value=self.projects).start()
+            patch("plugins.toggl.Toggl.add_time_entry", return_value=self.time_entry).start()
+
         self.load_plugin()
 
     def test_cli(self):
@@ -44,5 +46,5 @@ class TestToggl(TestGPTPlugin):
         idB = self.cli_set(args)
         assert idA == idB
 
-        args.update({'test_time_entry': True, 'set': False, 'toggl_projects': True})
+        args.update({'time_entry': True, 'set': False, 'toggl_projects': True})
         self.cli_time_entry(args)
