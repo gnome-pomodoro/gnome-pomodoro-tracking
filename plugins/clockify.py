@@ -139,23 +139,25 @@ class Clockify(GPTPlugin):
         url = join_url(self.url, "api/v1/workspaces")
         try:
             data = make_request('GET', url, headers=self.http_headers())
+            self.gpt.logger.info(data)
             if filter == 'first':
                 if data:
                     return len(data) and data[0]
             return data
-        except Exception:
-            pass
+        except Exception as e:
+            self.gpt.logger.exception(e)
         return None
 
     def projects(self, workspace_id, filter=""):
         url = join_url(self.url, f"api/v1/workspaces/{workspace_id}/projects")
         try:
             data = make_request('GET', url, headers=self.http_headers())
+            self.gpt.logger.info(data)
             if filter == 'first':
                 return len(data) and data[0]
             return data
-        except Exception:
-            pass
+        except Exception as e:
+            self.gpt.logger.exception(e)
         return None
 
     def add_time_entry(self, **kwargs):
@@ -187,6 +189,7 @@ class Clockify(GPTPlugin):
         try:
             url = join_url(self.url, f"api/v1/workspaces/{workspace_id}/time-entries")
             data = make_request('POST', url, json=time_entry, headers=self.http_headers())
+            self.gpt.logger.info(data)
             return data["id"]
         except Exception as e:
             self.gpt.logger.exception(e)
