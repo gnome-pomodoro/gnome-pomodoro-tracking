@@ -1,32 +1,30 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import os
-from .test_gpt_plugin import TestGPTPlugin
+from tests.test_gpt_plugin import TestGPTPlugin
 
 class TestToggl(TestGPTPlugin):
 
     plugin = "toggl"
 
-    def test_load_plugin(self):
-        gpt = self.gpt()
-        gpt.gptconfig_settings("plugin", self.plugin)
-        token = os.getenv("GP_TRACKING_TOGGL_TOKEN", "")
-        gpt.gptconfig_set(self.plugin, "token", token)
-        assert gpt.load_plugin() is True, "The plugin do not exists!"
+    def test_plugin(self):
+        self.gpt.gptconfig_settings("plugin", self.plugin)
+        token = os.getenv("GP_TRACKING_TOGGL_TOKEN")
+        self.gpt.gptconfig_set(self.plugin, "token", token)
 
-    def test_command_toggl_workspaces(self):
+    def test_cli(self):
+        self.load_plugin()
         args = {'toggl_workspaces': True}
-        idA = self.cli_list( args)
+        idA = self.cli_list(args)
         args.update({"set": idA})
         idB = self.cli_set(args)
         assert idA == idB
 
-    def test_command_toggl_projects(self):
-        args = {'toggl_projects': True}
-        idA = self.cli_list( args)
+        args.update({'toggl_projects': True, 'toggl_workspaces': False, 'set': False})
+        idA = self.cli_list(args)
         args.update({"set": idA})
         idB = self.cli_set(args)
         assert idA == idB
 
-    def test_time_entry(self):
-        super(TestToggl, self).test_time_entry()
+        args.update({'test_time_entry': True, 'set': False,'toggl_projects': True})
+        self.cli_time_entry(args)

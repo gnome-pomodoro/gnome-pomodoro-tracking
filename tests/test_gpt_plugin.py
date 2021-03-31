@@ -1,50 +1,41 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
+import unittest
 import gp_tracking as gpt
 
-class TestGPTPlugin(object):
+class TestGPTPlugin(unittest.TestCase):
 
-    def gpt(self):
-        DIRHOME = "./tests"
-        return gpt.GPTracking("gnome-pomodoro-tracking.template", "Remove", DIRHOME)
+    def setUp(self) -> None:
+        self.gpt = gpt.GPTracking("gnome-pomodoro-tracking.template", "./")
+        self.gpt.parse.set_defaults(debug=True)
 
     def load_plugin(self):
-        gpt = self.gpt()
-        gpt.load_plugin()
-        gpt.add_parse_args()
-        return gpt
+        self.gpt.load_plugin()
+        self.gpt.add_parse_args()
 
     def cli_list(self, parse_defaults):
-        gpt = self.load_plugin()
-        gpt.parse.set_defaults(**parse_defaults)
-        gpt.cli()
-        id, err  = self.get_stdout_id()
-        assert err is None, err
+        self.gpt.parse.set_defaults(**parse_defaults)
+        self.gpt.cli()
+        id = self.get_stdout_id()
         return id
 
     def cli_set(self, parse_defaults):
-        gpt = self.load_plugin()
-        gpt.parse.set_defaults(**parse_defaults)
-        gpt.cli()
-        id, err = self.get_stdout_id()
-        assert err is None, err
+        self.gpt.parse.set_defaults(**parse_defaults)
+        self.gpt.cli()
+        id = self.get_stdout_id()
         return id
 
     def get_stdout_id(self):
-        id, err = None, None
-        with open("/tmp/gnome-pomodoro-tracking.stdout", 'r') as f:
+        id = None
+        with open(".gnome-pomodoro-tracking.log", 'r') as f:
             lines = f.readlines()
-            index = 1 if len(lines) > 1 else 0
-            line_split = str(lines[index]).split(" ")
-            if len(line_split) > 1:
-                id  = line_split[0].strip()
-            else:
-                err = "Not found Id"
+            line_split = str(lines[len(lines)-1]).split("gp_tracking.py:write")
+            if len(line_split) == 2:
+                id  = line_split[1].strip().split(' ')[0] or None
             f.close()
-        return id, err
+        assert isinstance(id, str)
+        return id
 
-    def test_time_entry(self):
-        gpt = self.load_plugin()
-        parse_defaults =  {"test_time_entry": True}
-        gpt.parse.set_defaults(**parse_defaults)
-        gpt.cli()
+    def cli_time_entry(self, parse_defaults):
+        self.gpt.parse.set_defaults(**parse_defaults)
+        self.gpt.cli()

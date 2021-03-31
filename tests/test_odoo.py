@@ -7,28 +7,26 @@ class TestOdoo(TestGPTPlugin):
 
     plugin = "odoo"
 
-    def test_load_plugin(self):
-        gpt = self.gpt()
-        gpt.gptconfig_settings("plugin", self.plugin)
-        gpt.gptconfig_set(self.plugin, "url", os.getenv("GP_TRACKING_ODOO_URL", ""))
-        gpt.gptconfig_set(self.plugin, "database", os.getenv("GP_TRACKING_ODOO_DATABASE", ""))
-        gpt.gptconfig_set(self.plugin, "username", os.getenv("GP_TRACKING_ODOO_USERNAME", ""))
-        gpt.gptconfig_set(self.plugin, "password", os.getenv("GP_TRACKING_ODOO_PASSWORD", ""))
-        assert gpt.load_plugin() is True, "The plugin do not exists!"
+    def test_plugin(self):        
+        self.gpt.gptconfig_settings("plugin", self.plugin)
+        self.gpt.gptconfig_set(self.plugin, "url", os.getenv("GP_TRACKING_ODOO_URL"))
+        self.gpt.gptconfig_set(self.plugin, "database", os.getenv("GP_TRACKING_ODOO_DATABASE"))
+        self.gpt.gptconfig_set(self.plugin, "username", os.getenv("GP_TRACKING_ODOO_USERNAME"))
+        self.gpt.gptconfig_set(self.plugin, "password", os.getenv("GP_TRACKING_ODOO_PASSWORD"))
 
-    def test_command_odoo_projects(self):
+    def test_cli(self):
+        self.load_plugin()
         args = {'odoo_projects': True}
-        idA = self.cli_list( args)
+        idA = self.cli_list(args)
+        args.update({"set": idA})
+        idB = self.cli_set(args)
+        assert idA == idB
+    
+        args.update({'odoo_tasks': True, 'odoo_projects': False, 'set': False})
+        idA = self.cli_list(args)
         args.update({"set": idA})
         idB = self.cli_set(args)
         assert idA == idB
 
-    def test_command_odoo_tasks(self):
-        args = {'odoo_tasks': True}
-        idA = self.cli_list( args)
-        args.update({"set": idA})
-        idB = self.cli_set(args)
-        assert idA == idB
-
-    def test_time_entry(self):
-        super(TestOdoo, self).test_time_entry()
+        args.update({'test_time_entry': True, 'set': False,'odoo_tasks': False})
+        self.cli_time_entry(args)
