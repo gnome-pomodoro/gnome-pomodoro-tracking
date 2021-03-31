@@ -16,7 +16,7 @@
 </p>
 
 # GNOME Pomodoro Tracking
-It is a custom action for GNOME Pomodoro, that to connect any Time Tracking Software and create Time Entries.
+Lets you track your time with the popular time tracking services.
 
 ## Contents
 
@@ -28,7 +28,7 @@ It is a custom action for GNOME Pomodoro, that to connect any Time Tracking Soft
   * [Clockify](./assets/clockify/README.md)
   * [Odoo](./assets/odoo/README.md)
 * [GNOME Pomodoro Settings](#gnome-pomodoro-settings)
-* [Contributing](./CONTRIBUTING.md)
+* [Contributing](#)
 * [Tests](./tests/README.md)
 
 ## Requirements

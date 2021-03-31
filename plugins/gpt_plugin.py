@@ -100,7 +100,7 @@ class GPTPlugin(object):
         e.g
 
         _name = self.gptracking.gptconfig_get(self.GTP_CONFIG, "clockify_name")
-        self.gptracking.print_cli([{'name': _name }])
+        printtbl([{'key': _key, 'value': _value }])
 
         """
         raise NotImplementedError
