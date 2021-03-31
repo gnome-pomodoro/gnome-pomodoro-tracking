@@ -6,6 +6,7 @@ import configparser
 import sys
 from datetime import datetime, timedelta
 import logging
+from io import StringIO
 
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -82,9 +83,32 @@ class GPTracking:
             pass
         return 0
 
-    @classmethod
-    def exists(cls, path, msg="does not exist"):
-        return os.path.exists(path)
+    
+    def logger_config(self):
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)-8s %(filename)s:%(funcName)s %(message)s")
+        
+        fileh = logging.FileHandler('.gnome-pomodoro-tracking.log', 'a')        
+        fileh.setFormatter(formatter)
+        self.logger.addHandler(fileh)
+
+        class StreamToLogger(object):            
+            def __init__(self, logger, log_level=logging.INFO):
+                self.logger = logger
+                self.log_level = log_level
+                self.linebuf = ''
+
+            def write(self, buf):
+                for line in buf.rstrip().splitlines():
+                    self.logger.log(self.log_level, line.rstrip())
+
+            def flush(self):
+                pass
+
+        sys.stdout = StreamToLogger(self.logger, logging.INFO)
+        sys.stderr = StreamToLogger(self.logger, logging.ERROR)
+
+        self.logger.setLevel(logging.DEBUG)
 
     @classmethod
     def exit(cls, msg, code=0):
@@ -169,6 +193,11 @@ class GPTracking:
                                 dest='status',
                                 const=True,
                                 help='Displays the summary of the Pomodoro')
+        self.parse.add_argument('-d', '--debug',
+                                action='store_const',
+                                dest='debug',
+                                const=True,
+                                help=argparse.SUPPRESS)
         self.parse.add_argument('--set',
                                 action='store',
                                 dest='set',
@@ -208,59 +237,59 @@ class GPTracking:
     """
     def cli(self):
         params = self.gptparse_params()
+        if params.debug:
+            self.logger_config()
+        
+        if not self.gnome_pomodoro():
+            if params.plugin:
+                plugin = self.gptconfig_settings("plugin")
+                self.gptconfig_settings("plugin", params.plugin)
+                if not self.load_plugin():
+                    self.gptconfig_settings("plugin", plugin)
 
-        if self.gnome_pomodoro():
-            return
-
-        if params.plugin:
-            plugin = self.gptconfig_settings("plugin")
-            self.gptconfig_settings("plugin", params.plugin)
-            if not self.load_plugin():
-                self.gptconfig_settings("plugin", plugin)
-
-        if params.reset or params.stop:
-            params.trigger = 'skip'
-            params.duration = "0"
-            params.elapsed = "0"
-            self.gnome_pomodoro(params=params)
-            os.system("gnome-pomodoro --stop")
-            if params.reset:
-                os.system("gnome-pomodoro --start --no-default-window")
-        if params.name:
-            if not len(self.gptconfig_pomodoro("name")) and not len(self.gptconfig_pomodoro("start")):
+            if params.reset or params.stop:
+                params.trigger = 'skip'
+                params.duration = "0"
+                params.elapsed = "0"
+                self.gnome_pomodoro(params=params)
                 os.system("gnome-pomodoro --stop")
-                os.system("gnome-pomodoro --start --no-default-window")
-            self.gptconfig_pomodoro("name", params.name)
-        if params.status:
-            items = []
-            dt_start = self.today()
-            for k in ["type", "name", "start"]:
-                try:
-                    if k == 'start':
-                        dt_start = self.gptconfig_pomodoro(k)
-                    items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_pomodoro(k) )})
-                except Exception:
-                    pass
-            items.append({'name': 'Elapsed: {0:.2f} Min'.format(
-                self.convert2minutes(self.diff_elapsed(dt_start, self.today() ))) })
+                if params.reset:
+                    os.system("gnome-pomodoro --start --no-default-window")
+            if params.name:
+                if not len(self.gptconfig_pomodoro("name")) and not len(self.gptconfig_pomodoro("start")):
+                    os.system("gnome-pomodoro --stop")
+                    os.system("gnome-pomodoro --start --no-default-window")
+                self.gptconfig_pomodoro("name", params.name)
+            if params.status:
+                items = []
+                dt_start = self.today()
+                for k in ["type", "name", "start"]:
+                    try:
+                        if k == 'start':
+                            dt_start = self.gptconfig_pomodoro(k)
+                        items.append({'name': "%s: %s" % ( str(k).title(), self.gptconfig_pomodoro(k) )})
+                    except Exception:
+                        pass
+                items.append({'name': 'Elapsed: {0:.2f} Min'.format(
+                    self.convert2minutes(self.diff_elapsed(dt_start, self.today() ))) })
 
-            self.print_cli(items, title="Gnome Pomodoro Tracking - %s" % self.gptconfig_settings("plugin"))
-            if getattr(self.plugin, 'status', False):
-                getattr(self.plugin, 'status')()
+                self.print_cli(items, title="Gnome Pomodoro Tracking - %s" % self.gptconfig_settings("plugin"))
+                if getattr(self.plugin, 'status', False):
+                    getattr(self.plugin, 'status')()
 
-        if params.test_time_entry:
-            if getattr(self.plugin, 'add_time_entry', False):
-                end = datetime.utcnow()
-                start = end - timedelta(minutes=25)
-                result = getattr(self.plugin, 'add_time_entry')(
-                    description="Test Time entry ",
-                    start=start.strftime(DATETIME_FORMAT),
-                    end=end.strftime(DATETIME_FORMAT),
-                    minutes=25,
-                )
+            if params.test_time_entry:
+                if getattr(self.plugin, 'add_time_entry', False):
+                    end = datetime.utcnow()
+                    start = end - timedelta(minutes=25)
+                    result = getattr(self.plugin, 'add_time_entry')(
+                        description="Test Time entry ",
+                        start=start.strftime(DATETIME_FORMAT),
+                        end=end.strftime(DATETIME_FORMAT),
+                        minutes=25,
+                    )
 
-        if getattr(self.plugin, 'cli', False):
-            getattr(self.plugin, 'cli')()
+            if getattr(self.plugin, 'cli', False):
+                getattr(self.plugin, 'cli')()
 
     def gnome_pomodoro(self, params=None):
         """
