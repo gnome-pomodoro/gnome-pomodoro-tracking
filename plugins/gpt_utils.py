@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
+from configparser import NoOptionError
 import re
 import requests
 
@@ -25,11 +26,55 @@ def printtbl(rows, header=False):
             line += val(row.get(key))
         print(line)
 
-def make_request(method, url, **kwargs):
+def find_by_id(rows: list, id: str):
     """
-        Deprecated: use instanced GTPPlugin,make_request
+        params: 
+            rows: [{'id': 2},{'id': 1}]
+            id: 1
+        return: 
+            None,dict
     """
-    response = requests.request(method, url, **kwargs)
-    if response.ok:
-        return response.json()
-    raise Exception(response.text)
+    for row in rows:
+        for key in row.keys():
+            if key == 'id' and str(row.get(key)) == id:
+                return row
+    return None
+
+def only_columns(rows: list, colums: list=['id', 'name']):
+    """
+        params: 
+            rows: [{'id': 2, 'name': 'A'},{'id': 1, 'name': 'B'}]
+            id: 1
+        return: 
+            list
+    """
+    new_rows = []
+    for row in rows:
+        new_row = {}
+        for column in colums:
+            new_row.update({ column: row.get(column, None)})
+        new_rows.append(new_row)
+    return new_rows
+
+def config_attrs(gpt, section: str, attrs: list, formatter=None):
+    """
+        params:
+            gpt: GPTracking
+            section: pomodoro
+            attrs: ['name', 'type']
+            formatter: status
+        return:
+            list
+    """
+    rows = []
+    for attr in attrs:
+        try:
+            val = gpt.config.get(section, attr)
+            if formatter is not None and formatter == 'status':
+                key = str(str(attr).split('_')[0]).title()
+                rows.append({'key': key, 'value': val})
+            else:
+                rows.append({'key': attr, 'value': val})
+        except Exception as e:
+            pass
+    return rows

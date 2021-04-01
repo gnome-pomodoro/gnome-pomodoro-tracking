@@ -6,7 +6,7 @@ import configparser
 from datetime import datetime
 
 from .gpt_plugin import GPTPlugin
-from .gpt_utils import printtbl, join_url
+from .gpt_utils import printtbl, join_url, find_by_id, config_attrs
 
 class Odoo(GPTPlugin):
 
@@ -111,18 +111,11 @@ class Odoo(GPTPlugin):
         # Overwrite
         params = self.gpt.gptparse_params()
 
-        def findbyid(rows, id):
-            for row in rows:
-                for k in row.keys():
-                    if k == 'id' and row.get(k) == id:
-                        return row
-            return None
-
-        if params.odoo_projects:
+        if hasattr(params, 'odoo_projects') and params.odoo_projects:
             try:
                 rows = self.projects()
                 if params.set:
-                    row = findbyid(rows, int(params.set))
+                    row = find_by_id(rows, params.set)
                     if row:
                         self.gpt.gptconfig_set(self.name, "project_id", row.get('id'))
                         self.gpt.gptconfig_set(self.name, "project_name", row.get('name'))
@@ -135,11 +128,11 @@ class Odoo(GPTPlugin):
                     printtbl(rows)
             except Exception as e:
                 self.gpt.logger.exception(e)
-        elif params.odoo_tasks:
+        elif hasattr(params, 'odoo_tasks') and params.odoo_tasks:
             try:
                 rows = self.tasks()
                 if params.set:
-                    row = findbyid(rows, int(params.set))
+                    row = find_by_id(rows, params.set)
                     if row:
                         self.gpt.gptconfig_set(self.name, "task_id", row.get('id'))
                         self.gpt.gptconfig_set(self.name, "task_name", row.get('name'))
@@ -205,23 +198,10 @@ class Odoo(GPTPlugin):
                 raise Exception("First select the project  --odoo-projects --set ID")
         except Exception as e:
             self.gpt.logger.exception(e)
-        return False
+        return None
 
     # Optional params
     def status(self, **kwargs):
-        # Overwrite
-        items = []
-
-        def getstate(param):
-            try:
-                id = self.gpt.gptconfig_get(self.name, param + "_id")
-                name = self.gpt.gptconfig_get(self.name, param + "_name")
-                if len(id) and len(name):
-                    items.append({
-                        'key': str(param).title(),
-                        'value': "%s  %s" % ( id, name)})
-            except Exception:
-                pass
-        getstate('task')
-        getstate('project')
+        attrs = ['project_name', 'task_name']
+        items = config_attrs(self.gpt, self.name, attrs, formatter='status')
         printtbl(items)

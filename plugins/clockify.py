@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
-import json
 import configparser
 from .gpt_plugin import GPTPlugin
-from .gpt_utils import join_url, printtbl, make_request
+from .gpt_utils import join_url, printtbl, config_attrs,\
+    find_by_id, only_columns
 
 class Clockify(GPTPlugin):
     name = "clockify"
@@ -61,42 +61,27 @@ class Clockify(GPTPlugin):
     def auth(self):
         url = join_url(self.url, "api/v1/user")
         try:
-            data = make_request('GET', url, headers=self.http_headers())
-            return data.get("id") != ""
+            req = self.rget(url, headers=self.http_headers())
+            if req.ok:
+                data = req.json()
+                return data.get("id") != ""
+            else:
+                raise Exception(req.text)
         except Exception as e:
-            msg = ""
-            try:
-                err = json.loads(str(e))
-                msg = err.get("message", "Fail Auth")
-            except Exception as jl:
-                pass
-            raise Exception(msg)
+            self.gpt.logger.exception(e)
         return False
 
     def cli(self):
         # Overwrite
         params = self.gpt.gptparse_params()
 
-        def findbyid(rows, id):
-            for row in rows:
-                for k in row.keys():
-                    if k == 'id' and row.get(k) == id:
-                        return row
-            return None
-
-        def onlycolumns(rows):
-            new_rows = []
-            for r in rows:
-                new_rows.append( { 'id': r.get('id'), 'name':  r.get('name')})
-            return new_rows
-
-        if params.clockify_workspaces:
+        if hasattr(params, 'clockify_workspaces') and  params.clockify_workspaces:
             try:
                 rows = self.workspaces()
                 if rows:
-                    rows = onlycolumns(rows)
+                    rows = only_columns(rows)
                     if params.set:
-                        row = findbyid(rows, params.set)
+                        row = find_by_id(rows, params.set)
                         if row:
                             self.gpt.gptconfig_set(self.name, "workspace_id", row.get('id'))
                             self.gpt.gptconfig_set(self.name, "workspace_name", row.get('name'))
@@ -109,7 +94,7 @@ class Clockify(GPTPlugin):
                     raise Exception("Fail get workspaces")
             except Exception as e:
                 self.gpt.logger.exception(e)
-        elif params.clockify_projects:
+        elif hasattr(params, 'clockify_projects') and params.clockify_projects:
             try:
                 workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
             except Exception as e:
@@ -119,9 +104,9 @@ class Clockify(GPTPlugin):
             try:
                 rows = self.projects(workspace_id)
                 if rows:
-                    rows = onlycolumns(rows)
+                    rows = only_columns(rows)
                     if params.set:
-                        row = findbyid(rows, params.set)
+                        row = find_by_id(rows, params.set)
                         if row:
                             self.gpt.gptconfig_set(self.name, "project_id", row.get('id'))
                             self.gpt.gptconfig_set(self.name, "project_name", row.get('name'))
@@ -138,12 +123,16 @@ class Clockify(GPTPlugin):
     def workspaces(self, filter=""):
         url = join_url(self.url, "api/v1/workspaces")
         try:
-            data = make_request('GET', url, headers=self.http_headers())
-            self.gpt.logger.info(data)
-            if filter == 'first':
-                if data:
-                    return len(data) and data[0]
-            return data
+            req = self.rget(url, headers=self.http_headers())
+            if req.ok:
+                data = req.json()
+                self.gpt.logger.info(data)
+                if filter == 'first':
+                    if data:
+                        return len(data) and data[0]
+                return data
+            else: 
+                raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
         return None
@@ -151,11 +140,15 @@ class Clockify(GPTPlugin):
     def projects(self, workspace_id, filter=""):
         url = join_url(self.url, f"api/v1/workspaces/{workspace_id}/projects")
         try:
-            data = make_request('GET', url, headers=self.http_headers())
-            self.gpt.logger.info(data)
-            if filter == 'first':
-                return len(data) and data[0]
-            return data
+            req = self.rget(url, headers=self.http_headers())
+            if req.ok:
+                data = req.json()
+                self.gpt.logger.info(data)
+                if filter == 'first':
+                    return len(data) and data[0]
+                return data
+            else: 
+                raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
         return None
@@ -188,27 +181,18 @@ class Clockify(GPTPlugin):
         }
         try:
             url = join_url(self.url, f"api/v1/workspaces/{workspace_id}/time-entries")
-            data = make_request('POST', url, json=time_entry, headers=self.http_headers())
-            self.gpt.logger.info(data)
-            return data["id"]
+            req = self.rpost(url, json=time_entry, headers=self.http_headers())
+            if req.ok:
+                data = req.json()
+                self.gpt.logger.info(data)
+                return data["id"]
+            else:
+                raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
-        return -1
+        return None
 
     def status(self, **kwargs):
-        # Overwrite
-        items = []
-
-        def getstate(param):
-            try:
-                id = self.gpt.gptconfig_get(self.name, param + "_id")
-                name = self.gpt.gptconfig_get(self.name, param + "_name")
-                if len(id) and len(name):
-                    items.append({
-                        'key': str(param).title(),
-                        'value': "%s  %s" % ( id, name)})
-            except Exception:
-                pass
-        getstate('workspace')
-        getstate('project')
+        attrs = ['workspace_name', 'project_name']
+        items = config_attrs(self.gpt, self.name, attrs, formatter='status')
         printtbl(items)

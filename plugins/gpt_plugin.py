@@ -104,8 +104,21 @@ class GPTPlugin(object):
         """
         raise NotImplementedError
 
-    def make_request(self, method, url, **kwargs):
+    # Request Management
+    def request(self, method, url, **kwargs):
         """
             Make Request
         """
         return requests.request(method, url, **kwargs)
+
+    def rget(self, url, **kwargs):
+        """
+            Request GET
+        """
+        return self.request('GET', url, **kwargs)
+    
+    def rpost(self, url, **kwargs):
+        """
+            Request POST
+        """
+        return self.request('POST', url, **kwargs)
