@@ -17,7 +17,7 @@ class TestClockify(TestGPTPlugin):
         {'id': '5eab188c991f8972bb9a1fa4', 'name': 'Project C2', 'workspaceId': '5e9ca62da2786b699ed5748d'}]
 
     auth = True
-    time_entry = '6065003e9341062dc3acf936'
+    time_entry = {'id': '6065003e9341062dc3acf936', 'name': 'Time entry'}
 
     def setUp(self) -> None:
         super(TestClockify, self).setUp()

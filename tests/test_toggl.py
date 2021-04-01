@@ -17,7 +17,7 @@ class TestToggl(TestGPTPlugin):
         {'id': 168573879, 'name': 'Project T2', 'wid': 4755487}]
 
     auth = True
-    time_entry = 1950743713
+    time_entry = {'id': 1950743713, 'name': 'Time entry'}
 
     def setUp(self) -> None:
         super(TestToggl, self).setUp()

@@ -20,7 +20,7 @@ class TestOdoo(TestGPTPlugin):
         {'id': 14, 'name': 'Task O2', 'project_id': 2, 'project_name': 'Project O1'}]
 
     auth = True
-    time_entry = 4
+    time_entry = {'id': 4, 'name': 'Time entry'}
 
     def setUp(self) -> None:
         super(TestOdoo, self).setUp()
