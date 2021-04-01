@@ -1,8 +1,9 @@
 name: Pytest
 
 on:
-  #push:
-  #  branches: [ master ]
+  push:
+    branches: [ master ]
+
   pull_request:
     branches: [ master ]
 
@@ -24,20 +25,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    #- name: Lint with flake8
-    #  run: |
-    #    # stop the build if there are Python syntax errors or undefined names
-    #    flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    #    # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-    #    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      env:
-        GP_TRACKING_ENV: ${{ secrets.GP_TRACKING_ENV }}
-        GP_TRACKING_CLOCKIFY_TOKEN: ${{ secrets.GP_TRACKING_CLOCKIFY_TOKEN }}
-        GP_TRACKING_TOGGL_TOKEN: ${{ secrets.GP_TRACKING_TOGGL_TOKEN }}
-        GP_TRACKING_ODOO_URL: ${{ secrets.GP_TRACKING_ODOO_URL }}
-        GP_TRACKING_ODOO_PASSWORD: ${{ secrets.GP_TRACKING_ODOO_PASSWORD }}
-        GP_TRACKING_ODOO_USERNAME: ${{ secrets.GP_TRACKING_ODOO_USERNAME }}
-        GP_TRACKING_ODOO_DATABASE: ${{ secrets.GP_TRACKING_ODOO_DATABASE }}
+    - name: Lint with flake8
       run: |
-        pytest
+        flake8 . --count --show-source --statistics
+        flake8 . --count --exit-zero --statistics
+    - name: Test with unittest
+      run: |
+        python -m unittest
