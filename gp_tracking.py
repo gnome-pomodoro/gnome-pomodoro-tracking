@@ -8,18 +8,14 @@ from datetime import datetime, timedelta
 import logging
 from plugins import gpt_utils as utils
 
-
-DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
 class GPTracking:
 
-    def __init__(self, gptconfig, dirhome):
-        self.gptconfig = gptconfig
-        self.dirpath = os.path.dirname(os.path.realpath(__file__))
-        self.dirhome = dirhome
+    def __init__(self, config_path):
+        self.config_path = config_path
+        self.code_path = os.path.dirname(os.path.realpath(__file__))
 
         self.config = configparser.RawConfigParser()
-        self.config.read(self.gptconfig)
+        self.config.read(self.config_path)
         self.parse = argparse.ArgumentParser(
             prog="gnome-pomodoro-tracking",
             description='''Lets you track your time with the popular time tracking services''',
@@ -28,57 +24,39 @@ class GPTracking:
         self.plugin = None
         self.logger = logging.getLogger(__name__)
 
-    def gptconfig_set_section(self, section):
+    def add_section_config(self, section):
         self.config.add_section(section)
-        self.gptconfig_write()
+        self._write_config()
 
-    def gptconfig_set(self, section, key, value):
+    def set_config(self, section, key, value):
         self.config.set(section, key, value)
-        self.gptconfig_write()
+        self._write_config()
 
-    def gptconfig_get(self, section, key):
+    def get_config(self, section, key):
         return self.config.get(section, key)
 
-
-    def gptconfig_write(self):
-        with open(self.gptconfig, "w") as f:
+    def _write_config(self):
+        with open(self.config_path, "w") as f:
             self.config.write(f)
 
-    def gptconfig_settings(self, key, value=None):
+    def settings_config(self, key, value=None):
         if value:
             self.config.set("settings", key, value)
-            self.gptconfig_write()
+            self._write_config()
         else:
             return self.config.get("settings", key)
 
-    def gptconfig_pomodoro(self, key, value=None):
+    def pomodoro_config(self, key, value=None):
         if value:
             self.config.set("pomodoro", key, value)
-            self.gptconfig_write()
+            self._write_config()
         else:
             return self.config.get("pomodoro", key)
 
-    def gptconfig_pomodoro_clean(self):
+    def pomodoro_config_clean(self):
         for k in ["start", "end", "type", 'name']:
             self.config.set("pomodoro", k, "")
-        self.gptconfig_write()
-
-    @classmethod
-    def today(cls, dt=None):
-        return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    def convert2minutes(self, seconds):
-        return seconds / 60.0
-
-    def diff_elapsed(self, start, end):
-        try:
-            dt_start = datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ")
-            dt_end = datetime.strptime(end, "%Y-%m-%dT%H:%M:%SZ")
-            elapsed = dt_end - dt_start
-            return elapsed.total_seconds()
-        except Exception as e:
-            pass
-        return 0
+        self._write_config()
 
     def logger_config(self):
         formatter = logging.Formatter(
@@ -109,11 +87,11 @@ class GPTracking:
     def load_plugin(self):
 
         try:
-            plugin = self.gptconfig_settings("plugin")
+            plugin = self.settings_config("plugin")
 
             if not len(plugin):
                 raise configparser.NoOptionError("plugin", "settings")
-            path_plugin = "%s/plugins/%s.py" % (self.dirpath, plugin)
+            path_plugin = "%s/plugins/%s.py" % (self.code_path, plugin)
             if not os.path.isfile(path_plugin):
                 raise configparser.NoOptionError("plugin", "settings")
 
@@ -134,9 +112,6 @@ class GPTracking:
             self.logger.critical(e)
 
         return False
-
-    def gptparse_params(self):
-        return self.parse.parse_args()
 
     def add_parse_args(self):
         self.parse.add_argument('--plugin',
@@ -198,22 +173,19 @@ class GPTracking:
                                 help=argparse.SUPPRESS)
 
         if getattr(self.plugin, 'add_parse_args', False):
-            getattr(self.plugin, 'add_parse_args')(kind="optionals")
+            getattr(self.plugin, 'add_parse_args')(None)
 
-    """
-        Gnome pomodoro methods
-    """
     def cli(self):
-        params = self.gptparse_params()
+        params = self.parse.parse_args()
         if params.debug:
             self.logger_config()
 
         if not self.gnome_pomodoro():
             if params.plugin:
-                plugin = self.gptconfig_settings("plugin")
-                self.gptconfig_settings("plugin", params.plugin)
+                plugin = self.settings_config("plugin")
+                self.settings_config("plugin", params.plugin)
                 if not self.load_plugin():
-                    self.gptconfig_settings("plugin", plugin)
+                    self.settings_config("plugin", plugin)
 
             if params.reset or params.stop:
                 params.trigger = 'skip'
@@ -224,25 +196,25 @@ class GPTracking:
                 if params.reset:
                     os.system("gnome-pomodoro --start --no-default-window")
             if params.name:
-                if not len(self.gptconfig_pomodoro("name")) and not len(self.gptconfig_pomodoro("start")):
+                if not len(self.pomodoro_config("name")) and not len(self.pomodoro_config("start")):
                     os.system("gnome-pomodoro --stop")
                     os.system("gnome-pomodoro --start --no-default-window")
-                self.gptconfig_pomodoro("name", params.name)
+                self.pomodoro_config("name", params.name)
             if params.status:
                 items = [
-                    {'key': 'Plugin', 'value': str(self.gptconfig_settings("plugin")).title()}
+                    {'key': 'Plugin', 'value': str(self.settings_config("plugin")).title()}
                 ]
-                dt_start = self.today()
+                dt_start = utils.now()
                 for k in ["name", "type", 'start']:
                     try:
                         if k == 'start':
-                            dt_start = self.gptconfig_pomodoro(k)
+                            dt_start = self.pomodoro_config(k)
                         else:
-                            items.append({'key': str(k).title(), 'value': self.gptconfig_pomodoro(k)})
+                            items.append({'key': str(k).title(), 'value': self.pomodoro_config(k)})
                     except Exception:
                         pass
                 items.append({'key': 'Elapsed', 'value': '{0:.2f} Min'.format(
-                    self.convert2minutes(self.diff_elapsed(dt_start, self.today() ))) })
+                    utils.time_elapsed(dt_start, utils.now(), formatter='minutes')) })
                 utils.printtbl(items)
                 if getattr(self.plugin, 'status', False):
                     getattr(self.plugin, 'status')()
@@ -252,48 +224,47 @@ class GPTracking:
                     end = datetime.utcnow()
                     start = end - timedelta(minutes=25)
                     result = getattr(self.plugin, 'add_time_entry')(
-                        description="Test Time entry ",
-                        start=start.strftime(DATETIME_FORMAT),
-                        end=end.strftime(DATETIME_FORMAT),
+                        name="Time entry",
+                        start=start.strftime(utils.DATETIME_FORMAT),
+                        end=end.strftime(utils.DATETIME_FORMAT),
                         minutes=25,
                     )
+                    utils.printtbl([result])
 
             if getattr(self.plugin, 'cli', False):
                 getattr(self.plugin, 'cli')()
 
     def gnome_pomodoro(self, params=None):
         """
-           gp-tracking -gps $(state) -gpt "$(triggers)" -gpd $(duration) -gpe $(elapsed)
+           gnome-pomodoro-tracking -gps $(state) -gpt "$(triggers)" -gpd $(duration) -gpe $(elapsed)
         """
-        params = self.gptparse_params() if not params else params
+        params = self.parse.parse_args() if not params else params
         for p in ['gp_state', 'gp_trigger', 'gp_duration', 'gp_elapsed']:
             if not getattr(params, p, False):
                 return False
         # Start timer
         if 'start' in params.gp_trigger or 'resume' in params.gp_trigger:
-            self.gptconfig_pomodoro("type", params.gp_state.title())
-            self.gptconfig_pomodoro("start", self.today())
+            self.pomodoro_config("type", params.gp_state.title())
+            self.pomodoro_config("start", utils.now())
         # Stop timer
         elif 'skip' in params.gp_trigger or 'pause' in params.gp_trigger or 'complete' in params.gp_trigger:
             try:
-                name = self.gptconfig_pomodoro("name") or self.gptconfig_pomodoro("type")
-                start = self.gptconfig_pomodoro("start")
-                end = self.today()
-                minutes = self.convert2minutes(self.diff_elapsed(start, end))
+                name = self.pomodoro_config("name") or self.pomodoro_config("type")
+                start = self.pomodoro_config("start")
+                end = utils.now()
+                minutes = utils.time_elapsed(start, end, formatter='minutes')
                 if minutes > 0:
                     if getattr(self.plugin, 'add_time_entry', False):
-                        # Check param --test-time-entry
-                        add_time_entry = getattr(self.plugin, 'add_time_entry')(
+                        result = getattr(self.plugin, 'add_time_entry')(
                             name=name,
                             start=start,
                             end=end,
                             minutes=minutes,
-                        )
-                        if add_time_entry:
-                            self.logger.info("The time entry is added successfully %s " % add_time_entry)
-                        self.gptconfig_pomodoro_clean()
+                        )                        
+                        utils.printtbl([result])
+                        self.pomodoro_config_clean()
                 else:
-                    self.gptconfig_pomodoro_clean()
+                    self.pomodoro_config_clean()
             except Exception as e:
                 print(e)
         return True

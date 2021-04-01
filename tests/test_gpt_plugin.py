@@ -6,7 +6,7 @@ import gp_tracking as gpt
 class TestGPTPlugin(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.gpt = gpt.GPTracking("gnome-pomodoro-tracking.template", "./")
+        self.gpt = gpt.GPTracking("gnome-pomodoro-tracking.template")
         self.gpt.parse.set_defaults(debug=True)
 
     def load_plugin(self):
