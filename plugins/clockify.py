@@ -14,19 +14,19 @@ class Clockify(GPTPlugin):
 
     def setup(self):
         try:
-            self.session.update({"token": self.gpt.gptconfig_get(self.name, "token")})
+            self.session.update({"token": self.gpt.get_config(self.name, "token")})
         except configparser.NoSectionError as e:
             self.gpt.logger.error(e)
-            self.gpt.gptconfig_set_section(self.name)
+            self.gpt.add_section_config(self.name)
             self.add_parse_args(kind="setup-args")
         except configparser.NoOptionError as e:
             self.gpt.logger.error(e)
             self.add_parse_args(kind="setup-args")
-            params =  self.gpt.gptparse_params()
+            params = self.gpt.parse.parse_args()
             self.session.update({"token": params.clockify_token})
             try:
                 if self.auth():
-                    self.gpt.gptconfig_set(self.name, "token", self.token())
+                    self.gpt.set_config(self.name, "token", self.token())
                     print(f"{self.name} now can do you use.")
             except Exception as e:
                 self.gpt.logger.critical(e)
@@ -73,7 +73,7 @@ class Clockify(GPTPlugin):
 
     def cli(self):
         # Overwrite
-        params = self.gpt.gptparse_params()
+        params = self.gpt.parse.parse_args()
 
         if hasattr(params, 'clockify_workspaces') and  params.clockify_workspaces:
             try:
@@ -83,8 +83,8 @@ class Clockify(GPTPlugin):
                     if params.set:
                         row = find_by_id(rows, params.set)
                         if row:
-                            self.gpt.gptconfig_set(self.name, "workspace_id", row.get('id'))
-                            self.gpt.gptconfig_set(self.name, "workspace_name", row.get('name'))
+                            self.gpt.set_config(self.name, "workspace_id", row.get('id'))
+                            self.gpt.set_config(self.name, "workspace_name", row.get('name'))
                             printtbl([row])
                         else:
                             print('The workspace ID was not found')
@@ -96,7 +96,7 @@ class Clockify(GPTPlugin):
                 self.gpt.logger.exception(e)
         elif hasattr(params, 'clockify_projects') and params.clockify_projects:
             try:
-                workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
+                workspace_id = self.gpt.get_config(self.name, "workspace_id")
             except Exception as e:
                 self.gpt.logger.error(e)
                 workspace = self.workspaces(filter='first')
@@ -108,8 +108,8 @@ class Clockify(GPTPlugin):
                     if params.set:
                         row = find_by_id(rows, params.set)
                         if row:
-                            self.gpt.gptconfig_set(self.name, "project_id", row.get('id'))
-                            self.gpt.gptconfig_set(self.name, "project_name", row.get('name'))
+                            self.gpt.set_config(self.name, "project_id", row.get('id'))
+                            self.gpt.set_config(self.name, "project_name", row.get('name'))
                             printtbl([row])
                         else:
                             print('The project ID was not found')
@@ -155,13 +155,13 @@ class Clockify(GPTPlugin):
 
     def add_time_entry(self, **kwargs):
         # Overwrite
-        description = kwargs.get('name')
+        name = kwargs.get('name')
         start = kwargs.get('start')
         end = kwargs.get('end')
 
         workspace_id  = ""
         try:
-            workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
+            workspace_id = self.gpt.get_config(self.name, "workspace_id")
         except Exception:
             try:
                 workspace = self.workspaces(filter='first')
@@ -170,12 +170,12 @@ class Clockify(GPTPlugin):
                 pass
         project_id = None
         try:
-            project_id = self.gpt.gptconfig_get(self.name, "project_id")
+            project_id = self.gpt.get_config(self.name, "project_id")
         except Exception:
             pass
         time_entry = {
             "start": start,  # Required
-            "description": description,
+            "description": name,
             "projectId": project_id,
             "end": end,  # Required
         }
@@ -185,7 +185,7 @@ class Clockify(GPTPlugin):
             if req.ok:
                 data = req.json()
                 self.gpt.logger.info(data)
-                return data["id"]
+                return {'id': data['id'], 'name': name}
             else:
                 raise Exception(req.text)
         except Exception as e:

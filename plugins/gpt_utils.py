@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
-from configparser import NoOptionError
 import re
-import requests
+from datetime import datetime
+
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 def join_url(url, *paths):
     for path in paths:
@@ -78,3 +79,20 @@ def config_attrs(gpt, section: str, attrs: list, formatter=None):
         except Exception as e:
             pass
     return rows
+
+def time_elapsed(dtstart, dtend, formatter="seconds"):
+    try:
+        if isinstance(dtstart, str) and isinstance(dtend, str):
+            dt_start = datetime.strptime(dtstart, DATETIME_FORMAT)
+            dt_end = datetime.strptime(dtend, DATETIME_FORMAT)
+        elapsed = dt_end - dt_start
+        seconds = elapsed.total_seconds()
+        if formatter == 'minutes':
+            return seconds / 60.0
+        return seconds
+    except Exception as e:
+        pass
+    return 0
+
+def now():
+    return datetime.utcnow().strftime(DATETIME_FORMAT)

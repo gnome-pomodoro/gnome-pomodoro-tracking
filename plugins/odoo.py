@@ -18,22 +18,22 @@ class Odoo(GPTPlugin):
     def setup(self):
         try:
             self.session.update({
-                "username": self.gpt.gptconfig_get(self.name, "username"),
-                "password": self.gpt.gptconfig_get(self.name, "password"),
-                "url": self.gpt.gptconfig_get(self.name, "url"),
-                "database": self.gpt.gptconfig_get(self.name, "database"),
+                "username": self.gpt.get_config(self.name, "username"),
+                "password": self.gpt.get_config(self.name, "password"),
+                "url": self.gpt.get_config(self.name, "url"),
+                "database": self.gpt.get_config(self.name, "database"),
             })
 
             if not self.auth():
                 raise Exception("Fail auth check credentials")
         except configparser.NoSectionError as e:
             self.gpt.logger.error(e)
-            self.gpt.gptconfig_set_section(self.name)
+            self.gpt.add_section_config(self.name)
             self.add_parse_args("setup-args")
         except configparser.NoOptionError as e:
             self.gpt.logger.error(e)
             self.add_parse_args("setup-args")
-            params = self.gpt.gptparse_params()
+            params = self.gpt.parse.parse_args()
             try:
                 self.session.update({
                     "username": params.odoo_username,
@@ -42,7 +42,7 @@ class Odoo(GPTPlugin):
                     "database": params.odoo_database})
                 if self.auth():
                     for p in ['username', 'password', 'url', 'database']:
-                        self.gpt.gptconfig_set(self.name, p, self.session.get(p))
+                        self.gpt.set_config(self.name, p, self.session.get(p))
                     print(f"{self.name} now can do you use.")
             except Exception as e:
                 self.gpt.logger.exception(e)
@@ -109,7 +109,7 @@ class Odoo(GPTPlugin):
 
     def cli(self, **kwargs):
         # Overwrite
-        params = self.gpt.gptparse_params()
+        params = self.gpt.parse.parse_args()
 
         if hasattr(params, 'odoo_projects') and params.odoo_projects:
             try:
@@ -117,10 +117,10 @@ class Odoo(GPTPlugin):
                 if params.set:
                     row = find_by_id(rows, params.set)
                     if row:
-                        self.gpt.gptconfig_set(self.name, "project_id", row.get('id'))
-                        self.gpt.gptconfig_set(self.name, "project_name", row.get('name'))
-                        self.gpt.gptconfig_set(self.name, "task_id", "")
-                        self.gpt.gptconfig_set(self.name, "task_name", "")
+                        self.gpt.set_config(self.name, "project_id", row.get('id'))
+                        self.gpt.set_config(self.name, "project_name", row.get('name'))
+                        self.gpt.set_config(self.name, "task_id", "")
+                        self.gpt.set_config(self.name, "task_name", "")
                         printtbl([row])
                     else:
                         print('The project ID was not found')
@@ -134,10 +134,10 @@ class Odoo(GPTPlugin):
                 if params.set:
                     row = find_by_id(rows, params.set)
                     if row:
-                        self.gpt.gptconfig_set(self.name, "task_id", row.get('id'))
-                        self.gpt.gptconfig_set(self.name, "task_name", row.get('name'))
-                        self.gpt.gptconfig_set(self.name, "project_id", row.get('project_id'))
-                        self.gpt.gptconfig_set(self.name, "project_name", row.get('project_name'))
+                        self.gpt.set_config(self.name, "task_id", row.get('id'))
+                        self.gpt.set_config(self.name, "task_name", row.get('name'))
+                        self.gpt.set_config(self.name, "project_id", row.get('project_id'))
+                        self.gpt.set_config(self.name, "project_name", row.get('project_name'))
                         printtbl([row])
                     else:
                         print('The task ID was not found')
@@ -182,9 +182,9 @@ class Odoo(GPTPlugin):
         minutes = float(kwargs.get('minutes', 0))
         name = "%s - DTS:%s DTE:%s" % (description, dt_start, dt_end)
         try:
-            project_id = int(self.gpt.gptconfig_get(self.name, "project_id"))
+            project_id = int(self.gpt.get_config(self.name, "project_id"))
             if project_id > 0:
-                task_id = self.gpt.gptconfig_get(self.name, "task_id")
+                task_id = self.gpt.get_config(self.name, "task_id")
                 task_id = int(task_id) if isinstance(task_id, int) else False
                 id = self.models('account.analytic.line', 'create', [{
                     'date': datetime.now().strftime("%Y-%m-%d"),  # Required
@@ -193,7 +193,7 @@ class Odoo(GPTPlugin):
                     'task_id': task_id,
                     'unit_amount': minutes / 60 }])
                 self.gpt.logger.info(id)
-                return id
+                return {'id': id, 'name': name}
             else:
                 raise Exception("First select the project  --odoo-projects --set ID")
         except Exception as e:

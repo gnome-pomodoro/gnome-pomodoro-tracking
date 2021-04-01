@@ -16,19 +16,19 @@ class Toggl(GPTPlugin):
 
     def setup(self):
         try:
-            self.token = self.gpt.gptconfig_get(self.name, "token")
+            self.token = self.gpt.get_config(self.name, "token")
         except configparser.NoSectionError as e:
             self.gpt.logger.error(e)
-            self.gpt.gptconfig_set_section(self.name)
+            self.gpt.add_section_config(self.name)
             self.add_parse_args(kind="setup-args")
         except configparser.NoOptionError as e:
             self.gpt.logger.error(e)
             self.add_parse_args(kind="setup-args")
-            params =  self.gpt.gptparse_params()
+            params =  self.gpt.parse.parse_args()
             self.token = params.toggl_token
             try:
                 if self.auth():
-                    self.gpt.gptconfig_set(self.name, "token", self.token)
+                    self.gpt.set_config(self.name, "token", self.token)
                     print(f"{self.name} now can do you use.")
                 else:
                     raise Exception("Fail auth")
@@ -72,7 +72,7 @@ class Toggl(GPTPlugin):
         return False
 
     def cli(self):
-        params = self.gpt.gptparse_params()
+        params = self.gpt.parse.parse_args()
 
         if hasattr(params, 'toggl_workspaces') and params.toggl_workspaces:
             try:
@@ -82,11 +82,11 @@ class Toggl(GPTPlugin):
                     if params.set:
                         row = find_by_id(rows, params.set)
                         if row:
-                            self.gpt.gptconfig_set(self.name, "workspace_id", row.get('id') )
-                            self.gpt.gptconfig_set(self.name, "workspace_name", row.get('name') )
+                            self.gpt.set_config(self.name, "workspace_id", row.get('id') )
+                            self.gpt.set_config(self.name, "workspace_name", row.get('name') )
 
-                            self.gpt.gptconfig_set(self.name, "project_id", "")
-                            self.gpt.gptconfig_set(self.name, "project_name", "" )
+                            self.gpt.set_config(self.name, "project_id", "")
+                            self.gpt.set_config(self.name, "project_name", "" )
 
                             printtbl([row])
                         else:
@@ -99,7 +99,7 @@ class Toggl(GPTPlugin):
                 self.gpt.logger.exception(e)
         elif hasattr(params, 'toggl_projects') and params.toggl_projects:
             try:
-                workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
+                workspace_id = self.gpt.get_config(self.name, "workspace_id")
             except Exception as e:
                 workspace = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
@@ -110,8 +110,8 @@ class Toggl(GPTPlugin):
                     if params.set:
                         row = find_by_id(rows, params.set)
                         if row:
-                            self.gpt.gptconfig_set(self.name, "project_id", row.get('id') )
-                            self.gpt.gptconfig_set(self.name, "project_name", row.get('name') )
+                            self.gpt.set_config(self.name, "project_id", row.get('id') )
+                            self.gpt.set_config(self.name, "project_name", row.get('name') )
                             printtbl([row])
                         else:
                             print('The project ID was not found')
@@ -155,14 +155,14 @@ class Toggl(GPTPlugin):
         return None
 
     def add_time_entry(self, **kwargs):
-        description = kwargs.get('name')
+        name = kwargs.get('name')
         start = kwargs.get('start')
         end = kwargs.get('end')
         minutes = kwargs.get('minutes')
 
         workspace_id  = None
         try:
-            workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
+            workspace_id = self.gpt.get_config(self.name, "workspace_id")
         except Exception as e:
             try:
                 workspace, err = self.workspaces(filter='first')
@@ -171,13 +171,13 @@ class Toggl(GPTPlugin):
                 pass
         project_id = None
         try:
-            project_id = self.gpt.gptconfig_get(self.name, "project_id")
+            project_id = self.gpt.get_config(self.name, "project_id")
         except Exception as e:
             pass
 
         time_entry = {
             "start": start,  # Required
-            "description": description,
+            "description": name,
             "projectId": project_id,
             "stop": end,  # Required
             "duration": float(minutes) * 60,
@@ -199,7 +199,7 @@ class Toggl(GPTPlugin):
             if req.ok:
                 data = req.json()
                 self.gpt.logger.info(data)
-                return data["data"]["id"]
+                return {'id': data['data']['id'], 'name': name}
             else:
                 raise Exception(req.text)
         except Exception as e:

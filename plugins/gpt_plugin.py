@@ -37,7 +37,7 @@ class GPTPlugin(object):
             ends,str:        Datetime in UTC format %Y-%m-%dT%H:%M:%SZ
             minutes,float:   Elapsed
         return:
-            id,int|str:
+            dict: {'id': '1', 'name': 'Name'}
         Exception:
             fail to add
         """
@@ -82,7 +82,7 @@ class GPTPlugin(object):
             None
 
         e.g
-        params = self.gptracking.gptparse_params()
+        params = self.gpt.parse.parse_args()
         if params.clockify_workspaces:
             pass
         """
@@ -98,7 +98,7 @@ class GPTPlugin(object):
 
         e.g
 
-        _name = self.gptracking.gptconfig_get(self.GTP_CONFIG, "clockify_name")
+        _name = self.gptracking.get_config(self.GTP_CONFIG, "clockify_name")
         printtbl([{'key': _key, 'value': _value }])
 
         """
