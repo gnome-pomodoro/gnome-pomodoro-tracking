@@ -29,10 +29,10 @@ def printtbl(rows, header=False):
 
 def find_by_id(rows: list, id: str):
     """
-        params: 
+        params:
             rows: [{'id': 2},{'id': 1}]
             id: 1
-        return: 
+        return:
             None,dict
     """
     for row in rows:
@@ -41,12 +41,12 @@ def find_by_id(rows: list, id: str):
                 return row
     return None
 
-def only_columns(rows: list, colums: list=['id', 'name']):
+def only_columns(rows: list, colums: list = ['id', 'name']):
     """
-        params: 
+        params:
             rows: [{'id': 2, 'name': 'A'},{'id': 1, 'name': 'B'}]
             id: 1
-        return: 
+        return:
             list
     """
     new_rows = []

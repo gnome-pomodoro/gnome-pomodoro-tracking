@@ -132,7 +132,7 @@ class Toggl(GPTPlugin):
                 if filter == 'first':
                     return len(data) and data[0]
                 return data
-            else: 
+            else:
                 raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)

@@ -116,7 +116,7 @@ class GPTPlugin(object):
             Request GET
         """
         return self.request('GET', url, **kwargs)
-    
+
     def rpost(self, url, **kwargs):
         """
             Request POST

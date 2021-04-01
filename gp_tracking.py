@@ -259,8 +259,7 @@ class GPTracking:
                             name=name,
                             start=start,
                             end=end,
-                            minutes=minutes,
-                        )                        
+                            minutes=minutes)
                         utils.printtbl([result])
                         self.pomodoro_config_clean()
                 else:

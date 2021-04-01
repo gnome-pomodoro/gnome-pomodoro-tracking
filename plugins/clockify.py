@@ -75,7 +75,7 @@ class Clockify(GPTPlugin):
         # Overwrite
         params = self.gpt.parse.parse_args()
 
-        if hasattr(params, 'clockify_workspaces') and  params.clockify_workspaces:
+        if hasattr(params, 'clockify_workspaces') and params.clockify_workspaces:
             try:
                 rows = self.workspaces()
                 if rows:
@@ -131,7 +131,7 @@ class Clockify(GPTPlugin):
                     if data:
                         return len(data) and data[0]
                 return data
-            else: 
+            else:
                 raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
@@ -147,7 +147,7 @@ class Clockify(GPTPlugin):
                 if filter == 'first':
                     return len(data) and data[0]
                 return data
-            else: 
+            else:
                 raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
