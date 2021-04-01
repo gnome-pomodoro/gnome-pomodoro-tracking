@@ -2,7 +2,8 @@
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import configparser
 from .gpt_plugin import GPTPlugin
-from .gpt_utils import printtbl, join_url, make_request
+from .gpt_utils import printtbl, join_url,\
+    find_by_id, only_columns, config_attrs
 
 class Toggl(GPTPlugin):
 
@@ -59,9 +60,13 @@ class Toggl(GPTPlugin):
 
     def auth(self):
         try:
-            data = make_request('GET', join_url(self.url, "me" ), auth=self.http_auth())
-            if data['data']['id']:
-                return True
+            req = self.rget(join_url(self.url, "me" ), auth=self.http_auth())
+            if req.ok:
+                data = req.json()
+                if data['data']['id']:
+                    return True
+            else:
+                raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
         return False
@@ -69,26 +74,13 @@ class Toggl(GPTPlugin):
     def cli(self):
         params = self.gpt.gptparse_params()
 
-        def findbyid(rows, id):
-            for row in rows:
-                for k in row.keys():
-                    if k == 'id' and str(row.get(k)) == id:
-                        return row
-            return None
-
-        def onlycolumns(rows):
-            new_rows = []
-            for r in rows:
-                new_rows.append( { 'id': r.get('id'), 'name':  r.get('name')})
-            return new_rows
-
-        if params.toggl_workspaces:
+        if hasattr(params, 'toggl_workspaces') and params.toggl_workspaces:
             try:
                 rows = self.workspaces()
                 if rows:
-                    rows = onlycolumns(rows)
+                    rows = only_columns(rows)
                     if params.set:
-                        row = findbyid(rows, params.set)
+                        row = find_by_id(rows, params.set)
                         if row:
                             self.gpt.gptconfig_set(self.name, "workspace_id", row.get('id') )
                             self.gpt.gptconfig_set(self.name, "workspace_name", row.get('name') )
@@ -105,7 +97,7 @@ class Toggl(GPTPlugin):
                     raise Exception("Fail to get workspaces")
             except Exception as e:
                 self.gpt.logger.exception(e)
-        elif params.toggl_projects:
+        elif hasattr(params, 'toggl_projects') and params.toggl_projects:
             try:
                 workspace_id = self.gpt.gptconfig_get(self.name, "workspace_id")
             except Exception as e:
@@ -114,9 +106,9 @@ class Toggl(GPTPlugin):
             try:
                 rows = self.projects(workspace_id)
                 if rows:
-                    rows = onlycolumns(rows)
+                    rows = only_columns(rows)
                     if params.set:
-                        row = findbyid(rows, params.set)
+                        row = find_by_id(rows, params.set)
                         if row:
                             self.gpt.gptconfig_set(self.name, "project_id", row.get('id') )
                             self.gpt.gptconfig_set(self.name, "project_name", row.get('name') )
@@ -133,11 +125,15 @@ class Toggl(GPTPlugin):
     def workspaces(self, filter=""):
         url = join_url(self.url, "workspaces")
         try:
-            data = make_request('GET', url, auth=self.http_auth())
-            self.gpt.logger.info(data)
-            if filter == 'first':
-                return len(data) and data[0]
-            return data
+            req = self.rget(url, auth=self.http_auth())
+            if req.ok:
+                data = req.json()
+                self.gpt.logger.info(data)
+                if filter == 'first':
+                    return len(data) and data[0]
+                return data
+            else: 
+                raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
         return None
@@ -145,10 +141,14 @@ class Toggl(GPTPlugin):
     def projects(self, workspace_id, filter=""):
         try:
             url = join_url(self.url, "workspaces/{}/projects".format(workspace_id))
-            data = make_request('GET', url, auth=self.http_auth())
-            self.gpt.logger.info(data)
-            if filter == 'first':
-                return len(data) and data[0]
+            req = self.rget(url, auth=self.http_auth())
+            if req.ok:
+                data = req.json()
+                self.gpt.logger.info(data)
+                if filter == 'first':
+                    return len(data) and data[0]
+            else:
+                raise Exception(req.text)
             return data
         except Exception as e:
             self.gpt.logger.exception(e)
@@ -192,29 +192,21 @@ class Toggl(GPTPlugin):
 
         try:
             url = join_url(self.url, "time_entries")
-            data = make_request(
-                'POST', url, auth=self.http_auth(),
+            req = self.rpost(
+                url, auth=self.http_auth(),
                 json={"time_entry": time_entry}
             )
-            self.gpt.logger.info(data)
-            return data["data"]["id"]
+            if req.ok:
+                data = req.json()
+                self.gpt.logger.info(data)
+                return data["data"]["id"]
+            else:
+                raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
-        return -1
+        return None
 
     def status(self):
-        items = []
-
-        def getstate(param):
-            try:
-                id = self.gpt.gptconfig_get(self.name, param + "_id")
-                name = self.gpt.gptconfig_get(self.name, param + "_name")
-                if len(id) and len(name):
-                    items.append({
-                        'key': str(param).title(),
-                        'value': "%s  %s" % (id, name)})
-            except Exception:
-                pass
-        getstate('workspace')
-        getstate('project')
+        attrs = ['workspace_name', 'project_name']
+        items = config_attrs(self.gpt, self.name, attrs, formatter='status')
         printtbl(items)
