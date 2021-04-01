@@ -24,11 +24,11 @@ class TestOdoo(TestGPTPlugin):
 
     def setUp(self) -> None:
         super(TestOdoo, self).setUp()
-        self.gpt.gptconfig_settings("plugin", self.plugin)
-        self.gpt.gptconfig_set(self.plugin, "url", self.url)
-        self.gpt.gptconfig_set(self.plugin, "database", self.database)
-        self.gpt.gptconfig_set(self.plugin, "username", self.username)
-        self.gpt.gptconfig_set(self.plugin, "password", self.password)
+        self.gpt.settings_config("plugin", self.plugin)
+        self.gpt.set_config(self.plugin, "url", self.url)
+        self.gpt.set_config(self.plugin, "database", self.database)
+        self.gpt.set_config(self.plugin, "username", self.username)
+        self.gpt.set_config(self.plugin, "password", self.password)
 
         if self.url == 'http://local.host':
             patch("plugins.odoo.Odoo.auth", return_value=self.auth).start()

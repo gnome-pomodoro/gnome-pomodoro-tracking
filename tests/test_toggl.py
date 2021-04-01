@@ -21,8 +21,8 @@ class TestToggl(TestGPTPlugin):
 
     def setUp(self) -> None:
         super(TestToggl, self).setUp()
-        self.gpt.gptconfig_settings("plugin", self.plugin)
-        self.gpt.gptconfig_set(self.plugin, "token", self.token)
+        self.gpt.settings_config("plugin", self.plugin)
+        self.gpt.set_config(self.plugin, "token", self.token)
 
         if self.token == '19c98455494ab3f5d72d91de5c26b116':
             patch("plugins.toggl.Toggl.auth", return_value=self.auth).start()

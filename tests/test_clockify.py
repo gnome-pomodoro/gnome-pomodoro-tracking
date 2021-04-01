@@ -21,8 +21,8 @@ class TestClockify(TestGPTPlugin):
 
     def setUp(self) -> None:
         super(TestClockify, self).setUp()
-        self.gpt.gptconfig_settings("plugin", self.plugin)
-        self.gpt.gptconfig_set(self.plugin, "token", self.token)
+        self.gpt.settings_config("plugin", self.plugin)
+        self.gpt.set_config(self.plugin, "token", self.token)
 
         if self.token == 'X/oWnmt2eyj4ZCbh':
             patch("plugins.clockify.Clockify.auth", return_value=self.auth).start()
