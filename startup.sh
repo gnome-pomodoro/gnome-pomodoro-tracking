@@ -1,7 +1,7 @@
 #!/bin/sh
 
 GPT_DIR=${GPT_DIR:-$HOME/.gnome-pomodoro-tracking}
-REMOTE=${REMOTE:-https://github.com/josehbez/gnome-pomodoro-tracking.git}
+REMOTE=${REMOTE:-https://github.com/gnome-pomodoro/gnome-pomodoro-tracking.git}
 GPT_CONF="$HOME/.gnome-pomodoro-tracking.conf"
 GPT_BIN="$HOME/.local/bin/gnome-pomodoro-tracking"
 

@@ -1,57 +1,41 @@
-from os import supports_effective_ids
-import pdb
+# -*- coding: utf-8 -*-
+# Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
+import unittest
 import gp_tracking as gpt
-import os
-import re
 
-class TestGPTPlugin(object):
+class TestGPTPlugin(unittest.TestCase):
 
-    def gpt(self):
-        #DIRPATH = gpt.GPTracking.dirpath()
-        DIRHOME = os.path.expanduser("~")
-        return gpt.GPTracking("./gp-tracking.template", "Remove", DIRHOME)
+    def setUp(self) -> None:
+        self.gpt = gpt.GPTracking("gnome-pomodoro-tracking.template")
+        self.gpt.parse.set_defaults(debug=True)
 
     def load_plugin(self):
-        gpt = self.gpt()
-        gpt.load_plugin()
-        gpt.add_parse_args()
-        return gpt
+        self.gpt.load_plugin()
+        self.gpt.add_parse_args()
 
-    def cli_params_list(self, parse_defaults):
-        gpt = self.load_plugin()
-        gpt.parse.set_defaults(**parse_defaults)
-        gpt.cli()
-        id, idErr  = self.get_id_stdout()
-        assert idErr == None, idErr
-    
-    def cli_params_set(self,parse_defaults):
-        gpt = self.load_plugin()
-        gpt.parse.set_defaults(**parse_defaults)
-        gpt.cli()
-        success, successErr = self.set_success_stdout()
-        assert successErr == None, successErr
+    def cli_list(self, parse_defaults):
+        self.gpt.parse.set_defaults(**parse_defaults)
+        self.gpt.cli()
+        id = self.get_stdout_id()
+        return id
 
+    def cli_set(self, parse_defaults):
+        self.gpt.parse.set_defaults(**parse_defaults)
+        self.gpt.cli()
+        id = self.get_stdout_id()
+        return id
 
-    def get_id_stdout(self):
-        data  , err = None, None
-        with open("tests/stdout.txt", 'r') as f:
+    def get_stdout_id(self):
+        id = None
+        with open(".gnome-pomodoro-tracking.log", 'r') as f:
             lines = f.readlines()
-            line_split = str(lines[1]).split("|")
-            if len(line_split)>1:
-                data  = line_split[1].strip()
-            else:
-                err = "Not found Id"
+            line_split = str(lines[len(lines) - 1]).split("gp_tracking.py:write")
+            if len(line_split) == 2:
+                id  = line_split[1].strip().split(' ')[0] or None
             f.close()
-        return data, err 
+        assert isinstance(id, str)
+        return id
 
-    def set_success_stdout(self):
-        data, err= False, None
-        with open("tests/stdout.txt", 'r') as f:
-            lines = f.readlines()
-            line = str(lines[0])
-            if re.match(r'^.*succes.*$', line):
-                data  = True
-            else: 
-                err = line
-            f.close()
-        return data, err
+    def cli_time_entry(self, parse_defaults):
+        self.gpt.parse.set_defaults(**parse_defaults)
+        self.gpt.cli()

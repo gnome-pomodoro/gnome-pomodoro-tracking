@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import requests
 
-
 class GPTPlugin(object):
-    
+
     name = None
     session = {}
 
@@ -10,7 +11,7 @@ class GPTPlugin(object):
         self.gpt = gpt
         self.setup()
 
-    #Management setup
+    # Management setup
     def setup(self):
         """
         Checks params required for provider connect.
@@ -20,23 +21,23 @@ class GPTPlugin(object):
             None
         """
         raise NotImplementedError
-    
+
     def auth(self) -> bool:
         """
-        Check if auth was successful 
+        Check if auth was successful
         """
         raise NotImplementedError
 
-    # Management Time Entry 
-    def add_time_entry(self, **kwargs):
+    # Management Time Entry
+    def add_time_entry(self, **kwargs) -> any:
         """
-        Params: 
+        Params:
             description,str: Description activity
             start,str:       Datetime in UTC format %Y-%m-%dT%H:%M:%SZ
             ends,str:        Datetime in UTC format %Y-%m-%dT%H:%M:%SZ
             minutes,float:   Elapsed
         return:
-            id,int:
+            dict: {'id': '1', 'name': 'Name'}
         Exception:
             fail to add
         """
@@ -44,46 +45,44 @@ class GPTPlugin(object):
 
     def rm_time_entry(self, **kwargs) -> bool:
         """
-        Remove time entry in Time Tracking Software 
+        Remove time entry in Time Tracking Software
         Params:
             id,int: time entry | required
         Return:
             success,bool:
-        Exption: 
+        Exption:
             fail to remove
         """
         raise NotImplementedError
-    
+
     # Management CLI
     def add_parse_args(self, kind):
-        """ 
+        """
         Add optional arguments in command terminal
-        params: 
+        params:
             None
-        return: 
+        return:
             None
-        
         e.g
-        
-        self.gptracking.parse.add_argument('--clockify-workspaces', 
-            action='store_const', 
-            dest='clockify_workspaces', 
-            help='List clockify workspaces',     
-            const=True,                
+        self.gptracking.parse.add_argument('--clockify-workspaces',
+            action='store_const',
+            dest='clockify_workspaces',
+            help='List clockify workspaces',
+            const=True,
         )
         """
         raise NotImplementedError
-    
+
     def cli(self):
         """
         Interprets command line arguments
-        params: 
+        params:
             None
-        return: 
+        return:
             None
-        
+
         e.g
-        params = self.gptracking.gptparse_params()
+        params = self.gpt.parse.parse_args()
         if params.clockify_workspaces:
             pass
         """
@@ -92,27 +91,34 @@ class GPTPlugin(object):
     def status(self):
         """
         Print the current state of the Pomodoro ( gp-tracking --status )
-        params: 
+        params:
             None
-        return: 
+        return:
             None
 
-        e.g 
+        e.g
 
-        _name = self.gptracking.gptconfig_get(self.GTP_CONFIG, "clockify_name")
-        self.gptracking.print_cli([{'name': _name }])
+        _name = self.gptracking.get_config(self.GTP_CONFIG, "clockify_name")
+        printtbl([{'key': _key, 'value': _value }])
 
         """
         raise NotImplementedError
 
-    # Management Request 
-    def http_call(self,method, url, **kwargs):
-        #url = urljoin(self.url, url)
-        #import pdb; pdb.set_trace()
-        response = requests.request(method, url, **kwargs)
-        if response.ok:
-            return response.json()
-        text =response.text
-        raise Exception(text)
+    # Request Management
+    def request(self, method, url, **kwargs):
+        """
+            Make Request
+        """
+        return requests.request(method, url, **kwargs)
 
+    def rget(self, url, **kwargs):
+        """
+            Request GET
+        """
+        return self.request('GET', url, **kwargs)
 
+    def rpost(self, url, **kwargs):
+        """
+            Request POST
+        """
+        return self.request('POST', url, **kwargs)

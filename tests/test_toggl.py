@@ -1,38 +1,50 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import os
-import pdb
-from .test_gpt_plugin import TestGPTPlugin
-
+from tests.test_gpt_plugin import TestGPTPlugin
+from mock import patch
 
 class TestToggl(TestGPTPlugin):
 
     plugin = "toggl"
+    token = os.getenv("GP_TRACKING_TOGGL_TOKEN", "19c98455494ab3f5d72d91de5c26b116")
 
-    def test_load_plugin(self):        
-        gpt = self.gpt()
-        gpt.gptconfig_settings("plugin", self.plugin)
-        token = os.getenv("GP_TRACKING_TOGGL_TOKEN", "")
-        gpt.gptconfig_set(self.plugin, "token", token)
-        assert gpt.load_plugin() == True, "The plugin do not exists!"
+    workspaces = [
+        {'id': 4755497, 'name': "Workspace T1"},
+        {'id': 4755487, 'name': "Workspace T2"}]
+    projects = [
+        {'id': 164238639, 'name': 'Project T1', "wid": 4755497},
+        {'id': 168573879, 'name': 'Project T2', 'wid': 4755487}]
 
-    def test_command_toggl_workspaces(self):
+    auth = True
+    time_entry = {'id': 1950743713, 'name': 'Time entry'}
+
+    def setUp(self) -> None:
+        super(TestToggl, self).setUp()
+        self.gpt.settings_config("plugin", self.plugin)
+        self.gpt.set_config(self.plugin, "token", self.token)
+
+        if self.token == '19c98455494ab3f5d72d91de5c26b116':
+            patch("plugins.toggl.Toggl.auth", return_value=self.auth).start()
+            patch("plugins.toggl.Toggl.workspaces", return_value=self.workspaces).start()
+            patch("plugins.toggl.Toggl.projects", return_value=self.projects).start()
+            patch("plugins.toggl.Toggl.add_time_entry", return_value=self.time_entry).start()
+
+        self.load_plugin()
+
+    def test_cli(self):
+
         args = {'toggl_workspaces': True}
-        self.cli_params_list( args)
-    
-        id, idErr  = self.get_id_stdout()
-        args.update({"set": id})
-        self.cli_params_set(args)
+        idA = self.cli_list(args)
+        args.update({"set": idA})
+        idB = self.cli_set(args)
+        assert idA == idB
 
-    def test_command_toggl_projects(self):
-       args = {'toggl_projects': True}
-       self.cli_params_list( args)
+        args.update({'toggl_projects': True, 'toggl_workspaces': False, 'set': False})
+        idA = self.cli_list(args)
+        args.update({"set": idA})
+        idB = self.cli_set(args)
+        assert idA == idB
 
-       id, idErr  = self.get_id_stdout()
-       args.update({"set": id})
-       self.cli_params_set(args)
-
-
-    def test_time_entry(self): 
-        gpt = self.load_plugin()
-        parse_defaults =  {"test_time_entry": True}
-        gpt.parse.set_defaults(**parse_defaults)
-        gpt.cli()
+        args.update({'time_entry': True, 'set': False, 'toggl_projects': True})
+        self.cli_time_entry(args)

@@ -4,31 +4,26 @@
 
 ![](token.png)
 
-* Add token 
+* Add token
 
   ```bash
-  gp-tracking --clockify-token TOKEN
+  gnome-pomodoro-tracking --clockify-token TOKEN
   ```
 
 * Workspaces
-  * List
-    ```bash
-    gp-tracking --clockify-workspaces
-    ```
 
-  * Set
-    ```bash
-    gp-tracking --clockify-workspaces --set ID
+  ```bash
+  # List
+  gnome-pomodoro-tracking --clockify-workspaces
+  # set 
+  gnome-pomodoro-tracking --clockify-workspaces --set ID
   ```
   
 * Projects
-  * List
-    ```bash
-    gp-tracking --clockify-projects
-    ```
 
-  * Set
   ```bash
-    gp-tracking --clockify-projects --set ID
+  # List
+  gnome-pomodoro-tracking --clockify-projects
+  # Set 
+  gnome-pomodoro-tracking --clockify-projects --set ID
   ```
-

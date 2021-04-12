@@ -9,33 +9,31 @@
   <a href="LICENSE">  
     <img src="https://img.shields.io/github/license/gnome-pomodoro/gnome-pomodoro-tracking?style=flat-square" />
   </a>
-   <a href="semv.toml">
-    <img src="https://img.shields.io/badge/semv-3.0.1-green">
+  <a href=".pm/version.yml">
+        <img src="https://img.shields.io/badge/dynamic/yaml?color=green&label=version&query=version.*&url=https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomodoro-tracking/master/.pm/version.yml">
   </a>
-  
 
 </p>
 
-## Gnome Pomodoro Tracking (gp-tracking)
-It is a custom action for Gnome Pomodoro, that to connect any Time Tracking Software and create Time Entries.
+# GNOME Pomodoro Tracking
+Lets you track your time with the popular time tracking services.
 
 ## Contents
 
 * [Requirements](#requirements)
 * [Install](#install)
 * [CLI](#cli)
-* [Plugins](#plugins)
-  * [Clockify](#clockify)
-  * [Toggl](#toggl)
-  * [Odoo](#odoo)
-* [Gnome Pomodoro Settings](#gnome-pomodoro-settings)
-* [Contributing](#contributing)
+* Plugins
+  * [Toggl](./assets/toggl/README.md)
+  * [Clockify](./assets/clockify/README.md)
+  * [Odoo](./assets/odoo/README.md)
+* [GNOME Pomodoro Settings](#gnome-pomodoro-settings)
 * [Tests](#tests)
 
 ## Requirements
 
 * python3
-* git 
+* git
 * [gnomepomodoro.org](https://gnomepomodoro.org)
 
 ## Install
@@ -55,56 +53,51 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomod
 ## CLI
 
 ```bash
-# set alias or any short-name
-alias gp-tracking=gnome-pomodoro-tracking
 
-# Select Time Tracking Software
-gp-tracking --plugin NAME  
+usage: gnome-pomodoro-tracking [-h] [--plugin {odoo,clockify,toggl}] [-n NAME]
+                               [-r] [-k] [-s]
 
-#Enter the name of the time entry. If there is no active Pomodoro start a new one.
-gp-tracking --name NAME
-
-# Displays the summary of the time entry 
-gp-tracking --status
-
-# Stop the active Pomodoro, starts a new time entry
-gp-tracking --restart
-
-# Stop the active Pomodoro
-gp-tracking --stop
+optional arguments:
+  -h, --help            show this help message and exit
+  --plugin {odoo,clockify,toggl}
+                        Select Time Tracking Service
+  -n NAME, --name NAME  Set the name of the time entry
+  -r, --restart         Restart Pomodoro
+  -k, --stop            Stop Pomodoro
+  -s, --status          Status Pomodoro
 
 ```
 
-## Plugins
-
-### Clockify
-
-[Guidelines](./assets/clockify/README.md)
-
-### Toggl
-
-[Guidelines](./assets/toggl/README.md)
-
-### Odoo
-
-[Guidelines](./assets/odoo/README.md)
-
-## Gnome Pomodoro Settings
+## GNOME Pomodoro Settings
 
 `Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
 
 ```bash
-gp-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapsed)"
+gnome-pomodoro-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapsed)"
 ```
 
 <p align="center">  
  <img src="assets/gnome-pomodoro-settings.gif" width="400"/>
 </p>
 
+## Tests
 
-## Contributing
+```bash
 
-[Guidelines](./CONTRIBUTING.md) 
+# 1.- Run with mock values
+python -m unittest
 
-## Tests 
-[Guidelines](./tests/README.md)
+# 2.- Run with Third-party response
+# Clockify
+export GP_TRACKING_CLOCKIFY_TOKEN=Token
+# Toggl
+export GP_TRACKING_TOGGL_TOKEN=Token
+# Odoo
+export GP_TRACKING_ODOO_URL=Url
+export GP_TRACKING_ODOO_PASSWORD=Password
+export GP_TRACKING_ODOO_USERNAME=User
+export GP_TRACKING_ODOO_DATABASE=Db
+
+python -m unittest
+
+```
