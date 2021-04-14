@@ -18,7 +18,6 @@ class GPTracking:
         self.config.read(self.config_path)
         self.parse = argparse.ArgumentParser(
             prog="gnome-pomodoro-tracking",
-            description='''Lets you track your time with the popular time tracking services''',
             epilog="GONME Pomodoro Tracking <https://gnomepomodoro.org>",
         )
         self.plugin = None
@@ -175,7 +174,7 @@ class GPTracking:
                                 dest='min_trace',
                                 type=int,
                                 default=0,
-                                help="Minimum trace minutes")
+                                help=argparse.SUPPRESS)
         if getattr(self.plugin, 'add_parse_args', False):
             getattr(self.plugin, 'add_parse_args')(None)
 
