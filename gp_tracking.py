@@ -18,7 +18,6 @@ class GPTracking:
         self.config.read(self.config_path)
         self.parse = argparse.ArgumentParser(
             prog="gnome-pomodoro-tracking",
-            description='''Lets you track your time with the popular time tracking services''',
             epilog="GONME Pomodoro Tracking <https://gnomepomodoro.org>",
         )
         self.plugin = None
@@ -171,7 +170,11 @@ class GPTracking:
                                 dest='time_entry',
                                 const=True,
                                 help=argparse.SUPPRESS)
-
+        self.parse.add_argument('--min-trace',
+                                dest='min_trace',
+                                type=int,
+                                default=0,
+                                help=argparse.SUPPRESS)
         if getattr(self.plugin, 'add_parse_args', False):
             getattr(self.plugin, 'add_parse_args')(None)
 
@@ -187,6 +190,9 @@ class GPTracking:
                 if not self.load_plugin():
                     self.settings_config("plugin", plugin)
 
+            if params.min_trace:
+                if utils.config_attr(self, 'settings', 'mintrace', params.min_trace):
+                    utils.printtbl([{'key': 'Min Trace', 'value': '%s Min' % params.min_trace}])
             if params.reset or params.stop:
                 params.trigger = 'skip'
                 params.duration = "0"
@@ -205,7 +211,7 @@ class GPTracking:
                     {'key': 'Plugin', 'value': str(self.settings_config("plugin")).title()}
                 ]
                 dt_start = utils.now()
-                for k in ["name", "type", 'start']:
+                for k in ["type", 'start', 'name']:
                     try:
                         if k == 'start':
                             dt_start = self.pomodoro_config(k)
@@ -253,7 +259,9 @@ class GPTracking:
                 start = self.pomodoro_config("start")
                 end = utils.now()
                 minutes = utils.time_elapsed(start, end, formatter='minutes')
-                if minutes > 0:
+                mt = utils.config_attr(self, 'settings', 'mintrace')
+                mintrace = int(mt.get('value')) if mt and isinstance(mt, dict) else 0
+                if minutes > mintrace:
                     if getattr(self.plugin, 'add_time_entry', False):
                         result = getattr(self.plugin, 'add_time_entry')(
                             name=name,

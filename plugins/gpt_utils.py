@@ -80,6 +80,27 @@ def config_attrs(gpt, section: str, attrs: list, formatter=None):
             pass
     return rows
 
+def config_attr(gpt, section: str, attr: str, val: any = False):
+
+    def add_attr():
+        gpt.config.set(section, attr, val)
+        gpt._write_config()
+
+    try:
+        if val is False:
+            return {'key': attr, 'value': gpt.config.get(section, attr)}
+
+        if section in gpt.config.sections():
+            add_attr()
+        else:
+            gpt.config.add_section(section)
+            gpt._write_config()
+            add_attr()
+        return {'key': attr, 'value': val}
+    except Exception as e:
+        gpt.logger.critical(e)
+    return None
+
 def time_elapsed(dtstart, dtend, formatter="seconds"):
     try:
         if isinstance(dtstart, str) and isinstance(dtend, str):
