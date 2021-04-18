@@ -260,7 +260,11 @@ class GPTracking:
                 end = utils.now()
                 minutes = utils.time_elapsed(start, end, formatter='minutes')
                 mt = utils.config_attr(self, 'settings', 'mintrace')
-                mintrace = int(mt.get('value')) if mt and isinstance(mt, dict) else 0
+                mintrace = 0
+                if mt and isinstance(mt, dict):
+                    _mintrace = mt.get('value', '')
+                    if _mintrace.isdigit():
+                        mintrace = int(_mintrace)
                 if minutes > mintrace:
                     if getattr(self.plugin, 'add_time_entry', False):
                         result = getattr(self.plugin, 'add_time_entry')(
