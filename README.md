@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/how-does-it-work.png" width="1200">
+  <img src="docs/img/how-does-it-work.png" width="1200">
 </p>
 
 <p align="center">  
@@ -77,7 +77,7 @@ gnome-pomodoro-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -g
 ```
 
 <p align="center">  
- <img src="assets/gnome-pomodoro-settings.gif" width="400"/>
+ <img src="docs/img/gnome-pomodoro-settings.gif" width="400"/>
 </p>
 
 ## Tests
