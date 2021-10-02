@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import unittest
-import gp_tracking as gpt
+from gnome_pomodoro_tracking.tracking import Tracking
 
-class TestGPTPlugin(unittest.TestCase):
+class TestPlugin(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.gpt = gpt.GPTracking("gnome-pomodoro-tracking.template")
+        self.gpt = Tracking("gnome-pomodoro-tracking.template")
         self.gpt.parse.set_defaults(debug=True)
 
     def load_plugin(self):

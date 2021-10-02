@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import os
-from tests.test_gpt_plugin import TestGPTPlugin
+from tests.test_plugin import TestPlugin
 from mock import patch
 
-class TestClockify(TestGPTPlugin):
+class TestClockify(TestPlugin):
 
     plugin = "clockify"
     token = os.getenv("GP_TRACKING_CLOCKIFY_TOKEN", "X/oWnmt2eyj4ZCbh")
@@ -25,10 +25,10 @@ class TestClockify(TestGPTPlugin):
         self.gpt.set_config(self.plugin, "token", self.token)
 
         if self.token == 'X/oWnmt2eyj4ZCbh':
-            patch("plugins.clockify.Clockify.auth", return_value=self.auth).start()
-            patch("plugins.clockify.Clockify.workspaces", return_value=self.workspaces).start()
-            patch("plugins.clockify.Clockify.projects", return_value=self.projects).start()
-            patch("plugins.clockify.Clockify.add_time_entry", return_value=self.time_entry).start()
+            patch("gnome_pomodoro_tracking.clockify.Clockify.auth", return_value=self.auth).start()
+            patch("gnome_pomodoro_tracking.clockify.Clockify.workspaces", return_value=self.workspaces).start()
+            patch("gnome_pomodoro_tracking.clockify.Clockify.projects", return_value=self.projects).start()
+            patch("gnome_pomodoro_tracking.clockify.Clockify.add_time_entry", return_value=self.time_entry).start()
 
         self.load_plugin()
 

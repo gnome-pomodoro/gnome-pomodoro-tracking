@@ -5,10 +5,10 @@ from urllib.parse import urlparse
 import configparser
 from datetime import datetime
 
-from .gpt_plugin import GPTPlugin
-from .gpt_utils import printtbl, join_url, find_by_id, config_attrs
+from gnome_pomodoro_tracking.plugin import Plugin
+from gnome_pomodoro_tracking.utils import printtbl, join_url, find_by_id, config_attrs
 
-class Odoo(GPTPlugin):
+class Odoo(Plugin):
 
     name = "odoo"
 
@@ -43,7 +43,7 @@ class Odoo(GPTPlugin):
                 if self.auth():
                     for p in ['username', 'password', 'url', 'database']:
                         self.gpt.set_config(self.name, p, self.session.get(p))
-                    print(f"{self.name} now can do you use.")
+                    print("%s now can do you use."%self.name)
             except Exception as e:
                 self.gpt.logger.exception(e)
 

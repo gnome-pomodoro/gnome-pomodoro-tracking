@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import os
-from .test_gpt_plugin import TestGPTPlugin
+from .test_plugin import TestPlugin
 from mock import patch
 
-class TestOdoo(TestGPTPlugin):
+class TestOdoo(TestPlugin):
 
     plugin = "odoo"
     url = os.getenv("GP_TRACKING_ODOO_URL", "http://local.host")
@@ -31,10 +31,10 @@ class TestOdoo(TestGPTPlugin):
         self.gpt.set_config(self.plugin, "password", self.password)
 
         if self.url == 'http://local.host':
-            patch("plugins.odoo.Odoo.auth", return_value=self.auth).start()
-            patch("plugins.odoo.Odoo.projects", return_value=self.projects).start()
-            patch("plugins.odoo.Odoo.tasks", return_value=self.tasks).start()
-            patch("plugins.odoo.Odoo.add_time_entry", return_value=self.time_entry).start()
+            patch("gnome_pomodoro_tracking.odoo.Odoo.auth", return_value=self.auth).start()
+            patch("gnome_pomodoro_tracking.odoo.Odoo.projects", return_value=self.projects).start()
+            patch("gnome_pomodoro_tracking.odoo.Odoo.tasks", return_value=self.tasks).start()
+            patch("gnome_pomodoro_tracking.odoo.Odoo.add_time_entry", return_value=self.time_entry).start()
 
         self.load_plugin()
 

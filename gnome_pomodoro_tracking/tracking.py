@@ -6,15 +6,24 @@ import configparser
 import sys
 from datetime import datetime, timedelta
 import logging
-from plugins import gpt_utils as utils
+import gnome_pomodoro_tracking.utils as utils
 
-class GPTracking:
+class Tracking:
 
     def __init__(self, config_path):
         self.config_path = config_path
         self.code_path = os.path.dirname(os.path.realpath(__file__))
-
         self.config = configparser.RawConfigParser()
+        self.setup()
+
+    def setup(self):
+        if not os.path.exists(self.config_path) or not os.path.isfile(self.config_path):
+            config_template = """[settings]\nplugin =\n"""
+            config_template += """[pomodoro]\ntype =\nname =\nstart =\nend =\n"""
+            config_template += """[toggl]\n[clockify]\n[odoo]"""
+            with open(self.config_path, "w") as f:
+                f.write(config_template)
+        
         self.config.read(self.config_path)
         self.parse = argparse.ArgumentParser(
             prog="gnome-pomodoro-tracking",
@@ -90,13 +99,12 @@ class GPTracking:
 
             if not len(plugin):
                 raise configparser.NoOptionError("plugin", "settings")
-            path_plugin = "%s/plugins/%s.py" % (self.code_path, plugin)
+            path_plugin = "%s/%s.py" % (self.code_path, plugin)
             if not os.path.isfile(path_plugin):
                 raise configparser.NoOptionError("plugin", "settings")
-
-            globals()[plugin] = __import__("plugins.%s" % plugin)
+            globals()[plugin] = __import__("gnome_pomodoro_tracking.%s" % plugin)
             pluginClass = getattr( getattr(globals()[plugin], plugin), plugin.title())
-            __import__("plugins.%s" % plugin)
+            __import__("gnome_pomodoro_tracking.%s" % plugin)
             self.plugin = pluginClass(self)
             return True
         except configparser.NoSectionError as e:
@@ -104,9 +112,9 @@ class GPTracking:
                                  "\nTry re-install for regenerate file config.\n")
         except configparser.NoOptionError as e:
             self.logger.critical("Exec the command gnome-pomodoro-tracking --plugin NAME for set.\n")
-        except ModuleNotFoundError as e:
-            self.logger.critical("Fail load the plugin module. Exec the command"
-                                 "gnome-pomodoro-tracking --plugin NAME for  replace.\n")
+        #except ModuleNotFoundError as e:
+        #    self.logger.critical("Fail load the plugin module. Exec the command"
+        #                         "gnome-pomodoro-tracking --plugin NAME for  replace.\n")
         except Exception as e:
             self.logger.critical(e)
 

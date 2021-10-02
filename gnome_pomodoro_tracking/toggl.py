@@ -1,70 +1,56 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import configparser
-from .gpt_plugin import GPTPlugin
-from .gpt_utils import join_url, printtbl, config_attrs,\
-    find_by_id, only_columns
+from gnome_pomodoro_tracking.plugin import Plugin
+from gnome_pomodoro_tracking.utils import printtbl, join_url,\
+    find_by_id, only_columns, config_attrs
 
-class Clockify(GPTPlugin):
-    name = "clockify"
-    url = "https://api.clockify.me"
+class Toggl(Plugin):
+
+    name = "toggl"
+    url = "https://api.track.toggl.com/api/v8"
+    token = None
 
     def __init__(self, gpt):
         super().__init__(gpt)
 
     def setup(self):
         try:
-            self.session.update({"token": self.gpt.get_config(self.name, "token")})
+            self.token = self.gpt.get_config(self.name, "token")
         except configparser.NoSectionError as e:
-            self.gpt.logger.error(e)
             self.gpt.add_section_config(self.name)
-            self.add_parse_args(kind="setup-args")
         except configparser.NoOptionError as e:
+            pass
+        except Exception as e:
             self.gpt.logger.error(e)
-            self.add_parse_args(kind="setup-args")
-            params = self.gpt.parse.parse_args()
-            self.session.update({"token": params.clockify_token})
-            try:
-                if self.auth():
-                    self.gpt.set_config(self.name, "token", self.token())
-                    print(f"{self.name} now can do you use.")
-            except Exception as e:
-                self.gpt.logger.critical(e)
-                exit(0)
 
-    def token(self):
-        return self.session.get("token", "")
+    def add_parse_args(self, kind=None):
+        self.gpt.parse.add_argument('--toggl-token',
+                                    action='store_const',
+                                    dest='toggl_token',
+                                    help=' e.g 23bc78d4e46edd5479885db4260ecsf3',
+                                    const=True)    
+        self.gpt.parse.add_argument('--toggl-workspaces',
+                                    action='store_const',
+                                    dest='toggl_workspaces',
+                                    help='List workspaces',
+                                    const=True)
+        self.gpt.parse.add_argument('--toggl-projects',
+                                    action='store_const',
+                                    dest='toggl_projects',
+                                    help='List projects',
+                                    const=True)
 
-    def http_headers(self):
-        return{'X-Api-Key': self.token()}
-
-    def add_parse_args(self, kind):
-        if kind == "setup-args":
-            self.gpt.parse.add_argument('--clockify-token',
-                                        action='store',
-                                        dest='clockify_token',
-                                        help=' e.g XtGTMKadTS8sJ/E',
-                                        required=True)
-        else:
-            # Overwrite
-            self.gpt.parse.add_argument('--clockify-workspaces',
-                                        action='store_const',
-                                        dest='clockify_workspaces',
-                                        help='List clockify workspaces',
-                                        const=True)
-            self.gpt.parse.add_argument('--clockify-projects',
-                                        action='store_const',
-                                        dest='clockify_projects',
-                                        help='List clockify projects',
-                                        const=True)
+    def http_auth(self):
+        return (self.token, "api_token")
 
     def auth(self):
-        url = join_url(self.url, "api/v1/user")
         try:
-            req = self.rget(url, headers=self.http_headers())
+            req = self.rget(join_url(self.url, "me" ), auth=self.http_auth())
             if req.ok:
                 data = req.json()
-                return data.get("id") != ""
+                if data['data']['id']:
+                    return True
             else:
                 raise Exception(req.text)
         except Exception as e:
@@ -72,10 +58,18 @@ class Clockify(GPTPlugin):
         return False
 
     def cli(self):
-        # Overwrite
         params = self.gpt.parse.parse_args()
 
-        if hasattr(params, 'clockify_workspaces') and params.clockify_workspaces:
+        if hasattr(params, 'toggl_token') and params.toggl_token:
+            self.token = params.toggl_token
+            if self.auth():
+                self.gpt.set_config(self.name, "token", self.token)
+            else:
+                print("Fail auth check your token!")
+                exit(0)
+
+
+        if hasattr(params, 'toggl_workspaces') and params.toggl_workspaces:
             try:
                 rows = self.workspaces()
                 if rows:
@@ -83,22 +77,25 @@ class Clockify(GPTPlugin):
                     if params.set:
                         row = find_by_id(rows, params.set)
                         if row:
-                            self.gpt.set_config(self.name, "workspace_id", row.get('id'))
-                            self.gpt.set_config(self.name, "workspace_name", row.get('name'))
+                            self.gpt.set_config(self.name, "workspace_id", row.get('id') )
+                            self.gpt.set_config(self.name, "workspace_name", row.get('name') )
+
+                            self.gpt.set_config(self.name, "project_id", "")
+                            self.gpt.set_config(self.name, "project_name", "" )
+
                             printtbl([row])
                         else:
                             print('The workspace ID was not found')
                     else:
                         printtbl(rows)
                 else:
-                    raise Exception("Fail get workspaces")
+                    raise Exception("Fail to get workspaces")
             except Exception as e:
                 self.gpt.logger.exception(e)
-        elif hasattr(params, 'clockify_projects') and params.clockify_projects:
+        elif hasattr(params, 'toggl_projects') and params.toggl_projects:
             try:
                 workspace_id = self.gpt.get_config(self.name, "workspace_id")
             except Exception as e:
-                self.gpt.logger.error(e)
                 workspace = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
             try:
@@ -108,39 +105,22 @@ class Clockify(GPTPlugin):
                     if params.set:
                         row = find_by_id(rows, params.set)
                         if row:
-                            self.gpt.set_config(self.name, "project_id", row.get('id'))
-                            self.gpt.set_config(self.name, "project_name", row.get('name'))
+                            self.gpt.set_config(self.name, "project_id", row.get('id') )
+                            self.gpt.set_config(self.name, "project_name", row.get('name') )
                             printtbl([row])
                         else:
                             print('The project ID was not found')
                     else:
                         printtbl(rows)
                 else:
-                    raise Exception("Fail get projects")
+                    raise Exception("Fail to get projects")
             except Exception as e:
                 self.gpt.logger.exception(e)
 
     def workspaces(self, filter=""):
-        url = join_url(self.url, "api/v1/workspaces")
+        url = join_url(self.url, "workspaces")
         try:
-            req = self.rget(url, headers=self.http_headers())
-            if req.ok:
-                data = req.json()
-                self.gpt.logger.info(data)
-                if filter == 'first':
-                    if data:
-                        return len(data) and data[0]
-                return data
-            else:
-                raise Exception(req.text)
-        except Exception as e:
-            self.gpt.logger.exception(e)
-        return None
-
-    def projects(self, workspace_id, filter=""):
-        url = join_url(self.url, f"api/v1/workspaces/{workspace_id}/projects")
-        try:
-            req = self.rget(url, headers=self.http_headers())
+            req = self.rget(url, auth=self.http_auth())
             if req.ok:
                 data = req.json()
                 self.gpt.logger.info(data)
@@ -153,46 +133,75 @@ class Clockify(GPTPlugin):
             self.gpt.logger.exception(e)
         return None
 
+    def projects(self, workspace_id, filter=""):
+        try:
+            url = join_url(self.url, "workspaces/{}/projects".format(workspace_id))
+            req = self.rget(url, auth=self.http_auth())
+            if req.ok:
+                data = req.json()
+                self.gpt.logger.info(data)
+                if filter == 'first':
+                    return len(data) and data[0]
+            else:
+                raise Exception(req.text)
+            return data
+        except Exception as e:
+            self.gpt.logger.exception(e)
+        return None
+
     def add_time_entry(self, **kwargs):
-        # Overwrite
         name = kwargs.get('name')
         start = kwargs.get('start')
         end = kwargs.get('end')
+        minutes = kwargs.get('minutes')
 
-        workspace_id  = ""
+        workspace_id  = None
         try:
             workspace_id = self.gpt.get_config(self.name, "workspace_id")
-        except Exception:
+        except Exception as e:
             try:
-                workspace = self.workspaces(filter='first')
+                workspace, err = self.workspaces(filter='first')
                 workspace_id = workspace.get('id')
-            except Exception:
+            except Exception as e:
                 pass
         project_id = None
         try:
             project_id = self.gpt.get_config(self.name, "project_id")
-        except Exception:
+        except Exception as e:
             pass
+
         time_entry = {
             "start": start,  # Required
             "description": name,
             "projectId": project_id,
-            "end": end,  # Required
+            "stop": end,  # Required
+            "duration": float(minutes) * 60,
+            "created_with": "gp-tracking"
         }
+
+        if workspace_id:
+            time_entry.update({'wid': workspace_id})
+
+        if project_id:
+            time_entry.update({'pid': project_id})
+
         try:
-            url = join_url(self.url, f"api/v1/workspaces/{workspace_id}/time-entries")
-            req = self.rpost(url, json=time_entry, headers=self.http_headers())
+            url = join_url(self.url, "time_entries")
+            req = self.rpost(
+                url, auth=self.http_auth(),
+                json={"time_entry": time_entry}
+            )
             if req.ok:
                 data = req.json()
                 self.gpt.logger.info(data)
-                return {'id': data['id'], 'name': name}
+                return {'id': data['data']['id'], 'name': name}
             else:
                 raise Exception(req.text)
         except Exception as e:
             self.gpt.logger.exception(e)
         return None
 
-    def status(self, **kwargs):
+    def status(self):
         attrs = ['workspace_name', 'project_name']
         items = config_attrs(self.gpt, self.name, attrs, formatter='status')
         printtbl(items)

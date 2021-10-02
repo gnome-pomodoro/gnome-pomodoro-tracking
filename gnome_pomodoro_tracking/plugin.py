@@ -2,7 +2,7 @@
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import requests
 
-class GPTPlugin(object):
+class Plugin(object):
 
     name = None
     session = {}

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import os
-from tests.test_gpt_plugin import TestGPTPlugin
+from tests.test_plugin import TestPlugin
 from mock import patch
 
-class TestToggl(TestGPTPlugin):
+class TestToggl(TestPlugin):
 
     plugin = "toggl"
     token = os.getenv("GP_TRACKING_TOGGL_TOKEN", "19c98455494ab3f5d72d91de5c26b116")
@@ -25,10 +25,10 @@ class TestToggl(TestGPTPlugin):
         self.gpt.set_config(self.plugin, "token", self.token)
 
         if self.token == '19c98455494ab3f5d72d91de5c26b116':
-            patch("plugins.toggl.Toggl.auth", return_value=self.auth).start()
-            patch("plugins.toggl.Toggl.workspaces", return_value=self.workspaces).start()
-            patch("plugins.toggl.Toggl.projects", return_value=self.projects).start()
-            patch("plugins.toggl.Toggl.add_time_entry", return_value=self.time_entry).start()
+            patch("gnome_pomodoro_tracking.toggl.Toggl.auth", return_value=self.auth).start()
+            patch("gnome_pomodoro_tracking.toggl.Toggl.workspaces", return_value=self.workspaces).start()
+            patch("gnome_pomodoro_tracking.toggl.Toggl.projects", return_value=self.projects).start()
+            patch("gnome_pomodoro_tracking.toggl.Toggl.add_time_entry", return_value=self.time_entry).start()
 
         self.load_plugin()
 
