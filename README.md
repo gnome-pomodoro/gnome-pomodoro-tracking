@@ -44,11 +44,11 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomod
 
 
 ```bash
-pip3 install -u gnome-pomodoro-tracking
+pip3 install -U gnome-pomodoro-tracking
 ```
 ### Uninstall
 ```bash
-pip3 uninstall gnome-pomodoro-tracking
+pip3 uninstall -y gnome-pomodoro-tracking
 ```
 
 
@@ -61,14 +61,14 @@ usage: gnome-pomodoro-tracking [-h] [--plugin {odoo,clockify,toggl}] [-n]
                                [-r] [-k] [-s]
 Optional arguments:
   -h, --help            Show this help message and exit
-  --plugin  			Time Tracking Service
-  -n, --name   			Pomodoro name
+  --plugin  			      Time Tracking Service
+  -n, --name   			    Pomodoro name
   -r, --restart         Pomodoro restart
   -k, --stop            Pomodoro stop
   -s, --status          Pomodoro status
-  --time-entry			Create time entry
+  --time-entry			    Create time entry
   --min-trace           Time minimal elapsed to track
-  -d, --debug 			Enable debug
+  -d, --debug 			    Enable debug
 
 ```
 
