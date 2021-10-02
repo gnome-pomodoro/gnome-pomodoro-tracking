@@ -17,23 +17,23 @@
 * Credentials
 
   ```bash
-  gnome-pomodoro-tracking --odoo-database DB --odoo-url URL  --odoo-username USER --odoo-password PASS
+  gnome-pomodoro-tracking --database DB --url URL  --username USER --password PASS
   ```
 
 * Projects
   
   ```bash
   # List
-  gnome-pomodoro-tracking --odoo-projects
+  gnome-pomodoro-tracking --projects
   # Set
-  gnome-pomodoro-tracking --odoo-projects --set ID
+  gnome-pomodoro-tracking --projects --set ID
   ```
 
 * Tasks
 
   ```bash
   # List
-  gnome-pomodoro-tracking --odoo-tasks
+  gnome-pomodoro-tracking --tasks
   # Set
-  gnome-pomodoro-tracking --odoo-tasks --set ID
+  gnome-pomodoro-tracking --tasks --set ID
   ```

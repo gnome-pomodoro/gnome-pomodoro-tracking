@@ -1,29 +1,29 @@
-# Clockify 
+# Clockify
 
-* Generate token API in https://clockify.me/
+* Generate API Token at https://clockify.me/user/settings
 
-![](img/clokify-token.png)
+![](img/clockify-token.png)
 
 * Add token
 
   ```bash
-  gnome-pomodoro-tracking --clockify-token TOKEN
+  gnome-pomodoro-tracking --token TOKEN
   ```
 
 * Workspaces
 
   ```bash
   # List
-  gnome-pomodoro-tracking --clockify-workspaces
+  gnome-pomodoro-tracking --workspaces
   # set 
-  gnome-pomodoro-tracking --clockify-workspaces --set ID
+  gnome-pomodoro-tracking --workspaces --set ID
   ```
   
 * Projects
 
   ```bash
   # List
-  gnome-pomodoro-tracking --clockify-projects
+  gnome-pomodoro-tracking --projects
   # Set 
-  gnome-pomodoro-tracking --clockify-projects --set ID
+  gnome-pomodoro-tracking --projects --set ID
   ```

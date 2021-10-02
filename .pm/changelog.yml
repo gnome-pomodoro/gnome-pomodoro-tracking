@@ -8,9 +8,16 @@
   - Clockify , toogl and odoo now inehrit by GPTPlugin
   - Rename arg --state by --status
   - Rename arg --kill by long arg --stop
-
 3.0.1 (2021-01-09):
   added:
   - Rename repo josehbez/gp-tracking to gnome-pomodoro/gnome-pomodoro-tracking
   - Rename bin gp-tracking to gnome-pomodoro-tracking
   - File gpt.conf replace field name  Description by type
+4.0.0 (2021-10-02):
+  added:
+  - Group common args between plugins
+  - Support pip3 instalator
+  - Auth args optionals, fast switching between plugins
+  - Config file is saved in dir data gnome-pomodoro
+  removed:
+  - Remove old instalator

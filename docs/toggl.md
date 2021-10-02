@@ -1,29 +1,29 @@
-# toggl
+# Toggl Track
 
-* Generate token API in https://track.toggl.com/profile
+* Generate  API Token at https://track.toggl.com/profile
 
 ![](img/toggl-token.png)
 
 * Add token
 
   ```bash
-  gnome-pomodoro-tracking --toggl-token TOKEN
+  gnome-pomodoro-tracking --token TOKEN
   ```
 
 * Workspaces
 
   ```bash
   # List
-  gnome-pomodoro-tracking --toggl-workspaces
+  gnome-pomodoro-tracking --workspaces
   # Set 
-  gnome-pomodoro-tracking --toggl-workspaces --set ID
+  gnome-pomodoro-tracking --workspaces --set ID
   ```
 
 * Projects
 
   ```bash
   # List 
-  gnome-pomodoro-tracking --toggl-projects
+  gnome-pomodoro-tracking --projects
   # Set 
-  gnome-pomodoro-tracking --toggl-projects --set ID
+  gnome-pomodoro-tracking --projects --set ID
   ```
