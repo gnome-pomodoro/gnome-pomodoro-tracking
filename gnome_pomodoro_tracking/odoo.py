@@ -28,57 +28,34 @@ class Odoo(Plugin):
                 raise Exception("Fail auth check credentials")
         except configparser.NoSectionError as e:
             self.gpt.logger.error(e)
-            self.gpt.add_section_config(self.name)
-            self.add_parse_args("setup-args")
+            self.gpt.add_section_config(self.name)            
         except configparser.NoOptionError as e:
             self.gpt.logger.error(e)
-            self.add_parse_args("setup-args")
-            params = self.gpt.parse.parse_args()
-            try:
-                self.session.update({
-                    "username": params.odoo_username,
-                    "password": params.odoo_password,
-                    "url":  params.odoo_url,
-                    "database": params.odoo_database})
-                if self.auth():
-                    for p in ['username', 'password', 'url', 'database']:
-                        self.gpt.set_config(self.name, p, self.session.get(p))
-                    print("%s now can do you use."%self.name)
-            except Exception as e:
-                self.gpt.logger.exception(e)
 
     def add_parse_args(self, kind):
-        if kind == "setup-args":
-            self.gpt.parse.add_argument('--odoo-username',
-                                        action='store',
-                                        dest='odoo_username',
-                                        required=True)
-            self.gpt.parse.add_argument('--odoo-password',
-                                        action='store',
-                                        dest='odoo_password',
-                                        required=True)
-            self.gpt.parse.add_argument('--odoo-url',
-                                        action='store',
-                                        dest='odoo_url',
-                                        required=True)
-            self.gpt.parse.add_argument('--odoo-database',
-                                        action='store',
-                                        dest='odoo_database',
-                                        required=True)
-
-        else:
-            # Overwrite
-            self.gpt.parse.add_argument('--odoo-projects',
+        
+        self.gpt.parse.add_argument('-p','--projects',
                                         action='store_const',
                                         dest='odoo_projects',
-                                        help='Odoo projects',
+                                        help='List projects',
                                         const=True)
-            self.gpt.parse.add_argument('--odoo-tasks',
+        self.gpt.parse.add_argument('-t','--tasks',
                                         action='store_const',
                                         dest='odoo_tasks',
-                                        help='Odoo projects/tasks',
+                                        help='List tasks',
                                         const=True)
-
+        self.gpt.parse.add_argument('--username',  
+                                    action='store',
+                                    dest='odoo_username')
+        self.gpt.parse.add_argument('--password',
+                                    action='store',
+                                    dest='odoo_password')        
+        self.gpt.parse.add_argument('--database',
+                                    action='store',
+                                    dest='odoo_database')
+        self.gpt.parse.add_argument('--url',
+                                    action='store',
+                                    dest='odoo_url')
     def auth(self):
         up = urlparse(self.session.get('url'))
         url = '{}://{}'.format( up.scheme or 'https', up.netloc)
@@ -110,6 +87,23 @@ class Odoo(Plugin):
     def cli(self, **kwargs):
         # Overwrite
         params = self.gpt.parse.parse_args()
+        
+        if hasattr(params, 'odoo_username') and params.odoo_username and \
+            hasattr(params, 'odoo_password') and params.odoo_password and \
+            hasattr(params, 'odoo_url') and params.odoo_url and \
+            hasattr(params, 'odoo_database') and params.odoo_database:
+                self.session.update({
+                    "username": params.odoo_username,
+                    "password": params.odoo_password,
+                    "url":  params.odoo_url,
+                    "database": params.odoo_database})
+                if self.auth():
+                    for p in ['username', 'password', 'url', 'database']:
+                        self.gpt.set_config(self.name, p, self.session.get(p))
+                else:
+                    print("Fail auth check your username/password/url/database!")
+                    exit(0)
+            
 
         if hasattr(params, 'odoo_projects') and params.odoo_projects:
             try:
