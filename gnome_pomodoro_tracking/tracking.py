@@ -18,7 +18,7 @@ class Tracking:
 
     def setup(self):
         if not os.path.exists(self.config_path) or not os.path.isfile(self.config_path):
-            config_template = """[settings]\nplugin =\n"""
+            config_template = """[settings]\nplugin =\nmintrace = 0\n"""
             config_template += """[pomodoro]\ntype =\nname =\nstart =\nend =\n"""
             config_template += """[toggl]\n[clockify]\n[odoo]"""
             with open(self.config_path, "w") as f:
@@ -124,7 +124,7 @@ class Tracking:
         self.parse.add_argument('--plugin',
                                 action='store',
                                 dest='plugin',
-                                help='Select Time Tracking Service',
+                                help='Time Tracking Service',
                                 choices=['odoo', 'clockify', 'toggl'])
 
         self.parse.add_argument('-gps', '--gp-state',
@@ -148,22 +148,22 @@ class Tracking:
         self.parse.add_argument('-n', '--name',
                                 action='store',
                                 dest='name',
-                                help='''Set the name of the time entry''')
+                                help='Pomodoro name')
         self.parse.add_argument('-r', '--restart',
                                 action='store_const',
                                 dest='reset',
                                 const=True,
-                                help='Restart Pomodoro')
+                                help='Pomodoro restart')
         self.parse.add_argument('-k', '--stop',
                                 action='store_const',
                                 dest='stop',
                                 const=True,
-                                help='Stop Pomodoro')
+                                help='Pomodoro stop')
         self.parse.add_argument('-s', '--status',
                                 action='store_const',
                                 dest='status',
                                 const=True,
-                                help='Status Pomodoro')
+                                help='Pomodoro status')
         self.parse.add_argument('-d', '--debug',
                                 action='store_const',
                                 dest='debug',

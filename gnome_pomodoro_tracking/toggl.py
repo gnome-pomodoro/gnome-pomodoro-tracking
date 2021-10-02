@@ -25,22 +25,19 @@ class Toggl(Plugin):
             self.gpt.logger.error(e)
 
     def add_parse_args(self, kind=None):
-        self.gpt.parse.add_argument('--toggl-token',
-                                    action='store_const',
-                                    dest='toggl_token',
-                                    help=' e.g 23bc78d4e46edd5479885db4260ecsf3',
-                                    const=True)    
-        self.gpt.parse.add_argument('--toggl-workspaces',
+        self.gpt.parse.add_argument('-w','--workspaces',
                                     action='store_const',
                                     dest='toggl_workspaces',
                                     help='List workspaces',
                                     const=True)
-        self.gpt.parse.add_argument('--toggl-projects',
+        self.gpt.parse.add_argument('-p', '--projects',
                                     action='store_const',
                                     dest='toggl_projects',
                                     help='List projects',
                                     const=True)
-
+        self.gpt.parse.add_argument('--token',
+                                    action='store',
+                                    dest='toggl_token')
     def http_auth(self):
         return (self.token, "api_token")
 
