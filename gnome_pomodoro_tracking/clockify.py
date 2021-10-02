@@ -18,19 +18,10 @@ class Clockify(Plugin):
         except configparser.NoSectionError as e:
             self.gpt.logger.error(e)
             self.gpt.add_section_config(self.name)
-            self.add_parse_args(kind="setup-args")
         except configparser.NoOptionError as e:
+            pass
+        except Exception as e:
             self.gpt.logger.error(e)
-            self.add_parse_args(kind="setup-args")
-            params = self.gpt.parse.parse_args()
-            self.session.update({"token": params.clockify_token})
-            try:
-                if self.auth():
-                    self.gpt.set_config(self.name, "token", self.token())
-                    print("%s now can do you use."%self.name)
-            except Exception as e:
-                self.gpt.logger.critical(e)
-                exit(0)
 
     def token(self):
         return self.session.get("token", "")
@@ -38,26 +29,20 @@ class Clockify(Plugin):
     def http_headers(self):
         return{'X-Api-Key': self.token()}
 
-    def add_parse_args(self, kind):
-        if kind == "setup-args":
-            self.gpt.parse.add_argument('--clockify-token',
-                                        action='store',
-                                        dest='clockify_token',
-                                        help=' e.g XtGTMKadTS8sJ/E',
-                                        required=True)
-        else:
-            # Overwrite
-            self.gpt.parse.add_argument('--clockify-workspaces',
+    def add_parse_args(self, kind=None):
+        self.gpt.parse.add_argument('-w','--workspaces',
                                         action='store_const',
                                         dest='clockify_workspaces',
-                                        help='List clockify workspaces',
+                                        help='List workspaces',
                                         const=True)
-            self.gpt.parse.add_argument('--clockify-projects',
+        self.gpt.parse.add_argument('-p','--projects',
                                         action='store_const',
                                         dest='clockify_projects',
-                                        help='List clockify projects',
+                                        help='List projects',
                                         const=True)
-
+        self.gpt.parse.add_argument('--token',
+                                        action='store',
+                                        dest='clockify_token')
     def auth(self):
         url = join_url(self.url, "api/v1/user")
         try:
@@ -74,6 +59,14 @@ class Clockify(Plugin):
     def cli(self):
         # Overwrite
         params = self.gpt.parse.parse_args()
+
+        if hasattr(params, 'clockify_token') and params.clockify_token:
+            self.session.update({"token": params.clockify_token})            
+            if self.auth():
+                self.gpt.set_config(self.name, "token", self.token())
+            else:
+                print("Fail auth check your token!")
+                exit(0)            
 
         if hasattr(params, 'clockify_workspaces') and params.clockify_workspaces:
             try:
