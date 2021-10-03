@@ -151,7 +151,7 @@ class Toggl(Plugin):
         start = kwargs.get('start')
         end = kwargs.get('end')
         minutes = kwargs.get('minutes')
-
+        tags = kwargs.get('tags', [])
         workspace_id  = None
         try:
             workspace_id = self.gpt.get_config(self.name, "workspace_id")
@@ -182,6 +182,8 @@ class Toggl(Plugin):
         if project_id:
             time_entry.update({'pid': project_id})
 
+        if len(tags):
+            time_entry.update({'tags': tags})
         try:
             url = join_url(self.url, "time_entries")
             req = self.rpost(

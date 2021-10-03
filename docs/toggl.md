@@ -27,3 +27,13 @@
   # Set 
   gnome-pomodoro-tracking --projects --set ID
   ```
+
+* Tags
+
+  ```bash
+  # Add tag
+  gnome-pomodoro-tracking --tag tag-name
+  gnome-pomodoro-tracking --tag tag-name,tag-name2
+  ```
+
+  

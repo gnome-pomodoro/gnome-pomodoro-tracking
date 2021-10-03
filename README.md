@@ -56,19 +56,21 @@ pip3 uninstall -y gnome-pomodoro-tracking
 ## Command Line
 
 ```bash
-
-usage: gnome-pomodoro-tracking [-h] [--plugin {odoo,clockify,toggl}] [-n]
-                               [-r] [-k] [-s]
-Optional arguments:
-  -h, --help            Show this help message and exit
-  --plugin  			      Time Tracking Service
-  -n, --name   			    Pomodoro name
+usage: gnome-pomodoro-tracking [-h] [--plugin {odoo,clockify,toggl}] [-n NAME]
+                               [-g TAG] [-r] [-k] [-s] [-w] [-p]
+                               [--token TOGGL_TOKEN]
+optional arguments:
+  -h, --help            show this help message and exit
+  --plugin {odoo,clockify,toggl}
+                        Time Tracking Service
+  -n NAME, --name NAME  Pomodoro name
+  -g TAG, --tag TAG     Pomodoro tag
   -r, --restart         Pomodoro restart
   -k, --stop            Pomodoro stop
   -s, --status          Pomodoro status
-  --time-entry			    Create time entry
-  --min-trace           Time minimal elapsed to track
-  -d, --debug 			    Enable debug
+  -e, --time-entry      Create time entry
+  -m, --min-trace       Time minimal elapsed to track
+  -d, --debug           Enable debug
 
 ```
 

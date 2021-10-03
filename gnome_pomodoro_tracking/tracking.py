@@ -23,7 +23,7 @@ class Tracking:
             config_template += """[toggl]\n[clockify]\n[odoo]"""
             with open(self.config_path, "w") as f:
                 f.write(config_template)
-        
+
         self.config.read(self.config_path)
         self.parse = argparse.ArgumentParser(
             prog="gnome-pomodoro-tracking",
@@ -62,7 +62,7 @@ class Tracking:
             return self.config.get("pomodoro", key)
 
     def pomodoro_config_clean(self):
-        for k in ["start", "end", "type", 'name']:
+        for k in ["start", "end", "type"]:
             self.config.set("pomodoro", k, "")
         self._write_config()
 
@@ -112,7 +112,7 @@ class Tracking:
                                  "\nTry re-install for regenerate file config.\n")
         except configparser.NoOptionError as e:
             self.logger.critical("Exec the command gnome-pomodoro-tracking --plugin NAME for set.\n")
-        #except ModuleNotFoundError as e:
+        # except ModuleNotFoundError as e:
         #    self.logger.critical("Fail load the plugin module. Exec the command"
         #                         "gnome-pomodoro-tracking --plugin NAME for  replace.\n")
         except Exception as e:
@@ -149,6 +149,10 @@ class Tracking:
                                 action='store',
                                 dest='name',
                                 help='Pomodoro name')
+        self.parse.add_argument('-g', '--tag',
+                                action='store',
+                                dest='tag',
+                                help='Pomodoro tag')
         self.parse.add_argument('-r', '--restart',
                                 action='store_const',
                                 dest='reset',
@@ -173,12 +177,12 @@ class Tracking:
                                 action='store',
                                 dest='set',
                                 help=argparse.SUPPRESS)
-        self.parse.add_argument('--time-entry',
-                                action='store_const',
+        self.parse.add_argument('-e', '--time-entry',
                                 dest='time_entry',
-                                const=True,
+                                type=int,
+                                default=0,
                                 help=argparse.SUPPRESS)
-        self.parse.add_argument('--min-trace',
+        self.parse.add_argument('-m', '--min-trace',
                                 dest='min_trace',
                                 type=int,
                                 default=0,
@@ -199,8 +203,8 @@ class Tracking:
                     self.settings_config("plugin", plugin)
 
             if params.min_trace:
-                if utils.config_attr(self, 'settings', 'mintrace', params.min_trace):
-                    utils.printtbl([{'key': 'Min Trace', 'value': '%s Min' % params.min_trace}])
+                utils.config_attr(self, 'settings', 'mintrace', params.min_trace)
+
             if params.reset or params.stop:
                 params.trigger = 'skip'
                 params.duration = "0"
@@ -219,7 +223,7 @@ class Tracking:
                     {'key': 'Plugin', 'value': str(self.settings_config("plugin")).title()}
                 ]
                 dt_start = utils.now()
-                for k in ["type", 'start', 'name']:
+                for k in ["type", 'start', 'name', 'tag']:
                     try:
                         if k == 'start':
                             dt_start = self.pomodoro_config(k)
@@ -232,21 +236,54 @@ class Tracking:
                 utils.printtbl(items)
                 if getattr(self.plugin, 'status', False):
                     getattr(self.plugin, 'status')()
+            
+            if params.tag:
+                utils.config_attr(self, 'pomodoro', 'tag', params.tag)
 
             if params.time_entry:
                 if getattr(self.plugin, 'add_time_entry', False):
                     end = datetime.utcnow()
-                    start = end - timedelta(minutes=25)
-                    result = getattr(self.plugin, 'add_time_entry')(
-                        name="Time entry",
-                        start=start.strftime(utils.DATETIME_FORMAT),
-                        end=end.strftime(utils.DATETIME_FORMAT),
-                        minutes=25,
-                    )
-                    utils.printtbl([result])
+                    start = end - timedelta(minutes=params.time_entry)
+                    name = "GNOME Pomodoro Time Entry"
+                    self.add_time_entry(
+                        end=end.strftime(utils.DATETIME_FORMAT), 
+                        start=start.strftime(utils.DATETIME_FORMAT), 
+                        name=name)
 
             if getattr(self.plugin, 'cli', False):
                 getattr(self.plugin, 'cli')()
+
+    def add_time_entry(self, **kwargs):
+        try:
+            name = kwargs.get("name", None) or self.pomodoro_config("name") or self.pomodoro_config("type")
+            start = kwargs.get("start", None) or self.pomodoro_config("start")
+            end = kwargs.get("end", None) or utils.now()
+            minutes = utils.time_elapsed(start, end, formatter='minutes')
+            mt = utils.config_attr(self, 'settings', 'mintrace')
+            mintrace = 0
+
+            tag_attr = utils.config_attr(self, 'pomodoro', 'tag')
+            tags = []
+            if tag_attr:
+                tags = tag_attr.get("value", "").split(",")
+            if mt and isinstance(mt, dict):
+                _mintrace = mt.get('value', '')
+                if _mintrace.isdigit():
+                    mintrace = int(_mintrace)
+            if minutes > mintrace:
+                if getattr(self.plugin, 'add_time_entry', False):
+                    result = getattr(self.plugin, 'add_time_entry')(
+                        name=name,
+                        start=start,
+                        end=end,
+                        minutes=minutes,
+                        tags=tags)
+                    utils.printtbl([result])
+                    self.pomodoro_config_clean()
+            else:
+                self.pomodoro_config_clean()
+        except Exception as e:
+            print(e)
 
     def gnome_pomodoro(self, params=None):
         """
@@ -262,28 +299,5 @@ class Tracking:
             self.pomodoro_config("start", utils.now())
         # Stop timer
         elif 'skip' in params.gp_trigger or 'pause' in params.gp_trigger or 'complete' in params.gp_trigger:
-            try:
-                name = self.pomodoro_config("name") or self.pomodoro_config("type")
-                start = self.pomodoro_config("start")
-                end = utils.now()
-                minutes = utils.time_elapsed(start, end, formatter='minutes')
-                mt = utils.config_attr(self, 'settings', 'mintrace')
-                mintrace = 0
-                if mt and isinstance(mt, dict):
-                    _mintrace = mt.get('value', '')
-                    if _mintrace.isdigit():
-                        mintrace = int(_mintrace)
-                if minutes > mintrace:
-                    if getattr(self.plugin, 'add_time_entry', False):
-                        result = getattr(self.plugin, 'add_time_entry')(
-                            name=name,
-                            start=start,
-                            end=end,
-                            minutes=minutes)
-                        utils.printtbl([result])
-                        self.pomodoro_config_clean()
-                else:
-                    self.pomodoro_config_clean()
-            except Exception as e:
-                print(e)
+            self.add_time_entry()
         return True
