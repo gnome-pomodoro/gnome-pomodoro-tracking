@@ -19,20 +19,21 @@ Lets you track your time with the popular time tracking services.
 
 ## Contents
 
-* [Setup](#setup)
-* [Command Line](#command-line)
-* [Plugins]()
-  * [Toggl](docs/toggl.md)
-  * [Clockify](docs/clockify.md)
-  * [Odoo](docs/odoo.md)
-* [GNOME Pomodoro Settings](#gnome-pomodoro-settings)
-* [Develop](docs/develop.md)
+* Getting Started
+	* [Install](#getting-started)
+	* [GNOME Pomodoro Settings](#gnome-pomodoro-settings)
+	* [Command Line](#command-line)	
+* Guides
+	* [Introducing](docs/introducing.md)
+	* [Toggl](docs/toggl.md)
+	* [Clockify](docs/clockify.md)
+	* [Odoo](docs/odoo.md)
+* Contributing
+	* [Testing](testing.md)
 
+## Getting Started
 
-
-## Setup
-
-###  Requirements
+### Requirements
 * python3
 * [gnomepomodoro.org](https://gnomepomodoro.org)
 
@@ -42,7 +43,6 @@ Lets you track your time with the popular time tracking services.
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomodoro-tracking/master/startup.sh)" "" --uninstall
 ```
 
-
 ```bash
 pip3 install -U gnome-pomodoro-tracking
 ```
@@ -51,9 +51,19 @@ pip3 install -U gnome-pomodoro-tracking
 pip3 uninstall -y gnome-pomodoro-tracking
 ```
 
+### GNOME Pomodoro Settings
 
+`Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
 
-## Command Line
+```bash
+gnome-pomodoro-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapsed)"
+```
+
+<p align="center">  
+ <img src="docs/img/gnome-pomodoro-settings.gif" width="400"/>
+</p>
+
+### Command Line
 
 ```bash
 usage: gnome-pomodoro-tracking [-h] [--plugin {odoo,clockify,toggl}] [-n NAME]
@@ -76,14 +86,3 @@ optional arguments:
 
 
 
-## GNOME Pomodoro Settings
-
-`Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
-
-```bash
-gnome-pomodoro-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapsed)"
-```
-
-<p align="center">  
- <img src="docs/img/gnome-pomodoro-settings.gif" width="400"/>
-</p>
