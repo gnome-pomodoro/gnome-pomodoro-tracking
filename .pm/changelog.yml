@@ -23,9 +23,15 @@
   - Remove old instalator
 4.0.1 (2021-10-03):
   added:
-  - Added shortcut  -m/--min-trace 
+  - Added shortcut  -m/--min-trace
   - Plugin toggl support  tags
   changed:
   - Each Pomodoro stop don't reset name
   fixed:
   - Argument -e / --time-entry support minutes
+4.0.2 (2021-10-14):
+  changed:
+  - Time entry description remove text dates
+  fixed:
+  - Plugin Odoo fixed get task_id
+  - Plugin Odoo fixed task filter by project

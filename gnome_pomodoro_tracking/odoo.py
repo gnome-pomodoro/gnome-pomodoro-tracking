@@ -152,8 +152,9 @@ class Odoo(Plugin):
         self.gpt.logger.info(projects)
         return projects
 
-    def tasks(self, project_id=None):
-        if project_id:
+    def tasks(self):
+        project_id = self.gpt.get_config(self.name, "project_id")
+        if project_id and project_id.isdigit():
             domain = [[['active', '=', True], ['project_id', '=', int(project_id)]]]
         else:
             domain = [[['active', '=', True]]]
@@ -174,12 +175,12 @@ class Odoo(Plugin):
         dt_start = kwargs.get('start')
         dt_end = kwargs.get('end')
         minutes = float(kwargs.get('minutes', 0))
-        name = "%s - DTS:%s DTE:%s" % (description, dt_start, dt_end)
+        name = description
         try:
             project_id = int(self.gpt.get_config(self.name, "project_id"))
             if project_id > 0:
                 task_id = self.gpt.get_config(self.name, "task_id")
-                task_id = int(task_id) if isinstance(task_id, int) else False
+                task_id = int(task_id) if task_id and task_id.isdigit() else False
                 id = self.models('account.analytic.line', 'create', [{
                     'date': datetime.now().strftime("%Y-%m-%d"),  # Required
                     'name': name,  # Required
