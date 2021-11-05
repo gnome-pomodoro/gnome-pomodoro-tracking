@@ -35,3 +35,6 @@
   fixed:
   - Plugin Odoo fixed get task_id
   - Plugin Odoo fixed task filter by project
+4.0.3 (2021-11-05):
+  added:
+  - CLI argument --time-entry set default name

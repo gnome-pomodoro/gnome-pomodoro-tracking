@@ -236,7 +236,7 @@ class Tracking:
                 utils.printtbl(items)
                 if getattr(self.plugin, 'status', False):
                     getattr(self.plugin, 'status')()
-            
+
             if params.tag:
                 utils.config_attr(self, 'pomodoro', 'tag', params.tag)
 
@@ -244,10 +244,11 @@ class Tracking:
                 if getattr(self.plugin, 'add_time_entry', False):
                     end = datetime.utcnow()
                     start = end - timedelta(minutes=params.time_entry)
-                    name = "GNOME Pomodoro Time Entry"
+                    name = utils.config_attr(self, 'pomodoro', 'name')
+                    name = name['value'] if name else "GNOME Pomodoro Time Entry"
                     self.add_time_entry(
-                        end=end.strftime(utils.DATETIME_FORMAT), 
-                        start=start.strftime(utils.DATETIME_FORMAT), 
+                        end=end.strftime(utils.DATETIME_FORMAT),
+                        start=start.strftime(utils.DATETIME_FORMAT),
                         name=name)
 
             if getattr(self.plugin, 'cli', False):
