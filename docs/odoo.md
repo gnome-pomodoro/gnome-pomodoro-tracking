@@ -5,6 +5,7 @@
 * sale_timesheet
 
 ## Test 
+* ✅ Odoo 16.0 - Community & Enterprise
 * ✅ Odoo 13.0 - Community
 * ✅ Odoo 13.0 - Enterprise
 * ✅ Odoo 12.0 - Community
