@@ -134,3 +134,6 @@ assets/gitlab-logo2.png
 gnome-pomodoro-tracking.conf
 Pipfile
 .pypirc
+bin
+lib64
+pyvenv.cfg

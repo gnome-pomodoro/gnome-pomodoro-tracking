@@ -47,10 +47,10 @@ with open("requirements.txt", encoding="utf-8") as f:
 
 setup(
     name="gnome-pomodoro-tracking",
-    version="4.0.3",
+    version="4.1.0",
     url="https://github.com/gnome-pomodoro/gnome-pomodoro-tracking",
     author="Jose Hbez",
-    author_email="dev@josehbez.com",
+    author_email="josehbez@outlook.com",
     description="Connect your Pomodoros to popular time tracking services.",
     long_description=long_description,
     long_description_content_type='text/markdown',

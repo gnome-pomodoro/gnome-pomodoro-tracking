@@ -8,7 +8,7 @@ from gnome_pomodoro_tracking.utils import printtbl, join_url,\
 class Toggl(Plugin):
 
     name = "toggl"
-    url = "https://api.track.toggl.com/api/v8"
+    url = "https://api.track.toggl.com/api/v9"
     token = None
 
     def __init__(self, gpt):
@@ -46,7 +46,7 @@ class Toggl(Plugin):
             req = self.rget(join_url(self.url, "me" ), auth=self.http_auth())
             if req.ok:
                 data = req.json()
-                if data['data']['id']:
+                if data['id']:
                     return True
             else:
                 raise Exception(req.text)
