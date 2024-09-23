@@ -39,10 +39,9 @@ Lets you track your time with the popular time tracking services.
 
 ### Install
 ```bash
-# If you have installed v3, first uninstall old version
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomodoro-tracking/master/startup.sh)" "" --uninstall
+pip install -U git+https://github.com/gnome-pomodoro/gnome-pomodoro-tracking.git
 ```
-
+or 
 ```bash
 pip3 install -U gnome-pomodoro-tracking
 ```
