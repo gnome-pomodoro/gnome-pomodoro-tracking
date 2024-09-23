@@ -47,7 +47,7 @@ with open("requirements.txt", encoding="utf-8") as f:
 
 setup(
     name="gnome-pomodoro-tracking",
-    version="4.1.0",
+    version="4.1.1",
     url="https://github.com/gnome-pomodoro/gnome-pomodoro-tracking",
     author="Jose Hbez",
     author_email="josehbez@outlook.com",

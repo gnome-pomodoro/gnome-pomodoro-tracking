@@ -170,30 +170,28 @@ class Toggl(Plugin):
         time_entry = {
             "start": start,  # Required
             "description": name,
-            "projectId": project_id,
             "stop": end,  # Required
-            "duration": float(minutes) * 60,
-            "created_with": "gp-tracking"
+            "created_with": "gnome-pomodoro-tracking"
         }
 
         if workspace_id:
-            time_entry.update({'wid': workspace_id})
+            time_entry.update({'workspace_id': int(workspace_id)})
 
         if project_id:
-            time_entry.update({'pid': project_id})
+            time_entry.update({'project_id': int(project_id)})
 
         if len(tags):
             time_entry.update({'tags': tags})
         try:
-            url = join_url(self.url, "time_entries")
+            url = join_url(self.url, f"workspaces/{workspace_id}/time_entries")            
             req = self.rpost(
                 url, auth=self.http_auth(),
-                json={"time_entry": time_entry}
+                json=time_entry
             )
             if req.ok:
                 data = req.json()
                 self.gpt.logger.info(data)
-                return {'id': data['data']['id'], 'name': name}
+                return {'id': data['id'], 'name': name}
             else:
                 raise Exception(req.text)
         except Exception as e:
