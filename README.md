@@ -3,56 +3,40 @@
 </p>
 
 <p align="center">  
-  <a href="https://github.com/gnome-pomodoro/gnome-pomodoro-tracking/actions?query=workflow%3APytest">
+  <!--a href="https://github.com/gnome-pomodoro/gnome-pomodoro-tracking/actions?query=workflow%3APytest">
     <img src="https://github.com/gnome-pomodoro/gnome-pomodoro-tracking/workflows/Pytest/badge.svg">
-  </a>
+  </a-->
   <a href="LICENSE">  
     <img src="https://img.shields.io/github/license/gnome-pomodoro/gnome-pomodoro-tracking?style=flat-square" />
   </a>
-  <a href=".pm/version.yml">
-        <img src="https://img.shields.io/badge/dynamic/yaml?color=green&label=version&query=version.*&url=https://raw.githubusercontent.com/gnome-pomodoro/gnome-pomodoro-tracking/master/.pm/version.yml">
+  <a>
+       <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/gnome-pomodoro-tracking">
+
   </a>
 </p>
 
-# GNOME Pomodoro Tracking
-Lets you track your time with the popular time tracking services.
+# Welcome to Gnome Pomodoro Tracking!
+Our plugin integrates with Toggl, Clockify, and Odoo to provide accurate time logging for your tasks and projects.
 
-## Contents
 
-* Getting Started
-	* [Install](#getting-started)
-	* [GNOME Pomodoro Settings](#gnome-pomodoro-settings)
-	* [Command Line](#command-line)	
-* Guides
-	* [Introducing](docs/introducing.md)
-	* [Toggl](docs/toggl.md)
-	* [Clockify](docs/clockify.md)
-	* [Odoo](docs/odoo.md)
-* Contributing
-	* [Testing](testing.md)
-
+----
 ## Getting Started
 
-### Requirements
-* python3
-* [gnomepomodoro.org](https://gnomepomodoro.org)
+### 1. Install
+To get started, simply install the plugin using pip:
 
-### Install
-```bash
-pip install -U git+https://github.com/gnome-pomodoro/gnome-pomodoro-tracking.git
-```
-or 
 ```bash
 pip3 install -U gnome-pomodoro-tracking
 ```
-### Uninstall
-```bash
-pip3 uninstall -y gnome-pomodoro-tracking
-```
+ 
 
-### GNOME Pomodoro Settings
 
-`Preferences / Plugins ... / Custom Actions(Execute shell scripts) / Add `
+### 2. Set Up GNOME Pomodoro:
+
+
+* Open Gnome Pomodoro Prefences.
+* Navigate to "Plugins" > "Custom Actions (Execute shell scripts)".
+* Click "Add" and paste the following command:
 
 ```bash
 gnome-pomodoro-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -gpe "$(elapsed)"
@@ -62,26 +46,19 @@ gnome-pomodoro-tracking -gps "$(state)" -gpt "$(triggers)" -gpd "$(duration)" -g
  <img src="docs/img/gnome-pomodoro-settings.gif" width="400"/>
 </p>
 
-### Command Line
+### 3. Choose Your Time Tracking Service
 
-```bash
-usage: gnome-pomodoro-tracking [-h] [--plugin {odoo,clockify,toggl}] [-n NAME]
-                               [-g TAG] [-r] [-k] [-s] [-w] [-p]
-                               [--token TOGGL_TOKEN]
-optional arguments:
-  -h, --help            show this help message and exit
-  --plugin {odoo,clockify,toggl}
-                        Time Tracking Service
-  -n NAME, --name NAME  Pomodoro name
-  -g TAG, --tag TAG     Pomodoro tag
-  -r, --restart         Pomodoro restart
-  -k, --stop            Pomodoro stop
-  -s, --status          Pomodoro status
-  -e, --time-entry      Create time entry
-  -m, --min-trace       Time minimal elapsed to track
-  -d, --debug           Enable debug
+We support three popular services:
+* **Toggl**:  [Learn More](docs/toggl.md)
+* **Clockify**: [Learn More](docs/clockify.md)
+* **Odoo**: [Learn More](docs/odoo.md)
 
-```
+
+
+### 4. Command line 
+
+For advanced CLI usage and customization, please refer to the guide: [introducing.md](introducing.md)
+
 
 
 
