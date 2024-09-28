@@ -57,7 +57,7 @@ We support three popular services:
 
 ### 4. Command line 
 
-For advanced CLI usage and customization, please refer to the guide: [introducing.md](introducing.md)
+For advanced CLI usage and customization, please refer to the guide: [introducing.md](docs/introducing.md)
 
 
 
