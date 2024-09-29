@@ -34,7 +34,7 @@ pip3 install -U gnome-pomodoro-tracking
 ### 2. Set Up GNOME Pomodoro:
 
 
-* Open Gnome Pomodoro Prefences.
+* Open Gnome Pomodoro Preferences.
 * Navigate to "Plugins" > "Custom Actions (Execute shell scripts)".
 * Click "Add" and paste the following command:
 
