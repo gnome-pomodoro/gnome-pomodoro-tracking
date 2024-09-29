@@ -132,6 +132,7 @@ assets/gnome-pomodoro-256x256.png
 assets/how-does-work.xcf
 assets/gitlab-logo2.png
 gnome-pomodoro-tracking.conf
+gnome-pomodoro-tracking.template
 Pipfile
 .pypirc
 bin

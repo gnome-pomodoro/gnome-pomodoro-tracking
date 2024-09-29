@@ -25,6 +25,6 @@ max-line-length = 120
 # B007 loop control variable not used within the loop body
 # B008 Do not perform function calls in argument defaults
 # B011 do not call assert False since python -O removes them
-ignore = E126,E127,E131,E201,E202,E221,E222,E241,E302,E303,E800,W292,W391,W504,F841,B007,B008,B011
+ignore = E126,E127,E131,E201,E202,E221,E222,E241,E302,E303,E800,W292,W391,W504,F841,B007,B008,B011,W503
 
 # hang-closing = True
