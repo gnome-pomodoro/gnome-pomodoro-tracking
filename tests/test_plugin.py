@@ -3,6 +3,7 @@
 import unittest
 from gnome_pomodoro_tracking.tracking import Tracking
 
+
 class TestPlugin(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -27,11 +28,11 @@ class TestPlugin(unittest.TestCase):
 
     def get_stdout_id(self):
         id = None
-        with open(".gnome-pomodoro-tracking.log", 'r') as f:
+        with open(".gnome-pomodoro-tracking.log", "r") as f:
             lines = f.readlines()
-            line_split = str(lines[len(lines) - 1]).split("gp_tracking.py:write")
+            line_split = str(lines[len(lines) - 1]).split("tracking.py:write")
             if len(line_split) == 2:
-                id  = line_split[1].strip().split(' ')[0] or None
+                id = line_split[1].strip().split(" ")[0] or None
             f.close()
         assert isinstance(id, str)
         return id
