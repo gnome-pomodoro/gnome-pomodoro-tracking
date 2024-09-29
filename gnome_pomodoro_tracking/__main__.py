@@ -3,6 +3,7 @@
 import os
 from gnome_pomodoro_tracking.tracking import Tracking
 
+
 def main():
     config = "%s/.local/share/gnome-pomodoro/tracking.config" % os.path.expanduser("~")
     gpt = Tracking(config)
@@ -10,7 +11,6 @@ def main():
     gpt.add_parse_args()
     gpt.cli()
 
+
 if __name__ == "__main__":
     main()
-    
-

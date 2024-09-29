@@ -5,11 +5,10 @@ import os
 from shutil import rmtree
 from setuptools import setup, Command, find_packages
 
+
 class PublishCommand(Command):
 
-    user_options = [
-        ('testpypi', 't', "Publish on https://test.pypi.org/")
-    ]
+    user_options = [("testpypi", "t", "Publish on https://test.pypi.org/")]
 
     def initialize_options(self):
         self.testpypi = 0
@@ -26,8 +25,7 @@ class PublishCommand(Command):
             pass
 
         print("Building Source and Wheel (universal) distribution…")
-        os.system("{0} setup.py sdist bdist_wheel --universal"
-                  .format(sys.executable))
+        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
 
         print("Uploading the package to PyPi via Twine…")
 
@@ -36,6 +34,7 @@ class PublishCommand(Command):
         else:
             os.system("twine upload dist/*")
 
+
 long_description = ""
 with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
@@ -43,7 +42,7 @@ with open("README.md", encoding="utf-8") as f:
 requirements = []
 with open("requirements.txt", encoding="utf-8") as f:
     for line in f.readlines():
-        requirements.append(line.replace('\n', ''))
+        requirements.append(line.replace("\n", ""))
 
 setup(
     name="gnome-pomodoro-tracking",
@@ -53,38 +52,24 @@ setup(
     author_email="josehbez@outlook.com",
     description="Connect your Pomodoros to popular time tracking services.",
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     packages=find_packages(exclude=["docs", "tests*"]),
     include_package_data=True,
     entry_points={
-        "console_scripts": ["gnome-pomodoro-tracking=gnome_pomodoro_tracking.__main__:main"]
+        "console_scripts": [
+            "gnome-pomodoro-tracking=gnome_pomodoro_tracking.__main__:main"
+        ]
     },
     install_requires=requirements,
     license="MIT",
     classifiers=[
-
         "Environment :: Console",
-
         "Intended Audience :: End Users/Desktop",
         "Intended Audience :: Developers",
-
         "License :: OSI Approved :: MIT License",
-
         "Operating System :: POSIX :: Linux",
-
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.2",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-
-        "Topic :: Utilities",
+        "Programming Language :: Python :: 3" "Topic :: Utilities",
     ],
-    cmdclass={
-       "publish": PublishCommand
-    }
+    cmdclass={"publish": PublishCommand},
 )

@@ -2,8 +2,14 @@
 # Copyright (c) 2021 The Project GNOME Pomodoro Tracking Authors
 import configparser
 from gnome_pomodoro_tracking.plugin import Plugin
-from gnome_pomodoro_tracking.utils import join_url, printtbl, config_attrs,\
-    find_by_id, only_columns
+from gnome_pomodoro_tracking.utils import (
+    join_url,
+    printtbl,
+    config_attrs,
+    find_by_id,
+    only_columns,
+)
+
 
 class Clockify(Plugin):
     name = "clockify"
@@ -27,22 +33,27 @@ class Clockify(Plugin):
         return self.session.get("token", "")
 
     def http_headers(self):
-        return{'X-Api-Key': self.token()}
+        return {"X-Api-Key": self.token()}
 
     def add_parse_args(self, kind=None):
-        self.gpt.parse.add_argument('-w','--workspaces',
-                                        action='store_const',
-                                        dest='clockify_workspaces',
-                                        help='List workspaces',
-                                        const=True)
-        self.gpt.parse.add_argument('-p','--projects',
-                                        action='store_const',
-                                        dest='clockify_projects',
-                                        help='List projects',
-                                        const=True)
-        self.gpt.parse.add_argument('--token',
-                                        action='store',
-                                        dest='clockify_token')
+        self.gpt.parse.add_argument(
+            "-w",
+            "--workspaces",
+            action="store_const",
+            dest="clockify_workspaces",
+            help="List workspaces",
+            const=True,
+        )
+        self.gpt.parse.add_argument(
+            "-p",
+            "--projects",
+            action="store_const",
+            dest="clockify_projects",
+            help="List projects",
+            const=True,
+        )
+        self.gpt.parse.add_argument("--token", action="store", dest="clockify_token")
+
     def auth(self):
         url = join_url(self.url, "api/v1/user")
         try:
@@ -60,15 +71,15 @@ class Clockify(Plugin):
         # Overwrite
         params = self.gpt.parse.parse_args()
 
-        if hasattr(params, 'clockify_token') and params.clockify_token:
-            self.session.update({"token": params.clockify_token})            
+        if hasattr(params, "clockify_token") and params.clockify_token:
+            self.session.update({"token": params.clockify_token})
             if self.auth():
                 self.gpt.set_config(self.name, "token", self.token())
             else:
                 print("Fail auth check your token!")
-                exit(0)            
+                exit(0)
 
-        if hasattr(params, 'clockify_workspaces') and params.clockify_workspaces:
+        if hasattr(params, "clockify_workspaces") and params.clockify_workspaces:
             try:
                 rows = self.workspaces()
                 if rows:
@@ -76,24 +87,28 @@ class Clockify(Plugin):
                     if params.set:
                         row = find_by_id(rows, params.set)
                         if row:
-                            self.gpt.set_config(self.name, "workspace_id", row.get('id'))
-                            self.gpt.set_config(self.name, "workspace_name", row.get('name'))
+                            self.gpt.set_config(
+                                self.name, "workspace_id", row.get("id")
+                            )
+                            self.gpt.set_config(
+                                self.name, "workspace_name", row.get("name")
+                            )
                             printtbl([row])
                         else:
-                            print('The workspace ID was not found')
+                            print("The workspace ID was not found")
                     else:
                         printtbl(rows)
                 else:
                     raise Exception("Fail get workspaces")
             except Exception as e:
                 self.gpt.logger.exception(e)
-        elif hasattr(params, 'clockify_projects') and params.clockify_projects:
+        elif hasattr(params, "clockify_projects") and params.clockify_projects:
             try:
                 workspace_id = self.gpt.get_config(self.name, "workspace_id")
             except Exception as e:
                 self.gpt.logger.error(e)
-                workspace = self.workspaces(filter='first')
-                workspace_id = workspace.get('id')
+                workspace = self.workspaces(filter="first")
+                workspace_id = workspace.get("id")
             try:
                 rows = self.projects(workspace_id)
                 if rows:
@@ -101,11 +116,13 @@ class Clockify(Plugin):
                     if params.set:
                         row = find_by_id(rows, params.set)
                         if row:
-                            self.gpt.set_config(self.name, "project_id", row.get('id'))
-                            self.gpt.set_config(self.name, "project_name", row.get('name'))
+                            self.gpt.set_config(self.name, "project_id", row.get("id"))
+                            self.gpt.set_config(
+                                self.name, "project_name", row.get("name")
+                            )
                             printtbl([row])
                         else:
-                            print('The project ID was not found')
+                            print("The project ID was not found")
                     else:
                         printtbl(rows)
                 else:
@@ -120,7 +137,7 @@ class Clockify(Plugin):
             if req.ok:
                 data = req.json()
                 self.gpt.logger.info(data)
-                if filter == 'first':
+                if filter == "first":
                     if data:
                         return len(data) and data[0]
                 return data
@@ -137,7 +154,7 @@ class Clockify(Plugin):
             if req.ok:
                 data = req.json()
                 self.gpt.logger.info(data)
-                if filter == 'first':
+                if filter == "first":
                     return len(data) and data[0]
                 return data
             else:
@@ -148,17 +165,17 @@ class Clockify(Plugin):
 
     def add_time_entry(self, **kwargs):
         # Overwrite
-        name = kwargs.get('name')
-        start = kwargs.get('start')
-        end = kwargs.get('end')
+        name = kwargs.get("name")
+        start = kwargs.get("start")
+        end = kwargs.get("end")
 
-        workspace_id  = ""
+        workspace_id = ""
         try:
             workspace_id = self.gpt.get_config(self.name, "workspace_id")
         except Exception:
             try:
-                workspace = self.workspaces(filter='first')
-                workspace_id = workspace.get('id')
+                workspace = self.workspaces(filter="first")
+                workspace_id = workspace.get("id")
             except Exception:
                 pass
         project_id = None
@@ -178,7 +195,7 @@ class Clockify(Plugin):
             if req.ok:
                 data = req.json()
                 self.gpt.logger.info(data)
-                return {'id': data['id'], 'name': name}
+                return {"id": data["id"], "name": name}
             else:
                 raise Exception(req.text)
         except Exception as e:
@@ -186,6 +203,6 @@ class Clockify(Plugin):
         return None
 
     def status(self, **kwargs):
-        attrs = ['workspace_name', 'project_name']
-        items = config_attrs(self.gpt, self.name, attrs, formatter='status')
+        attrs = ["workspace_name", "project_name"]
+        items = config_attrs(self.gpt, self.name, attrs, formatter="status")
         printtbl(items)
