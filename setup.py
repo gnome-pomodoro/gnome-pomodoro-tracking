@@ -46,7 +46,7 @@ with open("requirements.txt", encoding="utf-8") as f:
 
 setup(
     name="gnome-pomodoro-tracking",
-    version="4.1.1",
+    version="4.1.2",
     url="https://github.com/gnome-pomodoro/gnome-pomodoro-tracking",
     author="Jose Hbez",
     author_email="josehbez@outlook.com",
@@ -69,7 +69,8 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3" "Topic :: Utilities",
+        "Programming Language :: Python :: 3",
+        "Topic :: Utilities",
     ],
     cmdclass={"publish": PublishCommand},
 )
